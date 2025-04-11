@@ -1,58 +1,51 @@
-import express from 'express';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { createServer } from 'http';
-import { exec } from 'child_process';
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const PORT = process.env.PORT || 3000;
 
-// First, determine if we're in production or development mode
-const isProduction = process.env.NODE_ENV === 'production';
+const MIME_TYPES = {
+  '.html': 'text/html',
+  '.js': 'text/javascript',
+  '.css': 'text/css',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+};
 
-// In production mode, we'll use the pre-built client files
-if (isProduction) {
-  console.log('Starting server in production mode...');
-  const app = express();
-  const server = createServer(app);
-
-  // Serve static files from public directory
-  app.use(express.static(join(__dirname, 'public')));
+const server = http.createServer((req, res) => {
+  console.log(`Request received: ${req.url}`);
   
-  // Add API endpoints
-  app.use(express.json());
-  app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  });
+  // Default to index.html for root path
+  let filePath = req.url === '/' 
+    ? './index.html' 
+    : '.' + req.url;
   
-  // Serve index.html for all non-API routes (client-side routing)
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(join(__dirname, 'public', 'index.html'));
+  const extname = path.extname(filePath);
+  const contentType = MIME_TYPES[extname] || 'application/octet-stream';
+  
+  fs.readFile(filePath, (err, content) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        console.log(`File not found: ${filePath}`);
+        res.writeHead(404);
+        res.end('404 - File Not Found');
+      } else {
+        console.error(`Server error: ${err.code}`);
+        res.writeHead(500);
+        res.end('500 - Server Error');
+      }
+    } else {
+      console.log(`Serving file: ${filePath} as ${contentType}`);
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(content, 'utf-8');
     }
   });
-  
-  const PORT = process.env.PORT || 3000;
-  server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running in production mode on port ${PORT}`);
-    console.log(`Access the application at: http://localhost:${PORT}`);
-  });
-} else {
-  // In development mode, we'll use the server/index.ts directly
-  console.log('Starting server in development mode...');
-  exec('npm run dev', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error starting dev server: ${error.message}`);
-      return;
-    }
-    
-    if (stderr) {
-      console.error(`Dev server stderr: ${stderr}`);
-    }
-    
-    console.log(`Dev server stdout: ${stdout}`);
-  });
+});
 
-  console.log('Development server started on port 3000');
-  console.log('You can access the application at: http://localhost:3000');
-}
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running at http://0.0.0.0:${PORT}/`);
+});
