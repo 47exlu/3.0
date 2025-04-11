@@ -1480,7 +1480,7 @@ export const useRapperGame = create<RapperGameStore>()(
         const lastWeekTotal = currentState.streamingPlatforms.find(p => p.name === platform.name)?.totalStreams || 0;
         
         // Calculate new streams this week
-        const newStreams = platformTotal - lastWeekTotal;
+        const newStreams = Math.max(0, platformTotal - lastWeekTotal); // Prevent negative streams
         
         // Calculate revenue from new streams
         const platformRevenue = calculateStreamingRevenue(newStreams, platform.name);
