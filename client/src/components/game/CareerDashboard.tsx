@@ -101,14 +101,14 @@ export function CareerDashboard() {
       // Get updated state after advancing the week
       const currentState = useRapperGame.getState();
       
-      // Calculate changes with null safety checks
-      const newStreams = (currentState.streamingPlatforms?.reduce(
-        (sum, platform) => sum + (platform.totalStreams || 0), 0) || 0) - previousStreams;
+      // Calculate changes with null safety checks and prevent negative values
+      const newStreams = Math.max(0, (currentState.streamingPlatforms?.reduce(
+        (sum, platform) => sum + (platform.totalStreams || 0), 0) || 0) - previousStreams);
       
-      const newFollowers = (currentState.socialMedia?.reduce(
-        (sum, platform) => sum + (platform.followers || 0), 0) || 0) - previousFollowers;
+      const newFollowers = Math.max(0, (currentState.socialMedia?.reduce(
+        (sum, platform) => sum + (platform.followers || 0), 0) || 0) - previousFollowers);
       
-      const newWealth = currentState.stats.wealth - previousWealth;
+      const newWealth = Math.max(0, currentState.stats.wealth - previousWealth);
       
       // Find viral, flopped, and comeback songs this week
       const viralSongs = currentState.songs
