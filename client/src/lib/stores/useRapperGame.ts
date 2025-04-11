@@ -956,11 +956,16 @@ export const useRapperGame = create<RapperGameStore>()(
             // Use integer division to ensure different values
             const roundedGrowth = Math.floor(finalPlatformGrowth);
             
-            // Log for debugging
-            console.log(`Song ${song.title}: Platform ${platformName} growth: ${roundedGrowth} (bias: ${platformBias.toFixed(2)}, variation: ${weeklyVariation.toFixed(2)}, perf: ${performanceMultiplier.toFixed(2)})`);
+            // Ensure minimum growth if song is actively gaining streams overall
+            // This ensures all platforms get at least some streams when a song is growing
+            const minimumGrowth = Math.max(1, Math.floor(totalGrowth * 0.01));
+            const finalGrowth = Math.max(minimumGrowth, roundedGrowth);
             
-            // Add to platform map
-            platformStreamMap[platformName] = (platformStreamMap[platformName] || 0) + roundedGrowth;
+            // Log for debugging
+            console.log(`Song ${song.title}: Platform ${platformName} growth: ${finalGrowth} (bias: ${platformBias.toFixed(2)}, variation: ${weeklyVariation.toFixed(2)}, perf: ${performanceMultiplier.toFixed(2)})`);
+            
+            // Add to platform map - ensure at least a small amount of growth
+            platformStreamMap[platformName] = (platformStreamMap[platformName] || 0) + finalGrowth;
           });
         }
       });

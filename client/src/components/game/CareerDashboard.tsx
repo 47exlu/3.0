@@ -96,7 +96,7 @@ export function CareerDashboard() {
     // Advance the week using the store function
     advanceWeek();
     
-    // Wait for state update
+    // Wait for state update with a slightly longer delay to ensure all calculations finish
     setTimeout(() => {
       // Get updated state after advancing the week
       const currentState = useRapperGame.getState();
@@ -108,6 +108,19 @@ export function CareerDashboard() {
       const newFollowers = Math.max(0, (currentState.socialMedia?.reduce(
         (sum, platform) => sum + (platform.followers || 0), 0) || 0) - previousFollowers);
       
+      // For revenue, use platform-specific revenue calculations rather than total wealth
+      // This provides a more accurate representation of streaming revenue
+      const platformRevenue = currentState.streamingPlatforms?.reduce(
+        (sum, platform) => {
+          const previousPlatform = streamingPlatforms?.find(p => p.name === platform.name);
+          if (!previousPlatform) return sum;
+          
+          // Calculate revenue from new streams this week
+          const newPlatformStreams = Math.max(0, platform.totalStreams - previousPlatform.totalStreams);
+          return sum + Math.max(0, platform.revenue - previousPlatform.revenue);
+        }, 0) || 0;
+      
+      // Add concert revenue, merchandise sales, etc. (if available in the state)
       const newWealth = Math.max(0, currentState.stats.wealth - previousWealth);
       
       // Find viral, flopped, and comeback songs this week
@@ -123,17 +136,18 @@ export function CareerDashboard() {
         .filter(song => song.performanceType === 'comeback' && song.performanceStatusWeek === currentState.currentWeek)
         .map(song => song.title);
       
-      // Update summary data with actual values
+      // Update summary data with actual values - use the revenue that's most accurately tracking
+      // streaming income (platformRevenue or newWealth, whichever is higher)
       setSummaryData({
         previousWeek,
         newStreams,
         newFollowers,
-        revenue: newWealth,
+        revenue: Math.max(platformRevenue, newWealth),
         viralSongs,
         floppedSongs,
         comebackSongs
       });
-    }, 100); // Small delay to ensure state is updated
+    }, 200); // Slightly longer delay to ensure state is updated
   };
 
   if (!character) return null;
