@@ -1,0 +1,14 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="10" fill="url(#future_gradient)" />
+  <polygon points="40,100 70,60 70,140" fill="white" fill-opacity="0.9" />
+  <polygon points="90,40 90,160 130,100" fill="white" fill-opacity="0.9" />
+  <polygon points="150,60 150,140 180,100" fill="white" fill-opacity="0.9" />
+  <rect x="40" y="40" width="120" height="120" rx="10" stroke="white" stroke-width="2" stroke-opacity="0.5" fill="none" />
+  <circle cx="100" cy="100" r="40" stroke="white" stroke-width="2" stroke-opacity="0.5" fill="none" />
+  <defs>
+    <linearGradient id="future_gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#10B981" />
+      <stop offset="1" stop-color="#3B82F6" />
+    </linearGradient>
+  </defs>
+</svg>

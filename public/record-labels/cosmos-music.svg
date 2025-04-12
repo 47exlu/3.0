@@ -1,16 +1,21 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="100" cy="100" r="95" fill="url(#cosmos_gradient)" />
-  <path d="M100 30C61.34 30 30 61.34 30 100C30 138.66 61.34 170 100 170C138.66 170 170 138.66 170 100C170 61.34 138.66 30 100 30ZM100 160C67.29 160 40 132.71 40 100C40 67.29 67.29 40 100 40C132.71 40 160 67.29 160 100C160 132.71 132.71 160 100 160Z" fill="white" fill-opacity="0.8"/>
-  <circle cx="100" cy="100" r="30" fill="white" fill-opacity="0.9"/>
-  <circle cx="140" cy="70" r="10" fill="white" fill-opacity="0.7"/>
-  <circle cx="60" cy="130" r="15" fill="white" fill-opacity="0.7"/>
-  <circle cx="130" cy="130" r="8" fill="white" fill-opacity="0.7"/>
-  <circle cx="70" cy="70" r="12" fill="white" fill-opacity="0.7"/>
-  <path d="M88 92V108L106 100L88 92Z" fill="#4F46E5"/>
+  <rect width="200" height="200" fill="url(#cosmos_gradient)" />
+  <circle cx="100" cy="100" r="60" fill="black" fill-opacity="0.3" />
+  <circle cx="100" cy="100" r="50" stroke="white" stroke-width="3" stroke-opacity="0.8" />
+  <circle cx="70" cy="60" r="8" fill="white" />
+  <circle cx="130" cy="90" r="12" fill="white" />
+  <circle cx="90" cy="130" r="10" fill="white" />
+  <circle cx="45" cy="100" r="5" fill="white" />
+  <circle cx="160" cy="140" r="7" fill="white" />
+  <circle cx="120" cy="40" r="6" fill="white" />
+  <path d="M70 60L120 40M120 40L130 90M130 90L160 140M160 140L90 130M90 130L45 100M45 100L70 60" stroke="white" stroke-width="1.5" stroke-opacity="0.6" />
+  <path d="M80 105 C80 99.7, 84 95, 88 95 A6 6 0 0 1 100 105 A6 6 0 0 1 88 115 C84 115, 80 110.3, 80 105 Z" fill="white" fill-opacity="0.9" />
+  <path d="M105 95H115Q120 95 120 100V110Q120 115 115 115H105V95Z" fill="white" fill-opacity="0.9" />
+  <path d="M125 95H145L135 105L145 115H125Z" fill="white" fill-opacity="0.9" />
   <defs>
     <linearGradient id="cosmos_gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#8B5CF6"/>
-      <stop offset="1" stop-color="#3B82F6"/>
+      <stop offset="0" stop-color="#8B5CF6" />
+      <stop offset="1" stop-color="#1D4ED8" />
     </linearGradient>
   </defs>
 </svg>

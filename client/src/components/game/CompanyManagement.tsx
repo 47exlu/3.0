@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { recordLabels, RecordLabel, getLabelsByLevelRequirement } from '../../lib/data/recordLabels';
+import { recordLabels, RecordLabel, getLabelsByLevelRequirement, getLabelById } from '../../lib/data/recordLabels';
 
 const CompanyManagement: React.FC = () => {
   const { toast } = useToast();
