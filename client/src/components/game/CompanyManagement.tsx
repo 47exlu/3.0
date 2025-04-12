@@ -768,7 +768,7 @@ const CompanyManagement: React.FC = () => {
           </div>
           
           <div className="bg-gray-800 rounded p-4">
-            <h3 className="font-bold text-white mb-3">Events for {format(date, 'MMMM dd, yyyy')}</h3>
+            <h3 className="font-bold text-white mb-3">Events for {format(date, 'dd/MM/yyyy')}</h3>
             
             {selectedDateEvents.length > 0 ? (
               <div className="space-y-3">
