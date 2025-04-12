@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
-import { Play, Heart, MoreHorizontal, Clock, Download, X } from 'lucide-react';
+import { Play, Heart, MoreHorizontal, Clock, Download, X, ChevronLeft } from 'lucide-react';
 
 // Helper to format large numbers with appropriate suffix (K, M, B)
 const formatNumber = (num: number): string => {
@@ -71,6 +71,15 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({ albumId, onBack }) => {
         aria-label="Close album view"
       >
         <X className="h-5 w-5" />
+      </button>
+      
+      {/* Prominent back button at the top */}
+      <button 
+        className="mb-4 flex items-center bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full transition-colors font-medium"
+        onClick={onBack}
+      >
+        <ChevronLeft className="h-5 w-5 mr-1" />
+        <span>Back to library</span>
       </button>
       
       {/* Album header */}
@@ -174,20 +183,22 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({ albumId, onBack }) => {
       {/* Back button at the bottom */}
       <div className="mt-6 pb-20 flex justify-center sm:justify-start">
         <button 
-          className="px-4 py-2 border border-gray-600 rounded-full text-xs sm:text-sm hover:bg-gray-800"
+          className="px-4 py-2 flex items-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors text-xs sm:text-sm"
           onClick={onBack}
         >
-          Back to profile
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Back to library
         </button>
       </div>
       
       {/* Fixed bottom exit control for easy access */}
       <div className="fixed bottom-4 left-0 right-0 flex justify-center z-50">
         <button 
-          className="px-6 py-3 bg-black/80 text-white rounded-full shadow-lg font-medium text-sm hover:bg-black"
+          className="px-6 py-3 bg-white/10 text-white rounded-full shadow-lg font-medium text-sm hover:bg-white/20 flex items-center"
           onClick={onBack}
         >
-          Exit Album View
+          <ChevronLeft className="h-5 w-5 mr-1" />
+          Back to library
         </button>
       </div>
     </div>
