@@ -331,17 +331,17 @@ const JobsSystem: React.FC = () => {
               <label className="block text-sm font-medium mb-1">Category</label>
               <div className="relative">
                 <select 
-                  className="bg-gray-800 text-white rounded px-3 py-2 w-full appearance-none"
+                  className="bg-gray-800 text-white border border-gray-700 rounded px-3 py-2 w-full appearance-none hover:bg-gray-700 transition-colors"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value as JobCategory | 'all')}
                 >
-                  <option value="all">All Categories</option>
-                  <option value="studio">Studio</option>
-                  <option value="performing">Performing</option>
-                  <option value="teaching">Teaching</option>
-                  <option value="media">Media</option>
-                  <option value="industry">Industry</option>
-                  <option value="freelance">Freelance</option>
+                  <option value="all" className="py-2 px-4 hover:bg-blue-600">All Categories</option>
+                  <option value="studio" className="py-2 px-4 hover:bg-blue-600">Studio</option>
+                  <option value="performing" className="py-2 px-4 hover:bg-blue-600">Performing</option>
+                  <option value="teaching" className="py-2 px-4 hover:bg-blue-600">Teaching</option>
+                  <option value="media" className="py-2 px-4 hover:bg-blue-600">Media</option>
+                  <option value="industry" className="py-2 px-4 hover:bg-blue-600">Industry</option>
+                  <option value="freelance" className="py-2 px-4 hover:bg-blue-600">Freelance</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                   <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -355,16 +355,16 @@ const JobsSystem: React.FC = () => {
               <label className="block text-sm font-medium mb-1">Difficulty</label>
               <div className="relative">
                 <select 
-                  className="bg-gray-800 text-white rounded px-3 py-2 w-full appearance-none"
+                  className="bg-gray-800 text-white border border-gray-700 rounded px-3 py-2 w-full appearance-none hover:bg-gray-700 transition-colors"
                   value={selectedDifficulty}
                   onChange={(e) => setSelectedDifficulty(e.target.value as JobDifficulty | 'all')}
                 >
-                  <option value="all">All Difficulties</option>
-                  <option value="entry">Entry Level</option>
-                  <option value="basic">Basic</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                  <option value="expert">Expert</option>
+                  <option value="all" className="py-2 px-4 hover:bg-blue-600">All Difficulties</option>
+                  <option value="entry" className="py-2 px-4 hover:bg-blue-600">Entry Level</option>
+                  <option value="basic" className="py-2 px-4 hover:bg-blue-600">Basic</option>
+                  <option value="intermediate" className="py-2 px-4 hover:bg-blue-600">Intermediate</option>
+                  <option value="advanced" className="py-2 px-4 hover:bg-blue-600">Advanced</option>
+                  <option value="expert" className="py-2 px-4 hover:bg-blue-600">Expert</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                   <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
