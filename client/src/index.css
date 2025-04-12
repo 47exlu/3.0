@@ -438,6 +438,19 @@ canvas {
     .adaptive-grid, .adaptive-grid-sm {
       grid-template-columns: 1fr;
     }
+    
+    /* Ensure all page-level components have plenty of bottom padding on mobile */
+    .h-full {
+      padding-bottom: 120px !important;
+    }
+    
+    /* Add extra spacing to the last child of any container */
+    .card:last-child, 
+    .grid:last-child,
+    .flex:last-child,
+    .mb-6:last-child {
+      margin-bottom: 120px !important;
+    }
   }
   
   /* Bottom navigation styling */
@@ -451,13 +464,13 @@ canvas {
     -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid rgba(109, 40, 217, 0.3);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 50;
+    z-index: 999;
     padding-bottom: env(safe-area-inset-bottom);
   }
   
   /* Content that needs to be adjusted for bottom navigation */
   .pb-safe {
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom) + 60px);
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom) + 90px);
   }
   
   /* Hide scrollbars but maintain functionality */
