@@ -506,7 +506,7 @@ export function ModernNavbar() {
         
         {/* Bottom tab bar for main navigation */}
         <motion.div 
-          className="bottom-nav flex justify-around items-center py-0 px-0.5 safe-area-inset"
+          className="bottom-nav flex justify-around items-center py-0 px-0.5 safe-area-inset fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800"
           initial={{ y: 50 }}
           animate={{ y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
