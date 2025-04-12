@@ -469,11 +469,18 @@ canvas {
     .bottom-nav ~ .bottom-nav,
     /* Remove any floating nav elements at the bottom */
     .flex.justify-around.fixed.bottom-0,
-    div[class*="fixed bottom-0"] {
+    div[class*="fixed bottom-0"],
+    /* Additional selectors to target those elements */
+    .flex.items-center.justify-around.fixed.bottom-0,
+    .fixed.bottom-0:not(.bottom-nav),
+    .tablet-device .flex.justify-around.items-center:not(.bottom-nav) {
       display: none !important;
       opacity: 0 !important;
       z-index: -1 !important;
       visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
     }
     
     /* Ensure the real bottom nav stays visible */
@@ -482,6 +489,11 @@ canvas {
       opacity: 1 !important;
       z-index: 50 !important;
       visibility: visible !important;
+    }
+    
+    /* Add breathing room at the bottom of content in tablet mode */
+    .tablet-device main {
+      padding-bottom: 60px !important;
     }
   }
   
