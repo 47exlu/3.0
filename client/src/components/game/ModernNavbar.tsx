@@ -133,7 +133,8 @@ const categories = [
   { id: 'marketing', name: 'Marketing' },
   { id: 'business', name: 'Business' },
   { id: 'network', name: 'Network' },
-  { id: 'other', name: 'Other' }
+  { id: 'other', name: 'Other' },
+  { id: 'system', name: 'Settings' }
 ];
 
 export function ModernNavbar() {
@@ -456,7 +457,7 @@ export function ModernNavbar() {
           animate={{ y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          {['main', 'music', 'marketing', 'business', 'network'].map((categoryId, idx) => {
+          {['main', 'music', 'marketing', 'business'].map((categoryId, idx) => {
             // Get first item from each category for quick access
             const firstScreen = screens.find(s => s.category === categoryId);
             if (!firstScreen) return null;
@@ -479,7 +480,7 @@ export function ModernNavbar() {
                 {isActive && (
                   <motion.div
                     layoutId="activeTabIndicator"
-                    className="absolute -top-1 w-1/5 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                    className="absolute -top-1 w-1/6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
                   />
                 )}
                 {firstScreen.icon}
@@ -487,6 +488,31 @@ export function ModernNavbar() {
               </motion.button>
             );
           })}
+          
+          {/* Settings Tab */}
+          <motion.button
+            key="settings"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.5 }}
+            whileTap={{ scale: 0.9 }}
+            className={cn(
+              "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors",
+              currentScreen === 'save_load' ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
+            )}
+            onClick={() => handleScreenChange('save_load')}
+          >
+            {currentScreen === 'save_load' && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                className="absolute -top-1 w-1/6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+              />
+            )}
+            <Settings className="w-5 h-5" />
+            <span className="text-[10px] mt-1">Settings</span>
+          </motion.button>
+          
+          {/* More Menu Button */}
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
