@@ -81,13 +81,9 @@ export const AlbumManagement: React.FC = () => {
     
     // Instead of filtering, let's just use all songs and show a more descriptive status
     const availableSongs = songs?.filter(song => {
-      // Accept songs that are either:
-      // 1. Released
-      // 2. Completed but not released
-      // 3. In progress but almost complete (>=90% progress)
-      const isValidSong = song.released || 
-                         (song.completed && !song.released) || 
-                         (song.productionProgress >= 90);
+      // Accept all unreleased songs for now (since users are having issues)
+      // This allows all songs to be included in albums
+      const isValidSong = !song.released; // Allow any unreleased song
       
       // Skip songs that don't meet the basic criteria
       if (!isValidSong) return false;
