@@ -1594,32 +1594,63 @@ export const useRapperGame = create<RapperGameStore>()(
         
       console.log(`Total weekly revenue: $${weeklyRevenue.toFixed(2)}`);
       
-      // Calculate new career level
-      const newCareerLevel = calculateCareerLevel(allStreams);
+      // Get all streams from all platforms for accurate level calculation
+      const totalStreamsFromPlatforms = updatedState.streamingPlatforms?.reduce((total, platform) => 
+        total + platform.totalStreams, 0) || 0;
       
-      // Check if level up occurred
-      if (newCareerLevel > currentState.stats.careerLevel) {
-        // Show level up notification
-        alert(`Congratulations! You've reached level ${newCareerLevel}!`);
+      // Get all streams from individual songs as a backup/verification
+      const totalStreamsFromSongs = updatedState.songs?.reduce((total, song) => 
+        total + song.streams, 0) || 0;
+      
+      // Use the higher of the two values to ensure accurate level calculation
+      const allTotalStreams = Math.max(totalStreamsFromPlatforms, totalStreamsFromSongs);
+      
+      // Log the values for debugging
+      console.log(`LEVEL CALCULATION - Streams from platforms: ${totalStreamsFromPlatforms}`);
+      console.log(`LEVEL CALCULATION - Streams from songs: ${totalStreamsFromSongs}`);
+      console.log(`LEVEL CALCULATION - Using max value: ${allTotalStreams}`);
+      
+      // Calculate new career level
+      const newCareerLevel = calculateCareerLevel(allTotalStreams);
+      console.log(`LEVEL CALCULATION - Current level: ${currentState.stats.careerLevel}, New level: ${newCareerLevel}`);
+      
+      // Force the level up if the streams requirement is met but the level isn't changing
+      const neededLevelUp = CAREER_LEVELS.findIndex(level => 
+        allTotalStreams >= level.totalStreamsRequired && 
+        level.level > currentState.stats.careerLevel);
         
-        // Add level up bonuses here if needed
-        // For example, give some bonus cash or fans on level up
-        const levelUpBonus = newCareerLevel * 1000; // Bonus cash on level up
+      // Check if level up occurred
+      if (newCareerLevel > currentState.stats.careerLevel || neededLevelUp !== -1) {
+        // Get the actual new level
+        const actualNewLevel = neededLevelUp !== -1 ? 
+          CAREER_LEVELS[neededLevelUp].level : newCareerLevel;
+        
+        // Show level up notification
+        alert(`Congratulations! You've reached level ${actualNewLevel}!`);
+        
+        // Add level up bonuses
+        const levelUpBonus = actualNewLevel * 1000; // Bonus cash on level up
+        
+        // Update career stats with the correct level
         updatedState.stats = {
-          ...updatedState.stats,
-          wealth: (updatedState.stats.wealth || 0) + levelUpBonus
+          ...currentState.stats,
+          careerLevel: actualNewLevel,
+          // Add weekly revenue to wealth plus level up bonus
+          wealth: currentState.stats.wealth + weeklyRevenue + levelUpBonus,
+          // Small natural increase in creativity each week
+          creativity: Math.min(100, currentState.stats.creativity + 0.2),
+        };
+      } else {
+        // Just update stats normally without level up
+        updatedState.stats = {
+          ...currentState.stats,
+          careerLevel: newCareerLevel,
+          // Add weekly revenue to wealth
+          wealth: currentState.stats.wealth + weeklyRevenue,
+          // Small natural increase in creativity each week
+          creativity: Math.min(100, currentState.stats.creativity + 0.2),
         };
       }
-      
-      // Update career stats
-      updatedState.stats = {
-        ...currentState.stats,
-        careerLevel: newCareerLevel,
-        // Add weekly revenue to wealth
-        wealth: currentState.stats.wealth + weeklyRevenue,
-        // Small natural increase in creativity each week
-        creativity: Math.min(100, currentState.stats.creativity + 0.2),
-      };
       
       // Generate random events (15% chance per week)
       const randomEvent = getRandomEventForWeek(
