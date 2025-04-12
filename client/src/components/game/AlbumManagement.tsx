@@ -77,8 +77,12 @@ export const AlbumManagement: React.FC = () => {
   // Filter available songs for album based on search and release status
   const getAvailableSongs = () => {
     const availableSongs = songs?.filter(song => {
-      // Only show completed songs
-      if (!song.completed) return false;
+      // Show both unreleased completed songs AND released songs
+      // We don't need to check completion for released songs as they must be completed already
+      const isValidSong = song.released || (song.completed && !song.released);
+      
+      // Skip songs that don't meet the basic criteria
+      if (!isValidSong) return false;
       
       // Filter by search query if provided
       if (searchQuery && !song.title.toLowerCase().includes(searchQuery.toLowerCase())) {
@@ -87,6 +91,9 @@ export const AlbumManagement: React.FC = () => {
       
       return true;
     }) || [];
+    
+    // Debug log to see what songs are available
+    console.log("Available songs for album:", availableSongs.length, availableSongs);
     
     return availableSongs;
   };
