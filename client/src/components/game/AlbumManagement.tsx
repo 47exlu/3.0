@@ -14,7 +14,8 @@ import {
   Filter,
   ArrowUp,
   ArrowDown,
-  Search
+  Search,
+  ImageIcon
 } from 'lucide-react';
 import { useRapperGame } from '../../lib/stores/useRapperGame';
 import { Album, Song } from '../../lib/types';
@@ -361,7 +362,7 @@ export const AlbumManagement: React.FC = () => {
                     <img src={albumCoverArt} alt="Album Cover" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-gray-500 text-center text-xs p-2">
-                      <Image className="h-8 w-8 mx-auto mb-1" />
+                      <ImageIcon className="h-8 w-8 mx-auto mb-1" />
                       <span>No cover selected</span>
                     </div>
                   )}
