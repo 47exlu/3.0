@@ -458,12 +458,12 @@ export function ModernNavbar() {
         
         {/* Bottom tab bar for main navigation */}
         <motion.div 
-          className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 flex justify-around items-center p-1 z-40"
+          className="bottom-nav flex justify-around items-center p-1 safe-area-inset glass-effect"
           initial={{ y: 50 }}
           animate={{ y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          {['main', 'music', 'marketing', 'business'].map((categoryId, idx) => {
+          {['main', 'music', 'marketing', 'business', 'system'].map((categoryId, idx) => {
             // Get first item from each category for quick access
             const firstScreen = screens.find(s => s.category === categoryId);
             if (!firstScreen) return null;

@@ -145,15 +145,15 @@ export function GameLayout({ children }: GameLayoutProps) {
       
       {/* Controls panel removed as requested in favor of the Settings tab in navigation */}
       
-      {/* Main content - adjusted for better mobile viewing with bottom padding on mobile */}
+      {/* Main content - enhanced for better responsive viewing with improved mobile support */}
       <motion.main 
-        className="w-full h-full overflow-auto flex-1 bg-gradient-to-b from-gray-900 to-gray-800 pb-16 md:pb-0"
+        className="w-full h-full overflow-auto flex-1 bg-gradient-to-b from-gray-900 to-gray-800 pb-safe mobile-scroll"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <motion.div 
-          className="h-full"
+          className="h-full nav-spacing-mobile md:nav-spacing-none"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
