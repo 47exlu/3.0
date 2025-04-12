@@ -1,0 +1,21 @@
+Weekly Performance - Platform YouTube: Previous streams 0, Current streams 0, New streams 0, Revenue $0.00
+Weekly Performance - Platform YouTube Vevo: Previous streams 0, Current streams 0, New streams 0, Revenue $0.00
+STREAMS SUMMARY - Total from songs: 0, Total from platforms: 0
+Weekly Performance - FINAL TOTAL: New streams 0, Revenue $0.00
+Total weekly revenue: $0.00
+LEVEL CALCULATION - Streams from platforms: 0
+LEVEL CALCULATION - Streams from songs: 0
+LEVEL CALCULATION - Using max value: 0
+LEVEL CALCULATION - Current level: 1, New level: 1
+CAREER_LEVELS is not defined
+at advanceWeek (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/lib/stores/useRapperGame.ts?t=1744426951250:1024:29)
+at confirmAdvanceWeek (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/components/game/CareerDashboard.tsx?t=1744426951250:85:5)
+at HTMLUnknownElement.callCallback2 (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:3674:22)
+at Object.invokeGuardedCallbackDev (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:3699:24)
+at invokeGuardedCallback (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:3733:39)
+at invokeGuardedCallbackAndCatchFirstError (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:3736:33)
+at executeDispatch (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:7014:11)
+at processDispatchQueueItemsInOrder (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:7034:15)
+at processDispatchQueue (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:7043:13)
+at dispatchEventsForPlugins (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-2EG2ZD3U.js?v=465fbdc5:7051:11)
+CAREER_LEVELS is not defined
