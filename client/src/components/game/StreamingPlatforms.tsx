@@ -304,13 +304,13 @@ export function StreamingPlatforms() {
                                     </div>
                                     <div className="text-right text-xs xxs:text-sm text-[#b3b3b3] flex-shrink-0 pl-1">
                                       {selectedPlatform === 'spotify' && spotify ? 
-                                         formatNumber(Math.floor(song.streams * (0.55 * (0.9 + Math.random() * 0.2)))) :
+                                         formatNumber(Math.floor(song.streams * 0.55)) :
                                        selectedPlatform === 'youtubeMusic' && youtubeMusic ?
-                                         formatNumber(Math.floor(song.streams * (0.28 * (0.9 + Math.random() * 0.2)))) :
+                                         formatNumber(Math.floor(song.streams * 0.28)) :
                                        selectedPlatform === 'itunes' && iTunes ?
-                                         formatNumber(Math.floor(song.streams * (0.12 * (0.9 + Math.random() * 0.2)))) :
+                                         formatNumber(Math.floor(song.streams * 0.12)) :
                                        selectedPlatform === 'soundcloud' && soundCloud ?
-                                         formatNumber(Math.floor(song.streams * (0.05 * (0.9 + Math.random() * 0.2)))) :
+                                         formatNumber(Math.floor(song.streams * 0.05)) :
                                          formatNumber(song.streams)
                                       }
                                     </div>
@@ -714,16 +714,15 @@ export function StreamingPlatforms() {
             <DialogTitle>Edit Profile Picture</DialogTitle>
           </DialogHeader>
           <ImageUploader 
-            defaultImage={character?.image || undefined}
-            onImageSelect={(imageData) => {
+            currentImage={character?.image || undefined}
+            onImageSelected={(imageData) => {
               updateCharacter({
                 ...character,
                 image: imageData
               });
               setShowProfileEditor(false);
             }}
-            aspectRatio="1:1"
-            cropShape="round"
+            aspectRatio="square"
           />
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowProfileEditor(false)}>Cancel</Button>
@@ -738,15 +737,15 @@ export function StreamingPlatforms() {
             <DialogTitle>Edit Cover Image</DialogTitle>
           </DialogHeader>
           <ImageUploader 
-            defaultImage={character?.coverImage || undefined}
-            onImageSelect={(imageData) => {
+            currentImage={character?.coverImage || undefined}
+            onImageSelected={(imageData) => {
               updateCharacter({
                 ...character,
                 coverImage: imageData
               });
               setShowCoverEditor(false);
             }}
-            aspectRatio="2.7:1"
+            aspectRatio="wide"
           />
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCoverEditor(false)}>Cancel</Button>
