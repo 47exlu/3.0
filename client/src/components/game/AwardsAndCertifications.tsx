@@ -66,27 +66,28 @@ type AwardsByType = Record<AwardType, AwardsByYear>;
 
 // Helper function to group awards by type and year
 const groupAwardsByTypeAndYear = (awards: Award[]): AwardsByType => {
-  const grouped: Partial<AwardsByType> = {};
-  
-  // Initialize the structure with empty arrays
-  Object.values(AWARD_TYPE_NAMES).forEach(type => {
-    grouped[type as AwardType] = {};
-  });
+  // Create initial structure with all award types as empty objects
+  const grouped: AwardsByType = {
+    grammy: {},
+    bet: {},
+    vma: {},
+    ama: {},
+    billboard: {},
+    iheartradio: {},
+    apollo: {},
+    worldstar: {}
+  };
   
   // Group awards by type and year
   awards.forEach(award => {
-    if (!grouped[award.type]) {
-      grouped[award.type] = {};
+    if (!grouped[award.type][award.year]) {
+      grouped[award.type][award.year] = [];
     }
     
-    if (!grouped[award.type]![award.year]) {
-      grouped[award.type]![award.year] = [];
-    }
-    
-    grouped[award.type]![award.year].push(award);
+    grouped[award.type][award.year].push(award);
   });
   
-  return grouped as AwardsByType;
+  return grouped;
 };
 
 const AwardsAndCertifications: React.FC = () => {
@@ -94,7 +95,10 @@ const AwardsAndCertifications: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'awards' | 'certifications'>('awards');
   
   // Group awards by type and year for better organization
-  const awardsByTypeAndYear = awards ? groupAwardsByTypeAndYear(awards) : {};
+  const awardsByTypeAndYear = awards ? groupAwardsByTypeAndYear(awards) : {
+    grammy: {}, bet: {}, vma: {}, ama: {}, billboard: {}, 
+    iheartradio: {}, apollo: {}, worldstar: {}
+  };
   
   // Filter songs with certifications
   const songsWithCertifications = songs.filter(song => 
@@ -184,7 +188,19 @@ const AwardsAndCertifications: React.FC = () => {
 };
 
 // Component to display the awards section
-const AwardsSection: React.FC<{ awards: Award[], awardsByTypeAndYear: AwardsByType }> = ({ 
+const AwardsSection: React.FC<{ 
+  awards: Award[], 
+  awardsByTypeAndYear: {
+    grammy: Record<number, Award[]>;
+    bet: Record<number, Award[]>;
+    vma: Record<number, Award[]>;
+    ama: Record<number, Award[]>;
+    billboard: Record<number, Award[]>;
+    iheartradio: Record<number, Award[]>;
+    apollo: Record<number, Award[]>;
+    worldstar: Record<number, Award[]>;
+  } 
+}> = ({ 
   awards, 
   awardsByTypeAndYear 
 }) => {
