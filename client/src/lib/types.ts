@@ -442,13 +442,14 @@ export interface TeamMember {
   name: string;
   role: TeamMemberRole;
   hired: boolean;
-  hiredDate?: number; // Week when hired
+  hiredWeek?: number; // Week when hired (changed from hiredDate for consistency)
   contractLength?: number; // In weeks
   contractEnds?: number; // Week when contract expires
   salary: number; // Weekly salary
   quality: number; // 1-100 rating of skill
   experience: number; // 1-100 rating of experience
   specialization?: string; // Additional area of expertise
+  description?: string; // Description of role and expertise
   bio?: string;
   image?: string; // Profile picture
   benefits: TeamMemberBenefit[];

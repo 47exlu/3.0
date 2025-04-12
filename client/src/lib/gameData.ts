@@ -824,6 +824,7 @@ export const DEFAULT_TEAM_MEMBERS: TeamMember[] = [
     quality: 65,
     experience: 70,
     specialization: "Indie Artists",
+    description: "Entry-level manager who can help you navigate the music industry and negotiate better deals.",
     bio: "Former indie label executive with solid connections in the underground scene. Good starting manager for new artists who value creative control.",
     image: "/assets/team/manager_1.jpg",
     benefits: [
