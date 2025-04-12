@@ -506,10 +506,11 @@ export function ModernNavbar() {
         
         {/* Bottom tab bar for main navigation */}
         <motion.div 
-          className="bottom-nav flex justify-around items-center py-0 px-0.5 safe-area-inset fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800"
+          className="bottom-nav flex justify-around items-center py-1 px-2 safe-area-inset fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 z-[9999]"
           initial={{ y: 50 }}
           animate={{ y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
+          style={{ display: 'flex !important', visibility: 'visible !important' }}
         >
           {['main', 'music', 'marketing', 'business', 'system'].map((categoryId, idx) => {
             // Get first item from each category for quick access
