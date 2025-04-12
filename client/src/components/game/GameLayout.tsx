@@ -128,7 +128,7 @@ export function GameLayout({ children }: GameLayoutProps) {
   // Don't show navbar on main menu or character creation
   const showNavbar = screen !== 'main_menu' && screen !== 'character_creation';
   
-  // Add class to body for device detection
+  // Add class to body for device detection and fix any duplicate navigation
   useEffect(() => {
     // Add device classes to help with CSS targeting
     const updateDeviceClass = () => {
@@ -136,19 +136,47 @@ export function GameLayout({ children }: GameLayoutProps) {
       document.body.classList.remove('tablet-device', 'desktop-device', 'mobile-device');
       
       // Add appropriate device class
-      if (window.innerWidth >= 768 && window.innerWidth <= 1023) {
+      if (window.innerWidth >= 768 && window.innerWidth <= 1180) {
         document.body.classList.add('tablet-device');
-      } else if (window.innerWidth >= 1024) {
+      } else if (window.innerWidth > 1180) {
         document.body.classList.add('desktop-device');
       } else {
         document.body.classList.add('mobile-device');
       }
       
-      // Also add a global class to mark those elements that need fix
-      const extraNavElements = document.querySelectorAll('.flex.justify-around.fixed.bottom-0:not(.bottom-nav)');
-      extraNavElements.forEach(el => {
-        el.classList.add('universal-fix-bottom');
-      });
+      // Apply fixes to address duplicate nav buttons in CareerDashboard
+      setTimeout(() => {
+        // Find all bottom navigation elements that aren't the main one
+        const extraNavElements = document.querySelectorAll('.fixed.bottom-0:not(.bottom-nav), .flex.justify-around.fixed.bottom-0:not(.bottom-nav)');
+        extraNavElements.forEach(el => {
+          el.classList.add('universal-fix-bottom');
+        });
+        
+        // Find the .game-action-buttons element in Career Dashboard if we're in tablet or desktop mode
+        if (window.innerWidth >= 768) {
+          const gameActionButtons = document.querySelectorAll('.game-action-buttons');
+          gameActionButtons.forEach(el => {
+            el.classList.add('hide-on-tablet-desktop');
+          });
+          
+          // Add a class to any element that has position:fixed and bottom:0 via inline style
+          const allElements = document.querySelectorAll('*');
+          allElements.forEach(el => {
+            const style = window.getComputedStyle(el);
+            if (style.position === 'fixed' && style.bottom === '0px' && !el.classList.contains('bottom-nav')) {
+              el.classList.add('universal-fix-bottom');
+            }
+          });
+        }
+      }, 100); // Short delay to ensure DOM is fully processed
+    };
+    
+    // Function to handle visibility changes and resume audio if needed
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log("Page became visible, resuming audio if needed");
+        resumeAudio();
+      }
     };
     
     // Run on mount
@@ -156,8 +184,16 @@ export function GameLayout({ children }: GameLayoutProps) {
     
     // Listen for resize events
     window.addEventListener('resize', updateDeviceClass);
-    return () => window.removeEventListener('resize', updateDeviceClass);
-  }, []);
+    
+    // Handle page visibility for audio resumption
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', updateDeviceClass);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [resumeAudio]);
 
   return (
     <motion.div 
