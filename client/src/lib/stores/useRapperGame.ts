@@ -46,7 +46,7 @@ import {
 } from '../types';
 import { useAudio } from './useAudio';
 import { useEnergyStore } from './useEnergyStore';
-import { DEFAULT_AI_RAPPERS, DEFAULT_SHOP_ITEMS, DEFAULT_SKILLS, DEFAULT_VENUES, DEFAULT_TEAM_MEMBERS, SOCIAL_MEDIA_COSTS, SONG_TIER_INFO, CAREER_LEVELS } from '../gameData';
+import { DEFAULT_AI_RAPPERS, DEFAULT_SHOP_ITEMS, DEFAULT_SKILLS, DEFAULT_VENUES, DEFAULT_TEAM_MEMBERS, SOCIAL_MEDIA_COSTS, SONG_TIER_INFO, CAREER_LEVELS, DEFAULT_JOBS } from '../gameData';
 import { getRandomEventForWeek } from '../utils/randomEvents';
 import { formatMoney } from '../utils';
 import { CERTIFICATION_THRESHOLDS, CertificationType } from '../types';
@@ -207,6 +207,9 @@ interface RapperGameActions {
   processMarketTrends: () => void;
   updateTwitterTrends: () => void;
   getTrendEffect: (platformName: string) => number;
+  
+  // Jobs system
+  checkJobRequirements: (job: any) => boolean;
 }
 
 // Combine state and actions
@@ -2513,6 +2516,328 @@ export const useRapperGame = create<RapperGameStore>()(
               alert(`${newlyCompleted.length} of your tours completed this week, earning you a total bonus of $${totalBonus}!`);
             }
           }
+        }
+      }
+      
+      // Process active jobs
+      if (currentState.activeJobs && currentState.activeJobs.length > 0) {
+        // Get job details from availableJobs
+        const jobDetails = currentState.availableJobs || [];
+        
+        // Process each active job
+        const processedJobs = currentState.activeJobs.map(job => {
+          // Increment weeks worked
+          const weeksWorked = job.weeksWorked + 1;
+          
+          // Calculate job performance based on skills and random elements
+          let performanceChange = 0;
+          
+          // Base performance change is random between -5 and +8
+          performanceChange += Math.floor(Math.random() * 13) - 5;
+          
+          // Skill boost: check if player has skills that boost this job's performance
+          const jobInfo = jobDetails.find(j => j.id === job.jobId);
+          if (jobInfo && currentState.skills) {
+            // If player has skills relevant to the job, boost performance
+            Object.keys(jobInfo.skillGains).forEach(skillName => {
+              const playerSkill = currentState.skills?.find(s => s.name === skillName);
+              if (playerSkill) {
+                // Add 1-3 performance points per skill level
+                performanceChange += Math.floor(playerSkill.level * (Math.random() * 2 + 1));
+              }
+            });
+          }
+          
+          // Cap performance change
+          performanceChange = Math.max(-10, Math.min(15, performanceChange));
+          
+          // Calculate new performance
+          let newPerformance = job.performance + performanceChange;
+          newPerformance = Math.max(20, Math.min(100, newPerformance));
+          
+          // Calculate pay for this week
+          const weeklyPay = job.weeklyPay;
+          const totalPay = job.totalPay + weeklyPay;
+          
+          // Determine if the job is complete
+          const isComplete = job.endWeek <= newWeek;
+          
+          // Add warning if performance is very poor
+          let warnings = job.warnings;
+          if (newPerformance < 40) {
+            warnings += 1;
+            
+            // Notify player about warning
+            if (warnings <= 3) {
+              alert(`You received a warning at your ${jobInfo?.title || 'job'} due to poor performance.`);
+            }
+            
+            // If too many warnings, job is terminated
+            if (warnings >= 3) {
+              // Move to completed jobs as failed
+              const jobHistory = {
+                jobId: job.jobId,
+                title: jobInfo?.title || 'Unknown Job',
+                category: jobInfo?.category || 'unknown',
+                startWeek: job.startWeek,
+                endWeek: newWeek,
+                totalPay,
+                completed: false,
+                performance: newPerformance,
+                reference: warnings >= 3 ? 'Terminated due to poor performance' : undefined
+              };
+              
+              // Add to completed jobs
+              updatedState.completedJobs = [
+                ...(updatedState.completedJobs || []),
+                jobHistory
+              ];
+              
+              // Show termination notice
+              alert(`You've been fired from your ${jobInfo?.title || 'job'} due to poor performance!`);
+              
+              // Return null to remove from active jobs
+              return null;
+            }
+          }
+          
+          // Handle job completion
+          if (isComplete) {
+            // Create job history entry
+            const jobHistory = {
+              jobId: job.jobId,
+              title: jobInfo?.title || 'Unknown Job',
+              category: jobInfo?.category || 'unknown',
+              startWeek: job.startWeek,
+              endWeek: newWeek,
+              totalPay,
+              completed: true,
+              performance: newPerformance,
+              reference: newPerformance > 85 ? 'Excellent work - highly recommended' :
+                        newPerformance > 70 ? 'Good work - would hire again' :
+                        newPerformance > 50 ? 'Satisfactory performance' :
+                        'Needs improvement'
+            };
+            
+            // Add to completed jobs
+            updatedState.completedJobs = [
+              ...(updatedState.completedJobs || []),
+              jobHistory
+            ];
+            
+            // Apply skill gains
+            if (jobInfo && jobInfo.skillGains) {
+              const updatedSkills = [...(currentState.skills || [])];
+              
+              Object.entries(jobInfo.skillGains).forEach(([skillName, gainAmount]) => {
+                const skillIndex = updatedSkills.findIndex(s => s.name === skillName);
+                
+                if (skillIndex >= 0) {
+                  // Update existing skill
+                  updatedSkills[skillIndex] = {
+                    ...updatedSkills[skillIndex],
+                    level: Math.min(
+                      updatedSkills[skillIndex].maxLevel,
+                      updatedSkills[skillIndex].level + gainAmount
+                    )
+                  };
+                }
+              });
+              
+              updatedState.skills = updatedSkills;
+            }
+            
+            // Reputation gain based on performance
+            const reputationGain = Math.floor(newPerformance / 20); // 1-5 points
+            updatedState.stats = {
+              ...updatedState.stats,
+              reputation: Math.min(100, updatedState.stats.reputation + reputationGain)
+            };
+            
+            // Reset job availability
+            updatedState.availableJobs = (currentState.availableJobs || []).map(j => {
+              if (j.id === job.jobId) {
+                return {
+                  ...j,
+                  status: 'available',
+                  appliedDate: undefined,
+                  acceptedDate: undefined,
+                  endDate: undefined
+                };
+              }
+              return j;
+            });
+            
+            // Job completion message
+            alert(`You completed your job as ${jobInfo?.title || 'employee'} with ${
+              newPerformance > 85 ? 'excellent' :
+              newPerformance > 70 ? 'good' :
+              newPerformance > 50 ? 'satisfactory' :
+              'poor'
+            } performance! You earned a total of $${totalPay.toLocaleString()}.`);
+            
+            // Return null to remove from active jobs
+            return null;
+          }
+          
+          // If job continues, return updated job info
+          return {
+            ...job,
+            weeksWorked,
+            performance: newPerformance,
+            totalPay,
+            warnings
+          };
+        }).filter(Boolean); // Remove null entries (completed/terminated jobs)
+        
+        // Update active jobs in state
+        updatedState.activeJobs = processedJobs;
+        
+        // Update wealth from job income
+        if (processedJobs.length > 0) {
+          const weeklyIncome = processedJobs.reduce((sum, job) => sum + (job?.weeklyPay || 0), 0);
+          
+          updatedState.stats = {
+            ...updatedState.stats,
+            wealth: updatedState.stats.wealth + weeklyIncome
+          };
+        }
+      }
+      
+      // Process job applications (random chance of acceptance)
+      if (currentState.appliedJobs && currentState.appliedJobs.length > 0) {
+        const processedApplications = [];
+        const acceptedApplications = [];
+        
+        currentState.appliedJobs.forEach(job => {
+          // Check if application has been pending for 1-3 weeks
+          const weeksWaiting = newWeek - (job.appliedDate || newWeek);
+          
+          // Only process applications that have waited the right amount of time
+          if (weeksWaiting >= 1) {
+            // Calculate chance of acceptance based on reputation and skills
+            let acceptanceChance = 0.5; // Base 50% chance
+            
+            // Reputation impact: higher reputation increases chance
+            acceptanceChance += (currentState.stats.reputation / 200); // +0 to +50% based on reputation
+            
+            // Skills impact: having required skills increases chance
+            if (job.requirements?.skills && currentState.skills) {
+              let skillBonus = 0;
+              const skillNames = Object.keys(job.requirements.skills);
+              
+              skillNames.forEach(skillName => {
+                const requiredLevel = job.requirements.skills?.[skillName] || 0;
+                const playerSkill = currentState.skills?.find(s => s.name === skillName);
+                
+                if (playerSkill && playerSkill.level >= requiredLevel) {
+                  // Each skill above requirement adds 5-10% chance
+                  skillBonus += 0.05 + ((playerSkill.level - requiredLevel) * 0.025);
+                }
+              });
+              
+              // Cap skill bonus at 30%
+              acceptanceChance += Math.min(0.3, skillBonus);
+            }
+            
+            // Job difficulty reduces chance
+            switch (job.difficulty) {
+              case 'expert':
+                acceptanceChance -= 0.3;
+                break;
+              case 'advanced':
+                acceptanceChance -= 0.2;
+                break;
+              case 'intermediate':
+                acceptanceChance -= 0.1;
+                break;
+              case 'basic':
+                acceptanceChance -= 0.05;
+                break;
+              // Entry level has no penalty
+            }
+            
+            // Cap final chance between 10% and 95%
+            acceptanceChance = Math.max(0.1, Math.min(0.95, acceptanceChance));
+            
+            // Random check for acceptance
+            if (Math.random() < acceptanceChance) {
+              // Job application accepted!
+              acceptedApplications.push(job);
+              
+              // Notify player
+              alert(`Good news! Your application for ${job.title} has been accepted! You can start the job from the Jobs page.`);
+            } else if (weeksWaiting >= 3) {
+              // After 3 weeks, failed applications are rejected
+              // Just remove from applied jobs, but keep track for UI
+              
+              // Notify player
+              alert(`Your application for ${job.title} was rejected.`);
+            } else {
+              // Still waiting for response
+              processedApplications.push(job);
+            }
+          } else {
+            // Not enough time has passed, keep in processing
+            processedApplications.push(job);
+          }
+        });
+        
+        // Update applied jobs in state
+        updatedState.appliedJobs = processedApplications;
+        
+        // Update accepted jobs status in available jobs list
+        if (acceptedApplications.length > 0) {
+          updatedState.availableJobs = (currentState.availableJobs || []).map(job => {
+            if (acceptedApplications.some(a => a.id === job.id)) {
+              return {
+                ...job,
+                status: 'accepted'
+              };
+            }
+            return job;
+          });
+        }
+      }
+      
+      // Refresh job offerings - chance for new jobs to appear
+      if (currentState.availableJobs && Math.random() < 0.3) { // 30% chance each week
+        // Create a copy of the available jobs
+        const availableJobs = [...(currentState.availableJobs || [])];
+        
+        // Get a list of all job IDs to avoid duplicates
+        const existingJobIds = new Set(availableJobs.map(job => job.id));
+        
+        // Generate 1-3 new job offerings from DEFAULT_JOBS that aren't already available
+        const numNewJobs = Math.floor(Math.random() * 3) + 1;
+        
+        // Import DEFAULT_JOBS from gameData or define here
+        // This requires DEFAULT_JOBS to be imported at the top of the file
+        const eligibleJobs = DEFAULT_JOBS.filter(job => !existingJobIds.has(job.id));
+        
+        if (eligibleJobs.length > 0) {
+          // Select random jobs from eligible pool
+          const selectedJobs = [];
+          for (let i = 0; i < Math.min(numNewJobs, eligibleJobs.length); i++) {
+            const randomIndex = Math.floor(Math.random() * eligibleJobs.length);
+            selectedJobs.push(eligibleJobs[randomIndex]);
+            eligibleJobs.splice(randomIndex, 1); // Remove to avoid duplicates
+          }
+          
+          // Check job requirements for each new job
+          const newJobs = selectedJobs.map(job => {
+            // Check if player meets requirements
+            const requirementsMet = get().checkJobRequirements(job);
+            
+            return {
+              ...job,
+              requirementsMet,
+              status: 'available'
+            };
+          });
+          
+          // Add new jobs to available jobs
+          updatedState.availableJobs = [...availableJobs, ...newJobs];
         }
       }
       
