@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Disc,
   Plus,
@@ -13,7 +13,8 @@ import {
   Edit,
   Filter,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Search
 } from 'lucide-react';
 import { useRapperGame } from '../../lib/stores/useRapperGame';
 import { Album, Song } from '../../lib/types';
@@ -21,7 +22,7 @@ import { formatDate, formatNumber } from '../../lib/utils';
 
 export const AlbumManagement: React.FC = () => {
   const { 
-    setScreen, albums, songs, releaseAlbum,
+    setScreen, albums, songs, releaseAlbum, createAlbum,
     character
   } = useRapperGame();
   const [activeTab, setActiveTab] = useState<string>('all');
@@ -29,6 +30,9 @@ export const AlbumManagement: React.FC = () => {
   const [formType, setFormType] = useState<'standard' | 'deluxe' | 'remix'>('standard');
   const [selectedParentAlbumId, setSelectedParentAlbumId] = useState<string | undefined>(undefined);
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
+  const [albumTitle, setAlbumTitle] = useState<string>('');
+  const [selectedSongIds, setSelectedSongIds] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   
   // Filter albums based on active tab
   const filteredAlbums = albums?.filter(album => {
@@ -70,10 +74,68 @@ export const AlbumManagement: React.FC = () => {
     };
   };
   
+  // Filter available songs for album based on search and release status
+  const getAvailableSongs = () => {
+    const availableSongs = songs?.filter(song => {
+      // Only show completed songs
+      if (!song.completed) return false;
+      
+      // Filter by search query if provided
+      if (searchQuery && !song.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
+      
+      return true;
+    }) || [];
+    
+    return availableSongs;
+  };
+  
+  const toggleSongSelection = (songId: string) => {
+    setSelectedSongIds(prev => {
+      if (prev.includes(songId)) {
+        return prev.filter(id => id !== songId);
+      } else {
+        return [...prev, songId];
+      }
+    });
+  };
+
   const handleCreateAlbum = (event: React.FormEvent) => {
     event.preventDefault();
-    // In a real implementation, this would create a new album
-    setShowCreateForm(false);
+    
+    // Validate form
+    if (!albumTitle.trim()) {
+      alert("Please enter an album title");
+      return;
+    }
+    
+    if (selectedSongIds.length === 0) {
+      alert("Please select at least one song for the album");
+      return;
+    }
+    
+    // Generate a default album cover (in a real app, this would be customizable)
+    const defaultCoverArt = "/images/default-album.jpg";
+    
+    // Create the album using the store function
+    try {
+      const albumId = createAlbum(albumTitle, formType, defaultCoverArt, selectedSongIds);
+      
+      if (albumId) {
+        // Reset form state
+        setAlbumTitle('');
+        setSelectedSongIds([]);
+        setShowCreateForm(false);
+        setSearchQuery('');
+        
+        // Show confirmation message
+        alert(`Album "${albumTitle}" created successfully!`);
+      }
+    } catch (error) {
+      console.error("Failed to create album:", error);
+      alert("Failed to create album. Please try again.");
+    }
   };
   
   const handleTabChange = (tab: string) => {
@@ -228,6 +290,8 @@ export const AlbumManagement: React.FC = () => {
               <label className="block text-gray-400 text-sm font-medium mb-2">Album Title</label>
               <input 
                 type="text" 
+                value={albumTitle}
+                onChange={(e) => setAlbumTitle(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter album title"
               />
@@ -275,6 +339,71 @@ export const AlbumManagement: React.FC = () => {
                 </select>
               </div>
             )}
+            
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-gray-400 text-sm font-medium">Song Selection</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search songs..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-gray-800 border border-gray-700 rounded-md pl-8 pr-4 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                </div>
+              </div>
+              
+              <div className="max-h-60 overflow-y-auto bg-gray-800 rounded-md">
+                {getAvailableSongs().length === 0 ? (
+                  <div className="p-4 text-center text-gray-400">
+                    No songs available. Create and complete songs first.
+                  </div>
+                ) : (
+                  <ul className="divide-y divide-gray-700">
+                    {getAvailableSongs().map(song => {
+                      const isSelected = selectedSongIds.includes(song.id);
+                      return (
+                        <li 
+                          key={song.id}
+                          className={`p-3 hover:bg-gray-700 transition-colors flex justify-between items-center cursor-pointer ${isSelected ? 'bg-gray-700' : ''}`}
+                          onClick={() => toggleSongSelection(song.id)}
+                        >
+                          <div className="flex items-center">
+                            <Music className="h-4 w-4 mr-2 text-gray-400" />
+                            <div>
+                              <div className="font-medium">{song.title}</div>
+                              <div className="text-xs text-gray-400">
+                                Quality: {song.quality}
+                                {song.featuring && ` • Feat. ${song.featuring}`}
+                                {song.released ? " • Released" : " • Unreleased"}
+                              </div>
+                            </div>
+                          </div>
+                          <div className={`h-5 w-5 rounded-full border ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-500'} flex items-center justify-center`}>
+                            {isSelected && <Check className="h-3 w-3 text-white" />}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+              
+              <div className="mt-2 text-sm text-gray-400 flex justify-between">
+                <span>{selectedSongIds.length} songs selected</span>
+                {selectedSongIds.length > 0 && (
+                  <button 
+                    type="button" 
+                    onClick={() => setSelectedSongIds([])}
+                    className="text-gray-400 hover:text-red-400"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+            </div>
             
             <div className="flex justify-end space-x-3 mt-6">
               <button
