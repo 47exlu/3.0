@@ -236,7 +236,19 @@ const getScreenLoadingVariant = (screen: string): "default" | "record" | "vinyl"
 function App() {
   const { screen, previousScreen } = useRapperGame();
   const { showLoading, hideLoading } = useLoadingScreen();
-  const { loadingAnimationsEnabled } = useSettings();
+  const { loadingAnimationsEnabled, autoSaveEnabled } = useSettings();
+  
+  // Initialize auto-save when app starts
+  useEffect(() => {
+    import('./lib/autoSaveService')
+      .then(autoSaveModule => {
+        autoSaveModule.initAutoSave();
+        console.log('Auto-save service initialized');
+      })
+      .catch(error => {
+        console.error('Failed to initialize auto-save service:', error);
+      });
+  }, []);
   
   // Show loading screen when screen changes
   useEffect(() => {
