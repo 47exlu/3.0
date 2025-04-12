@@ -50,6 +50,8 @@ export function StreamingPlatforms() {
   // New state variables for album details
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [showAlbumDetail, setShowAlbumDetail] = useState(false);
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioText, setBioText] = useState<string>("");
   
   // Get platform data
   const spotify = streamingPlatforms.find(p => p.name === 'Spotify');
@@ -459,7 +461,7 @@ export function StreamingPlatforms() {
                                         <span>{character?.artistName?.[0] || "R"}</span>
                                       )}
                                       <div className="absolute top-0 right-0 bg-[#1DB954] text-white text-xs rounded-full px-2 py-1 font-bold">
-                                        #{stats?.ranking || "123"}
+                                        #{gameState.streamingServices?.spotify?.ranking || "1"}
                                       </div>
                                     </div>
                                   </div>
@@ -479,20 +481,68 @@ export function StreamingPlatforms() {
                                 <div className="sm:w-2/3 p-4 sm:p-6">
                                   <div className="text-white">
                                     <div className="mb-4">
-                                      <h3 className="text-lg font-semibold mb-2">
-                                        {character?.characterDescription ? (
-                                          `${character.artistName || 'Artist'}`
-                                        ) : (
-                                          'Controversial rapper'
+                                      <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-lg font-semibold">
+                                          {character?.artistName || 'Artist'}
+                                        </h3>
+                                        {!isEditingBio && (
+                                          <Button 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            className="h-7 px-2 text-xs hover:bg-gray-800"
+                                            onClick={() => {
+                                              const currentBio = character?.bio || 
+                                                `${character?.artistName || 'Artist'} played fast and loose when it came to genres, often incorporating elements of punk rock, hip-hop, R&B, and heavy metal. In the late 2010s, they experienced a quick rise with dark and emotionally intense content, scoring a number one album with ${new Date().getFullYear()}'s ?. Months later, at the peak of popularity, they went viral. Born in ${character?.hometown || 'South Florida'}, they had a troubled upbringing, often getting into difficult situations; their mother couldn't cope with raising them alone, so they were often forced to stay with various relatives as a result.`;
+                                              setBioText(currentBio);
+                                              setIsEditingBio(true);
+                                            }}
+                                          >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
+                                              <path d="M12 20h9"/>
+                                              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                                            </svg>
+                                            Edit Bio
+                                          </Button>
                                         )}
-                                      </h3>
-                                      <p className="text-sm text-gray-300 leading-relaxed">
-                                        {character?.characterDescription ? (
-                                          character.characterDescription
-                                        ) : (
-                                          `${character?.artistName || 'Artist'} played fast and loose when it came to genres, often incorporating elements of punk rock, hip-hop, R&B, and heavy metal. In the late 2010s, they experienced a quick rise with dark and emotionally intense content, scoring a number one album with ${new Date().getFullYear()}'s ?. Months later, at the peak of popularity, they went viral. Born in ${character?.hometown || 'South Florida'}, they had a troubled upbringing, often getting into difficult situations; their mother couldn't cope with raising them alone, so they were often forced to stay with various relatives as a result. At a very young age, they were sent to a juvenile detention center after committing armed robbery; it was there that they met friend and longtime collaborator ${character?.friendName || 'Ski Mask the Slump God'}. After release, both of them decided to get clean and pursue a career in music, setting up the ${character?.hometown || 'Florida'} rap crew Members Only in the process.`
-                                        )}
-                                      </p>
+                                      </div>
+
+                                      {isEditingBio ? (
+                                        <div className="mt-2">
+                                          <textarea
+                                            value={bioText}
+                                            onChange={(e) => setBioText(e.target.value)}
+                                            className="w-full h-32 bg-gray-800 text-white border border-gray-700 rounded p-2 text-sm"
+                                            placeholder="Write your artist bio here..."
+                                          />
+                                          <div className="flex gap-2 mt-2">
+                                            <Button 
+                                              size="sm"
+                                              className="bg-[#1DB954] hover:bg-[#1ed760] text-black text-xs h-8"
+                                              onClick={() => {
+                                                const updatedCharacter = { ...character, bio: bioText };
+                                                gameState.updateCharacter(updatedCharacter);
+                                                setIsEditingBio(false);
+                                              }}
+                                            >
+                                              Save
+                                            </Button>
+                                            <Button 
+                                              variant="outline" 
+                                              size="sm"
+                                              className="text-xs h-8 border-gray-600"
+                                              onClick={() => setIsEditingBio(false)}
+                                            >
+                                              Cancel
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm text-gray-300 leading-relaxed">
+                                          {character?.bio || 
+                                            `${character?.artistName || 'Artist'} played fast and loose when it came to genres, often incorporating elements of punk rock, hip-hop, R&B, and heavy metal. In the late 2010s, they experienced a quick rise with dark and emotionally intense content, scoring a number one album with ${new Date().getFullYear()}'s ?. Months later, at the peak of popularity, they went viral. Born in ${character?.hometown || 'South Florida'}, they had a troubled upbringing, often getting into difficult situations; their mother couldn't cope with raising them alone, so they were often forced to stay with various relatives as a result.`
+                                          }
+                                        </p>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
