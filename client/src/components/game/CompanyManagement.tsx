@@ -379,9 +379,26 @@ const CompanyManagement: React.FC = () => {
       <div className="bg-gray-900 rounded-lg p-6 shadow-lg">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">{company.name}</h2>
-          <span className="bg-blue-600 px-3 py-1 rounded-full text-xs font-medium text-white">
-            Level {company.level}
-          </span>
+          <div className="flex items-center space-x-3">
+            <span className="bg-blue-600 px-3 py-1 rounded-full text-xs font-medium text-white">
+              Level {company.level}
+            </span>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <button
+            onClick={() => setViewState('labels')}
+            className="bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold py-3 px-4 rounded"
+          >
+            View Record Labels
+          </button>
+          <button
+            onClick={() => setViewState('calendar')}
+            className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-bold py-3 px-4 rounded"
+          >
+            Company Calendar
+          </button>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
