@@ -122,6 +122,12 @@ const screens = [
   { 
     id: 'save_load', 
     name: 'Save/Load', 
+    icon: <Calendar className="w-5 h-5" />,
+    category: 'system' 
+  },
+  { 
+    id: 'settings', 
+    name: 'Settings', 
     icon: <Settings className="w-5 h-5" />,
     category: 'system' 
   }
@@ -498,11 +504,11 @@ export function ModernNavbar() {
             whileTap={{ scale: 0.9 }}
             className={cn(
               "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors",
-              currentScreen === 'save_load' ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
+              currentScreen === 'settings' ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
             )}
-            onClick={() => handleScreenChange('save_load')}
+            onClick={() => handleScreenChange('settings')}
           >
-            {currentScreen === 'save_load' && (
+            {currentScreen === 'settings' && (
               <motion.div
                 layoutId="activeTabIndicator"
                 className="absolute -top-1 w-1/6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
