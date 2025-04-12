@@ -1333,3 +1333,170 @@ export const DEFAULT_JOBS: Job[] = [
     successChance: 0.7
   }
 ];
+
+// Sample music industry news articles
+export const DEFAULT_NEWS_ARTICLES: NewsArticle[] = [
+  {
+    id: "news_industry_streaming_1",
+    title: "Streaming Platforms Raise Royalty Rates After Artist Outcry",
+    content: `In a significant industry shift, major streaming platforms have announced an increase in royalty rates paid to artists following months of protests and advocacy from musicians at all levels.
+
+The movement, which gained momentum after several high-profile artists removed their catalogs from streaming services, has resulted in a 15% increase in per-stream payments, according to industry insiders.
+
+"This is a step in the right direction," said industry analyst Maria Chen. "Artists have been vocal about the unsustainability of previous rates, especially for independent musicians trying to make a living."
+
+Streaming platforms issued a joint statement emphasizing their commitment to supporting the creative community while maintaining a sustainable business model. The new rates will take effect at the beginning of next quarter.
+
+Independent artists have cautiously welcomed the news, though many argue that further improvements are needed for streaming to become truly equitable for creators.`,
+    summary: "Major streaming services have increased artist payouts by 15% following industry pressure and artist protests.",
+    category: "industry",
+    impact: "high",
+    publishedWeek: 0,
+    publishedYear: 0,
+    sourceName: "Music Industry Today",
+    sourceImage: "https://placekitten.com/50/50", // Placeholder image
+    featuredImage: "https://placekitten.com/800/400", // Placeholder image
+    playerMentioned: false,
+    hasBeenRead: false,
+    isPremium: false,
+    reactions: {
+      views: 25000,
+      likes: 1800,
+      shares: 520,
+      comments: 340
+    },
+    tags: ["streaming", "royalties", "industry change"]
+  },
+  {
+    id: "news_controversy_1",
+    title: "Chart-Topping Producer Accused of Stealing Beats from Underground Artists",
+    content: `A major controversy has erupted in the music world as acclaimed producer DJ SoundMaster faces allegations of plagiarizing beats from lesser-known artists.
+
+Several underground producers have come forward with evidence suggesting that at least five tracks on recent platinum-selling albums produced by DJ SoundMaster bear striking similarities to their previously published work.
+
+"The patterns are identical, just sped up and with different effects layered on top," claimed independent producer KLBeats, who shared side-by-side comparisons that have gone viral on social media.
+
+DJ SoundMaster has denied the allegations, stating that "similar beat patterns exist throughout music history" and that "any resemblance is coincidental."
+
+Major labels associated with the affected albums have declined to comment, but industry insiders suggest that settlements may already be in negotiation behind closed doors.
+
+The controversy highlights ongoing issues around credit and compensation in the production world, particularly as AI-generated music and sampling techniques continue to blur the lines of originality.`,
+    summary: "Famous producer accused of stealing beats from underground artists for multiple hit songs.",
+    category: "controversy",
+    impact: "medium",
+    publishedWeek: 0,
+    publishedYear: 0,
+    sourceName: "Beat Street Magazine",
+    sourceImage: "https://placekitten.com/51/51", // Placeholder image
+    featuredImage: "https://placekitten.com/800/401", // Placeholder image
+    playerMentioned: false,
+    hasBeenRead: false,
+    isPremium: false,
+    reactions: {
+      views: 42000,
+      likes: 3200,
+      shares: 1800,
+      comments: 950
+    },
+    tags: ["controversy", "production", "plagiarism"]
+  },
+  {
+    id: "news_trend_tiktok_1",
+    title: "15-Second Hooks: How TikTok is Reshaping Song Structure",
+    content: `Music producers and songwriters are increasingly crafting songs with TikTok virality in mind, leading to a fundamental shift in song structure across the industry.
+
+A new study from Universal Sound Analysis reveals that hit songs from the past year are 20% more likely to feature their strongest hook within the first 15 seconds compared to hits from five years ago.
+
+"We're seeing the 'TikTok effect' change how songs are written," explains music theorist Dr. James Wilson. "Artists are frontloading songs with catchy, loop-worthy sections that can be easily clipped for social platforms."
+
+The trend extends beyond just placement, affecting composition itself. Verses are getting shorter, pre-choruses are being eliminated, and many songs now begin with the chorus rather than building up to it.
+
+"It's not necessarily a negative development," notes songwriter Jamie Harris, who has penned several recent chart-toppers. "It's pushing us to be more creative and capture attention faster. Every second counts."
+
+Some industry veterans have criticized the trend as sacrificing artistic integrity for viral potential, while others see it as a natural evolution of the art form in response to changing consumption habits.`,
+    summary: "New research shows how TikTok is changing song structures, with hooks appearing earlier and songs designed for short clips.",
+    category: "trend",
+    impact: "medium",
+    publishedWeek: 0,
+    publishedYear: 0,
+    sourceName: "Digital Music Trends",
+    sourceImage: "https://placekitten.com/52/52", // Placeholder image
+    featuredImage: "https://placekitten.com/800/402", // Placeholder image
+    playerMentioned: false,
+    hasBeenRead: false,
+    isPremium: true,
+    reactions: {
+      views: 18000,
+      likes: 1200,
+      shares: 750,
+      comments: 230
+    },
+    tags: ["TikTok", "song structure", "production trends"]
+  },
+  {
+    id: "news_award_grammys_1",
+    title: "Grammy Awards Announce Major Category Revamp",
+    content: `The Recording Academy has unveiled significant changes to the Grammy Awards categories, responding to years of criticism about representation and relevance in the music industry's most prestigious award show.
+
+Among the most notable changes is the addition of a new "Best Alternative Hip-Hop" category, the expansion of the urban and electronic music fields, and the redefinition of criteria for the "Best New Artist" category to better accommodate artists who gained fame through non-traditional paths.
+
+"These changes reflect our commitment to evolving alongside the industry and ensuring all genres and creators are recognized appropriately," said Recording Academy CEO Marcus Williams in the announcement.
+
+The reforms also include a more transparent nomination process, with greater diversity among voting members and the elimination of the controversial "secret committees" that previously had final say on nominations in key categories.
+
+Industry response has been largely positive, with many artists and executives praising the changes as a step toward addressing long-standing complaints about bias and outdated categorizations in the awards system.
+
+The changes will take effect beginning with next year's ceremony, which marks the 67th annual Grammy Awards.`,
+    summary: "The Grammy Awards are adding new categories and changing voting rules to better reflect the current music landscape.",
+    category: "award",
+    impact: "high",
+    publishedWeek: 0,
+    publishedYear: 0,
+    sourceName: "Award Watch",
+    sourceImage: "https://placekitten.com/53/53", // Placeholder image
+    featuredImage: "https://placekitten.com/800/403", // Placeholder image
+    playerMentioned: false,
+    hasBeenRead: false,
+    isPremium: false,
+    reactions: {
+      views: 32000,
+      likes: 2100,
+      shares: 890,
+      comments: 560
+    },
+    tags: ["Grammy Awards", "awards", "music industry"]
+  },
+  {
+    id: "news_artist_comeback_1",
+    title: "After 5-Year Hiatus, Enigmatic Producer Returns with Surprise Album",
+    content: `The music world was stunned this week when reclusive producer Nightshade released a surprise album after disappearing from the public eye five years ago.
+
+The album, titled "Reemergence," appeared on streaming platforms without warning or promotional campaign, quickly becoming the most talked-about release of the year. Critics are already hailing it as a potential masterpiece that pushes genre boundaries.
+
+Nightshade, known for pioneering the neo-ambient trap movement before abruptly canceling a world tour and deleting all social media in 2020, has offered no explanation for the long absence or sudden return.
+
+The album features collaborations with several high-profile artists who kept the project secret, an impressive feat in the leak-prone music industry. Its experimental sound combines elements of the producer's earlier work with entirely new sonic directions.
+
+"It's like they never left, yet evolved a decade's worth in those five years," wrote influential music critic Alana Torres in her 5-star review.
+
+Industry analysts are now watching closely to see if Nightshade will follow the release with any public appearances or tour announcements.`,
+    summary: "Influential producer Nightshade has unexpectedly returned after 5 years with a surprise new album featuring multiple high-profile collaborations.",
+    category: "artist",
+    impact: "medium",
+    publishedWeek: 0,
+    publishedYear: 0,
+    sourceName: "Music Pulse",
+    sourceImage: "https://placekitten.com/54/54", // Placeholder image
+    featuredImage: "https://placekitten.com/800/404", // Placeholder image
+    playerMentioned: false,
+    hasBeenRead: false,
+    isPremium: false,
+    reactions: {
+      views: 38000,
+      likes: 4500,
+      shares: 2200,
+      comments: 870
+    },
+    tags: ["comeback", "album release", "Nightshade"]
+  }
+];

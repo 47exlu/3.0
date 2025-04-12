@@ -28,6 +28,7 @@ export type GameScreen =
   | "merchandise_sales_charts" // Merchandise sales charts and analytics
   | "fanbase_naming" // Fanbase naming screen
   | "media_events" // Media events screen (festivals, talk shows, interviews)
+  | "music_news" // Music industry news and magazine screen
   | "billboard_charts" // Billboard Hot 100 and album charts screen
   | "player_wikipedia" // Player's career Wikipedia-style page
   | "team_management" // Team management screen - for hiring manager, publicist, etc.
@@ -541,6 +542,44 @@ export interface MediaEvent {
   highlights?: string[];  // Text highlights from the event
 }
 
+// Music Industry News System
+export type NewsCategory = 
+  | "industry" 
+  | "artist" 
+  | "controversy" 
+  | "award" 
+  | "release" 
+  | "trend" 
+  | "event";
+
+export type NewsImpact = "low" | "medium" | "high";
+
+export interface NewsArticle {
+  id: string;
+  title: string;
+  content: string;
+  summary: string;
+  category: NewsCategory;
+  impact: NewsImpact;
+  publishedWeek: number;
+  publishedYear: number;
+  sourceName: string;
+  sourceImage?: string;
+  featuredImage?: string;
+  relatedArtistIds?: string[];
+  relatedEventIds?: string[];
+  playerMentioned: boolean;
+  hasBeenRead: boolean;
+  isPremium: boolean;      // Whether this is premium magazine content
+  reactions?: {
+    views: number;
+    likes: number;
+    shares: number;
+    comments: number;
+  };
+  tags?: string[];
+}
+
 export interface SkillTraining {
   id: string;
   skillName: SkillName;
@@ -844,6 +883,10 @@ export interface GameState {
   appliedJobs?: Job[]; // Jobs the player has applied for but not started
   activeJobs?: ActiveJob[]; // Jobs currently being worked
   completedJobs?: JobHistory[]; // Jobs completed in the past
+  
+  // News and magazine system
+  newsArticles?: NewsArticle[]; // News articles from the music industry
+  unreadNewsCount?: number; // Count of unread news articles
   
   // Premium store properties
   week?: number; // Alias for currentWeek for NewStorePanel
