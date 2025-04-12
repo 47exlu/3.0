@@ -703,7 +703,7 @@ export function CareerDashboard() {
       
       {/* Activities & Features */}
       <h2 className="text-xl font-bold text-amber-400 mb-4">Activities</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-14 sm:mb-14 md:mb-0">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-14 sm:mb-14 md:mb-0 tablet-layout desktop-layout responsive-gap notch-aware">
         <Card 
           className="bg-gradient-to-br from-green-900/70 to-teal-900/70 border-teal-800 cursor-pointer hover:from-green-800/70 hover:to-teal-800/70 transition-colors"
           onClick={() => setScreen('song_promotion')}
@@ -885,7 +885,7 @@ export function CareerDashboard() {
       
       {/* Top Songs */}
       {songs.filter(song => song.released).length > 0 && (
-        <Card className="mt-6 bg-black/30 border-gray-800">
+        <Card className="mt-6 bg-black/30 border-gray-800 notch-aware tablet-layout desktop-layout">
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium flex items-center">
               <MusicIcon size={18} className="mr-2 text-amber-400" />
@@ -899,8 +899,8 @@ export function CareerDashboard() {
                 .sort((a, b) => b.streams - a.streams)
                 .slice(0, 5)
                 .map(song => (
-                  <div key={song.id} className="py-2 first:pt-0 last:pb-0 flex justify-between items-center">
-                    <div className="flex items-center space-x-3">
+                  <div key={song.id} className="py-2 first:pt-0 last:pb-0 flex justify-between items-center responsive-gap">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <div 
                         className={`w-8 h-8 rounded-full flex items-center justify-center overflow-hidden ${
                           song.performanceType === 'viral' ? 'bg-green-600' : 
@@ -918,8 +918,8 @@ export function CareerDashboard() {
                           song.icon === "microphone" ? "🎤" : "🎵"
                         )}
                       </div>
-                      <div>
-                        <div className="font-medium">{song.title}</div>
+                      <div className="min-w-0 overflow-hidden">
+                        <div className="font-medium truncate">{song.title}</div>
                         <div className="text-sm text-gray-400 flex items-center gap-1">
                           {song.performanceType === 'viral' && (
                             <span className="text-green-400 font-semibold flex items-center">
@@ -966,7 +966,7 @@ export function CareerDashboard() {
       )}
       
       {/* Artist Stats */}
-      <Card className="mt-6 mb-14 sm:mb-14 md:mb-0 bg-black/30 border-gray-800">
+      <Card className="mt-6 mb-14 sm:mb-14 md:mb-0 bg-black/30 border-gray-800 notch-aware tablet-layout desktop-layout">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium flex items-center">
             <MicrophoneIcon size={18} className="mr-2 text-amber-400" />
