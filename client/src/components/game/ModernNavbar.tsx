@@ -24,7 +24,8 @@ import {
   X,
   ChevronRight,
   Book,
-  UserCog
+  UserCog,
+  Briefcase
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -103,6 +104,12 @@ const screens = [
     category: 'business' 
   },
   { 
+    id: 'jobs', 
+    name: 'Jobs', 
+    icon: <Briefcase className="w-5 h-5" />,
+    category: 'business' 
+  },
+  { 
     id: 'collaborations', 
     name: 'Collabs', 
     icon: <Users className="w-5 h-5" />,
@@ -176,6 +183,7 @@ export function ModernNavbar() {
       case 'touring': return 'touring_concerts';
       case 'team_management': return 'team_management';
       case 'awards_certifications': return 'awards_certifications';
+      case 'jobs': return 'jobs';
       default: return screenId;
     }
   };
