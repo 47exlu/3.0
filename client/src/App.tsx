@@ -28,6 +28,7 @@ import BillboardCharts from './components/game/BillboardCharts';
 import { SettingsPage } from './components/game/SettingsPage';
 import TeamManagement from './components/game/TeamManagement';
 import AwardsAndCertifications from './components/game/AwardsAndCertifications';
+import JobsSystem from './components/game/JobsSystem';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -182,6 +183,13 @@ const SCREEN_LOADING_MESSAGES: Record<string, string[]> = {
     "Setting up customization...",
     "Optimizing for your device...",
   ],
+  jobs: [
+    "Searching job listings...",
+    "Preparing your resume...",
+    "Scanning industry opportunities...",
+    "Setting up interviews...",
+    "Checking job market...",
+  ],
 };
 
 // Get a random loading message for the current screen
@@ -308,6 +316,7 @@ function App() {
                   {screen === 'settings' && <SettingsPage />}
                   {screen === 'team_management' && <TeamManagement />}
                   {screen === 'awards_certifications' && <AwardsAndCertifications />}
+                  {screen === 'jobs' && <JobsSystem />}
                 </GameLayout>
               </LoadingTransition>
             </Route>
