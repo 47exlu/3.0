@@ -76,10 +76,18 @@ export const AlbumManagement: React.FC = () => {
   
   // Filter available songs for album based on search and release status
   const getAvailableSongs = () => {
+    // First check if we have any songs at all
+    console.log("Total songs in store:", songs?.length, songs);
+    
+    // Instead of filtering, let's just use all songs and show a more descriptive status
     const availableSongs = songs?.filter(song => {
-      // Show both unreleased completed songs AND released songs
-      // We don't need to check completion for released songs as they must be completed already
-      const isValidSong = song.released || (song.completed && !song.released);
+      // Accept songs that are either:
+      // 1. Released
+      // 2. Completed but not released
+      // 3. In progress but almost complete (>=90% progress)
+      const isValidSong = song.released || 
+                         (song.completed && !song.released) || 
+                         (song.productionProgress >= 90);
       
       // Skip songs that don't meet the basic criteria
       if (!isValidSong) return false;
@@ -94,6 +102,14 @@ export const AlbumManagement: React.FC = () => {
     
     // Debug log to see what songs are available
     console.log("Available songs for album:", availableSongs.length, availableSongs);
+    console.log("Song selector criteria:", songs?.map(s => ({
+      id: s.id,
+      title: s.title,
+      released: s.released,
+      completed: s.completed,
+      progress: s.productionProgress,
+      isValid: s.released || (s.completed && !s.released) || (s.productionProgress >= 90)
+    })));
     
     return availableSongs;
   };
@@ -363,9 +379,19 @@ export const AlbumManagement: React.FC = () => {
               </div>
               
               <div className="max-h-60 overflow-y-auto bg-gray-800 rounded-md">
-                {getAvailableSongs().length === 0 ? (
+                {!songs || songs.length === 0 ? (
                   <div className="p-4 text-center text-gray-400">
-                    No songs available. Create and complete songs first.
+                    <p>You haven't created any songs yet.</p>
+                    <p className="mt-2">Go to <span className="font-bold text-blue-400">Music Studio</span> to create songs first.</p>
+                  </div>
+                ) : getAvailableSongs().length === 0 ? (
+                  <div className="p-4 text-center text-gray-400">
+                    <p>No songs available for your album.</p>
+                    <p className="mt-2">You need to:</p>
+                    <ul className="mt-1 list-disc list-inside">
+                      <li>Finish producing your songs (100% completion)</li>
+                      <li>OR release some songs first</li>
+                    </ul>
                   </div>
                 ) : (
                   <ul className="divide-y divide-gray-700">
@@ -438,16 +464,25 @@ export const AlbumManagement: React.FC = () => {
     <div className="albums-container p-4 text-white overflow-y-auto h-full">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Albums</h1>
-        <button
-          onClick={() => {
-            setFormType('standard');
-            setShowCreateForm(true);
-          }}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm flex items-center"
-        >
-          <Plus className="h-4 w-4 mr-1" />
-          New Album
-        </button>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setScreen('music_production')}
+            className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 py-2 rounded-full text-sm flex items-center"
+          >
+            <Music className="h-4 w-4 mr-1" />
+            Music Studio
+          </button>
+          <button
+            onClick={() => {
+              setFormType('standard');
+              setShowCreateForm(true);
+            }}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm flex items-center"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            New Album
+          </button>
+        </div>
       </div>
       
       <div className="flex space-x-2 overflow-x-auto mb-6 pb-2">
@@ -493,21 +528,36 @@ export const AlbumManagement: React.FC = () => {
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Disc className="w-16 h-16 text-gray-600 mb-4" />
           <h2 className="text-xl font-bold mb-2">No Albums Found</h2>
-          <p className="text-gray-400 max-w-md mb-6">
+          <p className="text-gray-400 max-w-md mb-4">
             {activeTab === 'all' 
-              ? "You haven't created any albums yet. Create your first album to start building your discography."
+              ? "You haven't created any albums yet. To create an album, you need to have songs first."
               : `No ${activeTab} albums found. Try a different filter or create a new album.`}
           </p>
-          <button
-            onClick={() => {
-              setFormType('standard');
-              setShowCreateForm(true);
-            }}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full text-sm flex items-center"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create New Album
-          </button>
+          
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <button
+              onClick={() => setScreen('music_production')}
+              className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-3 rounded-full text-sm flex items-center justify-center"
+            >
+              <Music className="h-4 w-4 mr-2" />
+              Create Songs First
+            </button>
+            
+            <button
+              onClick={() => {
+                setFormType('standard');
+                setShowCreateForm(true);
+              }}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full text-sm flex items-center justify-center"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create New Album
+            </button>
+          </div>
+          
+          <p className="text-sm text-gray-500 max-w-md">
+            Remember: You need to create and complete songs in the Music Studio before you can add them to an album.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
