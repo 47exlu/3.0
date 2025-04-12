@@ -17,7 +17,7 @@ import { useAudio } from '@/lib/stores/useAudio.ts';
 import { useEnergyStore } from '@/lib/stores/useEnergyStore';
 import { MusicIcon, ShopIcon } from '@/assets/icons';
 import { Lock } from 'lucide-react';
-import { SongTier, ActualSongTier } from '@/lib/types';
+import { SongTier } from '@/lib/types';
 import { SONG_TIER_INFO } from '@/lib/gameData';
 
 export function MusicProduction() {
@@ -53,13 +53,12 @@ export function MusicProduction() {
   const getEnergyCost = (tier: SongTier): number => {
     // Higher tier songs cost more energy
     switch(tier) {
-      case 0: return 10; // Free random song
       case 1: return 10; // Basic song
       case 2: return 15; // Better quality
       case 3: return 20; // Good quality
       case 4: return 25; // Hit song
       case 5: return 30; // Banger
-      default: return 10;
+      default: return 10; // Default energy cost
     }
   };
   
@@ -127,7 +126,7 @@ export function MusicProduction() {
   };
   
   // Sort songs by release date (newest first)
-  const sortedSongs = [...songs].sort((a, b) => b.releaseDate - a.releaseDate);
+  const sortedSongs = [...songs].sort((a, b) => (b.releaseDate || 0) - (a.releaseDate || 0));
   
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-indigo-900 to-black text-white p-4 overflow-y-auto">
@@ -230,7 +229,7 @@ export function MusicProduction() {
                 </Select>
                 
                 <div className="mt-2 text-sm text-gray-400">
-                  {selectedTier === 0 ? (
+                  {Number(selectedTier) === 0 ? (
                     <>
                       <p>Create a song for free with random quality!</p>
                       <p>Chance for each tier: Tier 1 (40%), Tier 2 (40%), Tier 3 (15%), Tier 4 (4%), Tier 5 (1%)</p>
@@ -307,7 +306,7 @@ export function MusicProduction() {
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                 onClick={handleCreateSong}
               >
-                {selectedTier === 0 ? 'Create Free Song' : `Create Song ($${formatNumber(tierInfo?.cost || 0)})`}
+                {Number(selectedTier) === 0 ? 'Create Free Song' : `Create Song ($${formatNumber(tierInfo?.cost || 0)})`}
               </Button>
               <div className="text-xs text-amber-400 text-center">
                 Energy Cost: {getEnergyCost(selectedTier)} units

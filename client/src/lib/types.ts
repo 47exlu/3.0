@@ -70,6 +70,8 @@ export interface WeeklyStats {
   reputation: number;
   songsReleased: number;
   songIds: string[]; // IDs of songs released this week
+  ghostProduction?: number; // Number of ghost productions completed this week
+  expenses?: number; // Expenses incurred this week
 }
 
 export type SongTier = 1 | 2 | 3 | 4 | 5;
