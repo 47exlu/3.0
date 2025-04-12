@@ -110,6 +110,7 @@ export function CareerDashboard() {
       
       // Get new streams directly from weekly stats
       const newStreams = latestWeekStats.newStreamsThisWeek || 0;
+      console.log(`DASHBOARD - Week ${latestWeekStats.week}: New streams this week: ${newStreams}, Total streams: ${totalStreams}`);
       
       // Get new followers by comparing with previous weekly stats
       const previousWeekStats = currentState.weeklyStats && currentState.weeklyStats.length > 1
