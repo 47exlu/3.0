@@ -53,6 +53,10 @@ export function StreamingPlatforms() {
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [bioText, setBioText] = useState<string>("");
   
+  // State for expanded sections
+  const [showAllPopular, setShowAllPopular] = useState(false);
+  const [showAllAlbums, setShowAllAlbums] = useState(false);
+  
   // Get platform data
   const spotify = streamingPlatforms.find(p => p.name === 'Spotify');
   const soundCloud = streamingPlatforms.find(p => p.name === 'SoundCloud');
