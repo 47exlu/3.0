@@ -31,6 +31,7 @@ export type GameScreen =
   | "billboard_charts" // Billboard Hot 100 and album charts screen
   | "player_wikipedia" // Player's career Wikipedia-style page
   | "team_management" // Team management screen - for hiring manager, publicist, etc.
+  | "awards_certifications" // Awards and certifications screen
   | "settings" // Game settings page
 
 export interface CharacterInfo {

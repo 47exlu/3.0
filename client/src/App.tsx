@@ -27,6 +27,7 @@ import MediaEventsManager from './components/game/MediaEventsManager';
 import BillboardCharts from './components/game/BillboardCharts';
 import { SettingsPage } from './components/game/SettingsPage';
 import TeamManagement from './components/game/TeamManagement';
+import AwardsAndCertifications from './components/game/AwardsAndCertifications';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -62,6 +63,13 @@ const SCREEN_LOADING_MESSAGES: Record<string, string[]> = {
     "Tracking your success...",
     "Calculating streams...",
     "Managing your career...",
+  ],
+  awards_certifications: [
+    "Polishing your trophies...",
+    "Counting your awards...",
+    "Preparing your achievements...",
+    "Reviewing certifications...",
+    "Validating your success...",
   ],
   music_production: [
     "Setting up the studio...",
@@ -299,6 +307,7 @@ function App() {
                   {screen === 'player_wikipedia' && <PlayerWikipedia />}
                   {screen === 'settings' && <SettingsPage />}
                   {screen === 'team_management' && <TeamManagement />}
+                  {screen === 'awards_certifications' && <AwardsAndCertifications />}
                 </GameLayout>
               </LoadingTransition>
             </Route>
