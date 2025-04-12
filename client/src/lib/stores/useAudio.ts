@@ -155,13 +155,36 @@ export const useAudio = create<AudioState>()(
       resumeAudio: () => {
         if (get().isMuted) return;
         
-        const { backgroundMusic } = get();
-        if (backgroundMusic && !backgroundMusic.playing()) {
+        // First unlock the audio context if it's suspended
+        // Using any to access internal Howler properties safely
+        const howlerAny = Howler as any;
+        if (typeof Howler !== 'undefined' && howlerAny.ctx && howlerAny.ctx.state === 'suspended') {
           try {
-            backgroundMusic.play();
-            console.log("Resumed background music playback");
-          } catch (err) {
-            console.error("Error resuming background music:", err);
+            howlerAny.ctx.resume().then(() => {
+              console.log("Howler audio context resumed successfully");
+            }).catch((error: Error) => {
+              console.error("Failed to resume Howler context:", error);
+            });
+          } catch (error: unknown) {
+            console.error("Error accessing Howler audio context:", error);
+          }
+        }
+        
+        // Then resume background music if it was playing
+        const { backgroundMusic } = get();
+        if (backgroundMusic) {
+          try {
+            if (!backgroundMusic.playing()) {
+              backgroundMusic.play();
+              console.log("Resumed background music playback");
+            } else {
+              // Already playing, make sure volume is correct
+              if (!get().isMuted) {
+                backgroundMusic.volume(0.4); // Reset to default volume
+              }
+            }
+          } catch (error: unknown) {
+            console.error("Error resuming background music:", error);
           }
         }
       }
