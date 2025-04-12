@@ -26,14 +26,14 @@ export const BusinessOverview: React.FC = () => {
   
   const currentWeekData = {
     week: currentWeek,
-    newStreamsThisWeek: weeklyStats?.[currentWeek]?.newListeners || 0,
+    newStreamsThisWeek: weeklyStats?.[currentWeek]?.streams || 0,
     totalStreams: totalStreams,
     revenue: weeklyStats?.[currentWeek]?.revenue || 0
   };
   
   const prevWeekData = {
     week: currentWeek - 1,
-    newStreamsThisWeek: weeklyStats?.[currentWeek - 1]?.newListeners || 0,
+    newStreamsThisWeek: weeklyStats?.[currentWeek - 1]?.streams || 0,
     totalStreams: totalStreams - currentWeekData.newStreamsThisWeek,
     revenue: weeklyStats?.[currentWeek - 1]?.revenue || 0
   };

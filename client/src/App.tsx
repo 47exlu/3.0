@@ -31,6 +31,8 @@ import AwardsAndCertifications from './components/game/AwardsAndCertifications';
 import JobsSystem from './components/game/JobsSystem';
 import MusicNews from './components/game/MusicNews';
 import CompanyManagement from './components/game/CompanyManagement';
+import { BusinessOverview } from './components/game/BusinessOverview';
+import { Awards } from './components/game/Awards';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -192,6 +194,20 @@ const SCREEN_LOADING_MESSAGES: Record<string, string[]> = {
     "Setting up interviews...",
     "Checking job market...",
   ],
+  business_overview: [
+    "Calculating revenue streams...",
+    "Analyzing business metrics...",
+    "Compiling financial reports...",
+    "Reviewing income statements...",
+    "Tracking music business data...",
+  ],
+  awards: [
+    "Polishing your trophies...",
+    "Counting your Grammy nominations...",
+    "Preparing award ceremony highlights...",
+    "Reviewing industry recognitions...",
+    "Loading your hall of fame...",
+  ],
 };
 
 // Get a random loading message for the current screen
@@ -321,6 +337,8 @@ function App() {
                   {screen === 'jobs' && <JobsSystem />}
                   {screen === 'music_news' && <MusicNews />}
                   {screen === 'company_management' && <CompanyManagement />}
+                  {screen === 'business_overview' && <BusinessOverview />}
+                  {screen === 'awards' && <Awards />}
                 </GameLayout>
               </LoadingTransition>
             </Route>
