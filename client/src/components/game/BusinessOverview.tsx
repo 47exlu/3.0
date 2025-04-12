@@ -26,15 +26,15 @@ export const BusinessOverview: React.FC = () => {
   
   const currentWeekData = {
     week: currentWeek,
-    newStreamsThisWeek: weeklyStats?.[currentWeek]?.streams || 0,
-    totalStreams: totalStreams,
+    newStreamsThisWeek: weeklyStats?.[currentWeek]?.newStreamsThisWeek || 0,
+    totalStreams: weeklyStats?.[currentWeek]?.totalStreams || totalStreams,
     revenue: weeklyStats?.[currentWeek]?.revenue || 0
   };
   
   const prevWeekData = {
     week: currentWeek - 1,
-    newStreamsThisWeek: weeklyStats?.[currentWeek - 1]?.streams || 0,
-    totalStreams: totalStreams - currentWeekData.newStreamsThisWeek,
+    newStreamsThisWeek: weeklyStats?.[currentWeek - 1]?.newStreamsThisWeek || 0,
+    totalStreams: weeklyStats?.[currentWeek - 1]?.totalStreams || (totalStreams - currentWeekData.newStreamsThisWeek),
     revenue: weeklyStats?.[currentWeek - 1]?.revenue || 0
   };
   
