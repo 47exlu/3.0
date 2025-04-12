@@ -212,7 +212,7 @@ export function GameLayout({ children }: GameLayoutProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        style={{ overflowY: 'visible' }}
+        style={{ overflowY: 'auto', maxHeight: '100vh' }}
       >
         <motion.div 
           className={`w-full ${screen === 'main_menu' ? 'pb-0' : 'pb-24 sm:pb-20 md:pb-24'}`}
