@@ -462,6 +462,29 @@ canvas {
     padding-bottom: env(safe-area-inset-bottom);
   }
   
+  /* Fix for tablets - hide extra bottom navigation elements */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    /* Target specifically the bottom action buttons that are displaying incorrectly */
+    .bottom-nav:nth-of-type(2),
+    .bottom-nav ~ .bottom-nav,
+    /* Remove any floating nav elements at the bottom */
+    .flex.justify-around.fixed.bottom-0,
+    div[class*="fixed bottom-0"] {
+      display: none !important;
+      opacity: 0 !important;
+      z-index: -1 !important;
+      visibility: hidden !important;
+    }
+    
+    /* Ensure the real bottom nav stays visible */
+    .bottom-nav:first-of-type {
+      display: flex !important;
+      opacity: 1 !important;
+      z-index: 50 !important;
+      visibility: visible !important;
+    }
+  }
+  
   /* Add a subtle glow to the bottom nav active elements */
   .bottom-nav .text-purple-400 {
     text-shadow: 0 0 8px rgba(139, 92, 246, 0.5);

@@ -127,6 +127,28 @@ export function GameLayout({ children }: GameLayoutProps) {
 
   // Don't show navbar on main menu or character creation
   const showNavbar = screen !== 'main_menu' && screen !== 'character_creation';
+  
+  // Add class to body for tablet detection
+  useEffect(() => {
+    // Add tablet class to help with CSS targeting
+    if (window.innerWidth >= 768 && window.innerWidth <= 1023) {
+      document.body.classList.add('tablet-device');
+    } else {
+      document.body.classList.remove('tablet-device');
+    }
+    
+    // Listen for resize events
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && window.innerWidth <= 1023) {
+        document.body.classList.add('tablet-device');
+      } else {
+        document.body.classList.remove('tablet-device');
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <motion.div 
