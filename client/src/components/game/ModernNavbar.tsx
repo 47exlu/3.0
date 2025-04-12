@@ -101,6 +101,7 @@ export function ModernNavbar() {
     { id: 'instagram', name: 'Instagram', category: 'marketing', icon: <Instagram className="w-5 h-5" /> },
     { id: 'twitter', name: 'Twitter', category: 'marketing', icon: <Twitter className="w-5 h-5" /> },
     { id: 'youtube', name: 'YouTube', category: 'marketing', icon: <Youtube className="w-5 h-5" /> },
+    { id: 'player_wikipedia', name: 'Wikipedia', category: 'marketing', icon: <BookOpen className="w-5 h-5" /> },
     { id: 'merchandise', name: 'Merch', category: 'marketing', icon: <ShoppingBag className="w-5 h-5" /> },
     { id: 'interviews', name: 'Interviews', category: 'marketing', icon: <MessageCircle className="w-5 h-5" /> },
     
