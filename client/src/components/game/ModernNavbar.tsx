@@ -78,7 +78,7 @@ const screens = [
     category: 'marketing' 
   },
   { 
-    id: 'merch_management', 
+    id: 'merchandise', 
     name: 'Merchandise', 
     icon: <ShoppingBag className="w-5 h-5" />,
     category: 'business' 
