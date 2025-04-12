@@ -18,6 +18,7 @@ import {
   MarketTrend,
   MediaEvent,
   MerchandiseItem,
+  TeamMember,
   MerchandiseWeeklySales,
   MusicVideo,
   PlayerStats,
@@ -45,7 +46,7 @@ import {
 } from '../types';
 import { useAudio } from './useAudio';
 import { useEnergyStore } from './useEnergyStore';
-import { DEFAULT_AI_RAPPERS, DEFAULT_SHOP_ITEMS, DEFAULT_SKILLS, DEFAULT_VENUES, SOCIAL_MEDIA_COSTS, SONG_TIER_INFO } from '../gameData';
+import { DEFAULT_AI_RAPPERS, DEFAULT_SHOP_ITEMS, DEFAULT_SKILLS, DEFAULT_VENUES, DEFAULT_TEAM_MEMBERS, SOCIAL_MEDIA_COSTS, SONG_TIER_INFO } from '../gameData';
 import { getRandomEventForWeek } from '../utils/randomEvents';
 // Import all game calculations functions
 import { 
@@ -98,6 +99,11 @@ interface RapperGameActions {
   // Music video production
   createMusicVideo: (video: MusicVideo, updatedSong: Song, cost: number) => void;
   updateMusicVideo: (updatedVideo: MusicVideo) => void;
+  
+  // Team management
+  hireTeamMember: (teamMemberId: string) => void;
+  fireTeamMember: (teamMemberId: string) => void;
+  payTeamSalaries: () => void;
   
   // Image management
   updateSongCoverArt: (songId: string, coverArt: string) => void;
@@ -442,7 +448,11 @@ const initialState: GameState = {
   
   // Market trends system
   activeMarketTrends: [],
-  pastMarketTrends: []
+  pastMarketTrends: [],
+  
+  // Team management system
+  teamMembers: [],
+  availableTeamMembers: DEFAULT_TEAM_MEMBERS
 };
 
 // Create the store with combined state and actions

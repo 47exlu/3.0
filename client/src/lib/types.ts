@@ -456,7 +456,7 @@ export interface TeamMember {
 }
 
 export interface TeamMemberBenefit {
-  type: "revenueBoost" | "streamingBoost" | "socialMediaBoost" | "productionSpeed" | "tourRevenue" | "merchandiseSales" | "controversyProtection" | "skillBoost";
+  type: "revenueBoost" | "streamingBoost" | "socialMediaBoost" | "productionSpeed" | "tourRevenue" | "merchandiseSales" | "controversyProtection" | "skillBoost" | "reputationBoost";
   description: string;
   value: number; // Percentage boost or flat value
   affectedArea?: string; // Specific area affected (e.g., "twitter" for social media)

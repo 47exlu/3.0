@@ -812,3 +812,196 @@ export const DEFAULT_SKILLS = [
     trainingCost: 2500
   }
 ];
+
+// Available team members that can be hired
+export const DEFAULT_TEAM_MEMBERS: TeamMember[] = [
+  {
+    id: "manager_1",
+    name: "Alex Thompson",
+    role: "manager",
+    hired: false,
+    salary: 2000,
+    quality: 65,
+    experience: 70,
+    specialization: "Indie Artists",
+    bio: "Former indie label executive with solid connections in the underground scene. Good starting manager for new artists who value creative control.",
+    image: "/assets/team/manager_1.jpg",
+    benefits: [
+      {
+        type: "revenueBoost",
+        description: "Negotiates better streaming rates, increasing overall revenue",
+        value: 10 // 10% boost to all revenue
+      },
+      {
+        type: "controversyProtection",
+        description: "Helps manage public relations during controversies",
+        value: 15 // 15% reduction in negative impact from controversies
+      }
+    ],
+    levelRequirement: 2
+  },
+  {
+    id: "manager_2",
+    name: "Sophia Rodriguez",
+    role: "manager",
+    hired: false,
+    salary: 5000,
+    quality: 85,
+    experience: 90,
+    specialization: "Mainstream Artists",
+    bio: "Industry veteran who's managed several platinum-selling artists. Demands a higher salary but delivers exceptional results for established performers.",
+    image: "/assets/team/manager_2.jpg",
+    benefits: [
+      {
+        type: "revenueBoost",
+        description: "Secures major deals and partnerships for substantial revenue growth",
+        value: 25 // 25% boost to all revenue
+      },
+      {
+        type: "streamingBoost",
+        description: "Uses industry connections to get your music on key playlists",
+        value: 20 // 20% boost to streaming numbers
+      },
+      {
+        type: "controversyProtection",
+        description: "Expert at crisis management and reputation repair",
+        value: 30 // 30% reduction in negative impact from controversies
+      }
+    ],
+    levelRequirement: 5
+  },
+  {
+    id: "publicist_1",
+    name: "Marcus Green",
+    role: "publicist",
+    hired: false,
+    salary: 1500,
+    quality: 60,
+    experience: 65,
+    specialization: "Social Media",
+    bio: "Digital-first publicist who specializes in building organic buzz through social media campaigns and viral marketing tactics.",
+    image: "/assets/team/publicist_1.jpg",
+    benefits: [
+      {
+        type: "socialMediaBoost",
+        description: "Increases engagement and follower growth across platforms",
+        value: 15, // 15% boost to social media growth
+        affectedArea: "all"
+      },
+      {
+        type: "streamingBoost",
+        description: "Creates campaigns that drive listeners to your music",
+        value: 10 // 10% boost to streaming numbers
+      }
+    ],
+    levelRequirement: 2
+  },
+  {
+    id: "publicist_2",
+    name: "Victoria Chang",
+    role: "publicist",
+    hired: false,
+    salary: 4000,
+    quality: 80,
+    experience: 85,
+    specialization: "Traditional Media",
+    bio: "Connected publicist with strong relationships at major publications, TV shows, and radio stations. Can get you premium coverage others can't access.",
+    image: "/assets/team/publicist_2.jpg",
+    benefits: [
+      {
+        type: "socialMediaBoost",
+        description: "Gets your content featured by major media accounts",
+        value: 25, // 25% boost to social media growth
+        affectedArea: "all"
+      },
+      {
+        type: "reputationBoost",
+        description: "Secures high-profile interviews and features",
+        value: 15 // 15% faster reputation growth
+      },
+      {
+        type: "controversyProtection",
+        description: "Skilled at spinning negative stories into positive narratives",
+        value: 20 // 20% reduction in negative impact from controversies
+      }
+    ],
+    levelRequirement: 4
+  },
+  {
+    id: "producer_1",
+    name: "Jay Beats",
+    role: "producer",
+    hired: false,
+    salary: 2500,
+    quality: 70,
+    experience: 65,
+    specialization: "Trap Production",
+    bio: "Up-and-coming producer with a knack for creating catchy trap beats. Can help speed up your production process and improve track quality.",
+    image: "/assets/team/producer_1.jpg",
+    benefits: [
+      {
+        type: "productionSpeed",
+        description: "Helps create songs faster",
+        value: 20 // 20% faster song production
+      },
+      {
+        type: "skillBoost",
+        description: "Enhances your production abilities",
+        value: 15, // +15% to production skill effectiveness
+        affectedArea: "production"
+      }
+    ],
+    levelRequirement: 3
+  },
+  {
+    id: "tourManager_1",
+    name: "Derek Williams",
+    role: "tourManager",
+    hired: false,
+    salary: 3000,
+    quality: 75,
+    experience: 80,
+    specialization: "Logistics & Planning",
+    bio: "Experienced tour manager who keeps everything running smoothly on the road. Maximizes revenue while controlling costs.",
+    image: "/assets/team/tourManager_1.jpg",
+    benefits: [
+      {
+        type: "tourRevenue",
+        description: "Optimizes ticket pricing and venue selection",
+        value: 20 // 20% increased tour revenue
+      },
+      {
+        type: "productionSpeed",
+        description: "Allows you to work on music while touring",
+        value: 10 // 10% production speed even during tours
+      }
+    ],
+    levelRequirement: 4
+  },
+  {
+    id: "socialMediaManager_1",
+    name: "Zoe Chen",
+    role: "socialMediaManager",
+    hired: false,
+    salary: 1800,
+    quality: 75,
+    experience: 70,
+    specialization: "Content Strategy",
+    bio: "Digital native with deep understanding of platform algorithms and trends. Makes your social media presence more professional and engaging.",
+    image: "/assets/team/socialMediaManager_1.jpg",
+    benefits: [
+      {
+        type: "socialMediaBoost",
+        description: "Creates consistent, high-quality content across platforms",
+        value: 30, // 30% boost to social media growth
+        affectedArea: "all"
+      },
+      {
+        type: "merchandiseSales",
+        description: "Uses social channels to promote merchandise",
+        value: 15 // 15% boost to merchandise sales
+      }
+    ],
+    levelRequirement: 3
+  }
+];
