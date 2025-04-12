@@ -463,13 +463,25 @@ const CompanyManagement: React.FC = () => {
           )}
         </div>
         
-        <button 
-          onClick={() => setViewState('calendar')} 
-          className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
-        >
-          <Calendar className="w-4 h-4 mr-2" />
-          Company Calendar
-        </button>
+        <div className="flex space-x-3 mb-4">
+          <button 
+            onClick={() => setViewState('calendar')} 
+            className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
+          >
+            <Calendar className="w-4 h-4 mr-2" />
+            Company Calendar
+          </button>
+          
+          {company.type === 'record_label' && (
+            <button 
+              onClick={() => setViewState('labels')} 
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
+            >
+              <Building2 className="w-4 h-4 mr-2" />
+              Partner with Label
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -797,6 +809,181 @@ const CompanyManagement: React.FC = () => {
     );
   };
 
+  // Render labels view
+  const renderLabelsView = () => {
+    if (!company || company.type !== 'record_label') return null;
+    
+    return (
+      <div className="bg-gray-900 rounded-lg p-6 shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-white">Partner with a Record Label</h2>
+          <button 
+            onClick={() => setViewState('overview')} 
+            className="text-blue-400 hover:text-blue-300"
+          >
+            Back to Overview
+          </button>
+        </div>
+        
+        <p className="text-gray-300 mb-6">
+          Partnering with a major label can boost your distribution and marketing power. 
+          Each label offers different benefits and contract terms.
+        </p>
+        
+        <Tabs defaultValue="available">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="available">Available Labels</TabsTrigger>
+            <TabsTrigger value="all">All Labels</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="available">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {availableLabels.length > 0 ? (
+                availableLabels.map(label => (
+                  <Card 
+                    key={label.id} 
+                    className={`bg-gray-800 border-0 transition-all ${selectedLabelId === label.id ? 'ring-2 ring-purple-500' : 'hover:bg-gray-750'}`}
+                    onClick={() => handleSelectLabel(label.id)}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <Avatar className="h-12 w-12 mr-3 bg-transparent">
+                            <AvatarImage src={label.logoPath} alt={label.name} />
+                            <AvatarFallback className="bg-purple-900">{label.name.substring(0, 2)}</AvatarFallback>
+                          </Avatar>
+                          <CardTitle className="text-xl text-white">{label.name}</CardTitle>
+                        </div>
+                        <span className="bg-blue-600 px-3 py-1 rounded-full text-xs font-medium text-white">
+                          Level {label.levelRequired}+
+                        </span>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-300 mb-3">{label.description}</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-gray-400">Reputation:</span>
+                            <span className="text-white">{label.reputation}/100</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-1.5 mb-3">
+                            <div className="bg-purple-600 h-1.5 rounded-full" style={{width: `${label.reputation}%`}}></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between mb-1">
+                            <span className="text-gray-400">Marketing:</span>
+                            <span className="text-white">{label.marketingPower}/100</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-1.5 mb-3">
+                            <div className="bg-blue-600 h-1.5 rounded-full" style={{width: `${label.marketingPower}%`}}></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {label.genres.map((genre, index) => (
+                          <span key={index} className="text-xs px-2 py-1 bg-gray-700 rounded-full text-white">
+                            {genre}
+                          </span>
+                        ))}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="pt-0 flex justify-between text-sm text-gray-300">
+                      <div>Royalty: {Math.round(label.royaltyRate * 100)}%</div>
+                      <div>Advance: ${formatNumber(label.advanceAmount)}</div>
+                    </CardFooter>
+                  </Card>
+                ))
+              ) : (
+                <p className="text-gray-400 italic col-span-2">No labels available at your current level</p>
+              )}
+            </div>
+            
+            {selectedLabelId && (
+              <div className="mt-6">
+                <button 
+                  onClick={handleSignWithLabel}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white font-bold py-3 px-4 rounded"
+                >
+                  Sign with {getLabelById(selectedLabelId)?.name || 'Label'}
+                </button>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="all">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {recordLabels.map(label => (
+                <Card 
+                  key={label.id} 
+                  className={`bg-gray-800 border-0 transition-all ${
+                    label.levelRequired > (stats.careerLevel || 1) 
+                      ? 'opacity-60 cursor-not-allowed' 
+                      : 'hover:bg-gray-750'
+                  }`}
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Avatar className="h-12 w-12 mr-3 bg-transparent">
+                          <AvatarImage src={label.logoPath} alt={label.name} />
+                          <AvatarFallback className="bg-purple-900">{label.name.substring(0, 2)}</AvatarFallback>
+                        </Avatar>
+                        <CardTitle className="text-xl text-white">{label.name}</CardTitle>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${
+                        label.levelRequired > (stats.careerLevel || 1) 
+                          ? 'bg-red-600' 
+                          : 'bg-blue-600'
+                      }`}>
+                        Level {label.levelRequired}+
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-300 mb-3">{label.description}</p>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <div className="flex justify-between mb-1">
+                          <span className="text-gray-400">Reputation:</span>
+                          <span className="text-white">{label.reputation}/100</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-1.5 mb-3">
+                          <div className="bg-purple-600 h-1.5 rounded-full" style={{width: `${label.reputation}%`}}></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex justify-between mb-1">
+                          <span className="text-gray-400">Marketing:</span>
+                          <span className="text-white">{label.marketingPower}/100</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-1.5 mb-3">
+                          <div className="bg-blue-600 h-1.5 rounded-full" style={{width: `${label.marketingPower}%`}}></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {label.genres.map((genre, index) => (
+                        <span key={index} className="text-xs px-2 py-1 bg-gray-700 rounded-full text-white">
+                          {genre}
+                        </span>
+                      ))}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-0 flex justify-between text-sm text-gray-300">
+                    <div>Royalty: {Math.round(label.royaltyRate * 100)}%</div>
+                    <div>Advance: ${formatNumber(label.advanceAmount)}</div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
+  };
+
   // Determine which view to render
   const renderContent = () => {
     switch (viewState) {
@@ -808,6 +995,8 @@ const CompanyManagement: React.FC = () => {
         return renderManageEmployees();
       case 'artists':
         return renderManageArtists();
+      case 'labels':
+        return renderLabelsView();
       case 'calendar':
         return renderCalendar();
       default:

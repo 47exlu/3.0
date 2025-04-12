@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="20" fill="url(#stellar_gradient)" />
+  <path d="M100 40L112.94 80.4721H155.106L121.083 105.528L134.023 145.999L100 120.944L65.9772 145.999L78.9168 105.528L44.8944 80.4721H87.0605L100 40Z" fill="white" fill-opacity="0.9"/>
+  <circle cx="40" cy="40" r="10" fill="white" fill-opacity="0.7"/>
+  <circle cx="160" cy="40" r="8" fill="white" fill-opacity="0.7"/>
+  <circle cx="40" cy="160" r="15" fill="white" fill-opacity="0.7"/>
+  <circle cx="160" cy="160" r="12" fill="white" fill-opacity="0.7"/>
+  <path d="M60 100H80M100 80V120M120 100H140" stroke="white" stroke-width="4" stroke-linecap="round"/>
   <defs>
-    <linearGradient id="stellar-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8E2DE2"/>
-      <stop offset="100%" style="stop-color:#4A00E0"/>
+    <linearGradient id="stellar_gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EC4899"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
     </linearGradient>
   </defs>
-  <rect x="10" y="10" width="180" height="180" rx="15" fill="url(#stellar-gradient)" />
-  
-  <!-- Star pattern -->
-  <polygon points="100,40 107,55 123,55 110,65 115,80 100,70 85,80 90,65 77,55 93,55" fill="white" />
-  <polygon points="60,90 64,98 73,98 66,103 69,112 60,107 51,112 54,103 47,98 56,98" fill="white" opacity="0.8" />
-  <polygon points="140,90 144,98 153,98 146,103 149,112 140,107 131,112 134,103 127,98 136,98" fill="white" opacity="0.8" />
-  <polygon points="100,120 103,126 110,126 104,130 107,137 100,133 93,137 96,130 90,126 97,126" fill="white" opacity="0.6" />
-  
-  <text x="100" y="165" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">STELLAR</text>
-  <text x="100" y="180" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">ENTERTAINMENT</text>
 </svg>

@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="95" fill="url(#cosmos_gradient)" />
+  <path d="M100 30C61.34 30 30 61.34 30 100C30 138.66 61.34 170 100 170C138.66 170 170 138.66 170 100C170 61.34 138.66 30 100 30ZM100 160C67.29 160 40 132.71 40 100C40 67.29 67.29 40 100 40C132.71 40 160 67.29 160 100C160 132.71 132.71 160 100 160Z" fill="white" fill-opacity="0.8"/>
+  <circle cx="100" cy="100" r="30" fill="white" fill-opacity="0.9"/>
+  <circle cx="140" cy="70" r="10" fill="white" fill-opacity="0.7"/>
+  <circle cx="60" cy="130" r="15" fill="white" fill-opacity="0.7"/>
+  <circle cx="130" cy="130" r="8" fill="white" fill-opacity="0.7"/>
+  <circle cx="70" cy="70" r="12" fill="white" fill-opacity="0.7"/>
+  <path d="M88 92V108L106 100L88 92Z" fill="#4F46E5"/>
   <defs>
-    <linearGradient id="cosmos-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#5433FF"/>
-      <stop offset="50%" style="stop-color:#20BDFF"/>
-      <stop offset="100%" style="stop-color:#A5FECB"/>
+    <linearGradient id="cosmos_gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#3B82F6"/>
     </linearGradient>
   </defs>
-  <circle cx="100" cy="100" r="90" fill="url(#cosmos-gradient)" />
-  <circle cx="100" cy="100" r="40" fill="none" stroke="white" stroke-width="4" />
-  <circle cx="100" cy="100" r="65" fill="none" stroke="white" stroke-width="2" stroke-dasharray="5,5" />
-  <circle cx="70" cy="70" r="10" fill="white" />
-  <circle cx="130" cy="125" r="8" fill="white" />
-  <circle cx="90" cy="140" r="5" fill="white" />
-  <text x="100" y="105" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">COSMOS</text>
-  <text x="100" y="125" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">MUSIC GROUP</text>
 </svg>

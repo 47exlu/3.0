@@ -1,25 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="0" fill="url(#horizon_gradient)" />
+  <path d="M40 100H160" stroke="white" stroke-width="6" stroke-linecap="round" />
+  <circle cx="100" cy="100" r="30" fill="white" fill-opacity="0.8" />
+  <path d="M90 85V115M110 85V115" stroke="#2563EB" stroke-width="4" stroke-linecap="round" />
+  <path d="M0 130H200" stroke="white" stroke-width="3" stroke-opacity="0.5" />
+  <path d="M0 150H200" stroke="white" stroke-width="2" stroke-opacity="0.3" />
+  <path d="M0 170H200" stroke="white" stroke-width="1" stroke-opacity="0.2" />
   <defs>
-    <linearGradient id="horizon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#FF416C"/>
-      <stop offset="100%" style="stop-color:#FF4B2B"/>
+    <linearGradient id="horizon_gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0EA5E9" />
+      <stop offset="1" stop-color="#6366F1" />
     </linearGradient>
   </defs>
-  <rect x="10" y="10" width="180" height="180" rx="0" fill="black" />
-  
-  <!-- Horizon line and sun -->
-  <path d="M 10,100 L 190,100" stroke="url(#horizon-gradient)" stroke-width="5" />
-  <circle cx="100" cy="100" r="30" fill="url(#horizon-gradient)" />
-  
-  <!-- Sound waves -->
-  <path d="M 10,100 Q 35,70 60,100 Q 85,130 110,100 Q 135,70 160,100 Q 185,130 190,100" 
-        fill="none" stroke="white" stroke-width="2" opacity="0.3" />
-  <path d="M 10,100 Q 35,80 60,100 Q 85,120 110,100 Q 135,80 160,100 Q 185,120 190,100" 
-        fill="none" stroke="white" stroke-width="2" opacity="0.5" />
-  <path d="M 10,100 Q 35,90 60,100 Q 85,110 110,100 Q 135,90 160,100 Q 185,110 190,100" 
-        fill="none" stroke="white" stroke-width="2" opacity="0.7" />
-  
-  <text x="100" y="160" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">HORIZON</text>
-  <text x="100" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">RECORDS</text>
 </svg>
