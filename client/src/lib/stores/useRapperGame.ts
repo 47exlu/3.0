@@ -4454,11 +4454,30 @@ export const useRapperGame = create<RapperGameStore>()(
         // Update songs - mark them as released and active
         const updatedSongs = songs.map(song => {
           if (albumToRelease.songIds.includes(song.id)) {
+            // Calculate song position in album - first songs get more initial streams
+            const songIndex = albumToRelease.songIds.indexOf(song.id);
+            const positionFactor = Math.max(0.5, 1 - (songIndex / (albumSongs.length * 1.5)));
+            
+            // Calculate initial streams based on song quality and position in album
+            const songQuality = typeof song.quality === 'number' ? song.quality : 50;
+            const qualityFactor = songQuality / avgSongQuality;
+            
+            // Higher quality songs and songs earlier in the album get more streams
+            // This makes album tracks more realistically distributed
+            const initialStreams = Math.floor(
+              (baseStreams / albumSongs.length) * 
+              positionFactor * 
+              qualityFactor * 
+              (1.0 + (Math.random() * 0.3))
+            );
+            
+            console.log(`Album song ${song.title}: Initial streams ${initialStreams} (position factor: ${positionFactor.toFixed(2)}, quality factor: ${qualityFactor.toFixed(2)})`);
+            
             return {
               ...song,
               released: true,
               isActive: true,
-              streams: (song.streams || 0) + Math.floor(baseStreams / albumSongs.length)
+              streams: (song.streams || 0) + initialStreams
             };
           }
           return song;
