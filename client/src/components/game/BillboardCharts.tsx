@@ -316,10 +316,9 @@ const BillboardCharts: React.FC = () => {
     
     // Update the character with the Billboard ranking position
     if (updateCharacter && character) {
-      updateCharacter({
-        ...character,
-        ranking: playerRankInChart 
-      });
+      const updatedCharacter = { ...character };
+      updatedCharacter.ranking = playerRankInChart;
+      updateCharacter(updatedCharacter);
     }
   };
 

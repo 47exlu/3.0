@@ -486,7 +486,7 @@ export function StreamingPlatforms() {
                                           </h3>
                                           {/* Rank indicator with orange gradient background */}
                                           <div className="ml-2 bg-gradient-to-r from-orange-500 to-orange-400 text-white text-sm font-bold px-2 py-1 rounded-lg flex items-center">
-                                            #{character?.ranking || stats?.chartPosition || "0"}
+                                            #{character?.ranking || "—"}
                                           </div>
                                         </div>
                                         {!isEditingBio && (

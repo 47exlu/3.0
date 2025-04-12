@@ -69,6 +69,7 @@ export interface CharacterInfo {
   hometown?: string;
   background?: string;
   fanbaseName?: string; // Name for the artist's fandom
+  ranking?: number; // Billboard artist ranking
 }
 
 export interface PlayerStats {
@@ -82,6 +83,7 @@ export interface PlayerStats {
   stagePower?: number; // Added for touring/concerts system
   totalFans?: number; // Total number of fans across all platforms
   popularity?: number; // Overall popularity score (0-100)
+  chartPosition?: number; // Billboard chart position (legacy field - use character.ranking)
 }
 
 export interface WeeklyStats {
