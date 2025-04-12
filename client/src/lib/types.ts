@@ -252,6 +252,7 @@ export interface Song {
   platformStreamDistribution?: Record<string, number>; // Platform-specific stream distribution
   producedByPlayer?: boolean; // Indicates this song was produced by player for another artist
   hype?: number; // Hype level from promotion activities
+  certifications?: SongCertification[]; // Song certifications (gold, platinum, etc.)
 }
 
 export type VideoQuality = "basic" | "premium";
@@ -604,6 +605,71 @@ export interface Controversy {
 // Album system interfaces
 export type AlbumType = 'standard' | 'deluxe' | 'remix' | 'ep' | 'compilation';
 
+// Certification types (gold, platinum, etc.)
+export type CertificationType = 'gold' | 'platinum' | '2xPlatinum' | '3xPlatinum' | '4xPlatinum' | '5xPlatinum' | 'diamond';
+
+// Certification thresholds (streams/sales needed)
+export const CERTIFICATION_THRESHOLDS = {
+  gold: 500000,
+  platinum: 1000000,
+  '2xPlatinum': 2000000,
+  '3xPlatinum': 3000000,
+  '4xPlatinum': 4000000,
+  '5xPlatinum': 5000000,
+  diamond: 10000000
+};
+
+// Song certification interface
+export interface SongCertification {
+  id: string;
+  type: CertificationType;
+  dateAwarded: number; // Week number
+  streams: number;
+  issuingOrganization: string; // e.g., "RIAA"
+}
+
+// Award type for artists
+export type AwardType = 
+  | 'grammy' 
+  | 'bet' 
+  | 'vma' 
+  | 'ama' 
+  | 'billboard' 
+  | 'iheartradio'
+  | 'apollo'
+  | 'worldstar';
+
+// Award category
+export type AwardCategory = 
+  | 'best_new_artist'
+  | 'artist_of_the_year'
+  | 'album_of_the_year'
+  | 'song_of_the_year'
+  | 'best_rap_performance'
+  | 'best_rap_album'
+  | 'best_rap_song'
+  | 'best_music_video'
+  | 'best_collaboration'
+  | 'best_visual_effects'
+  | 'best_choreography'
+  | 'most_popular_artist'
+  | 'breakthrough_artist';
+
+// Award interface
+export interface Award {
+  id: string;
+  type: AwardType;
+  name: string; // e.g., "Grammy Awards 2025"
+  category: AwardCategory;
+  date: number; // Week number
+  year: number; // Calendar year
+  isWinner: boolean; // Whether the player won or was just nominated
+  songId?: string; // Optional reference to a specific song
+  albumId?: string; // Optional reference to a specific album
+  competitionLevel: number; // 1-10 scale of how prestigious the award is
+  reputationBoost: number; // Reputation boost from winning
+}
+
 export interface Album {
   id: string;
   title: string;
@@ -626,6 +692,7 @@ export interface Album {
   remixArtists?: string[]; // For remix albums - artists who contributed remixes
   platformStreams: Record<string, number>; // Streams per platform (Spotify, YouTube Music, etc.)
   chartPosition?: number; // Position on the Billboard charts
+  certifications?: SongCertification[]; // Album certifications
 }
 
 // Subscription info
@@ -699,6 +766,11 @@ export interface GameState {
   // Market trends system
   activeMarketTrends?: MarketTrend[]; // Currently active market trends
   pastMarketTrends?: MarketTrend[]; // Historical market trends
+  
+  // Awards and certifications system
+  awards?: Award[]; // Awards won or nominated for
+  nominations?: Award[]; // Separate list of just nominations (not wins)
+  upcomingAwardShows?: Award[]; // Upcoming award show events the player might be nominated for
   
   // Team management system
   teamMembers?: TeamMember[]; // Current team members (hired staff)

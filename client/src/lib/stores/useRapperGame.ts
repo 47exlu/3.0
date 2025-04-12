@@ -49,6 +49,7 @@ import { useEnergyStore } from './useEnergyStore';
 import { DEFAULT_AI_RAPPERS, DEFAULT_SHOP_ITEMS, DEFAULT_SKILLS, DEFAULT_VENUES, DEFAULT_TEAM_MEMBERS, SOCIAL_MEDIA_COSTS, SONG_TIER_INFO, CAREER_LEVELS } from '../gameData';
 import { getRandomEventForWeek } from '../utils/randomEvents';
 import { formatMoney } from '../utils';
+import { CERTIFICATION_THRESHOLDS, CertificationType } from '../types';
 // Import all game calculations functions
 import { 
   calculateCareerLevel,
@@ -90,6 +91,13 @@ interface RapperGameActions {
   
   // Game progression
   advanceWeek: () => void;
+  
+  // Awards and certifications
+  checkForCertifications: () => void;
+  addSongCertification: (songId: string, type: CertificationType) => void;
+  addAlbumCertification: (albumId: string, type: CertificationType) => void;
+  generateAwards: () => void;
+  awardPlayerNomination: (category: string, awardType: string) => void;
   
   // Music production
   createSong: (title: string, tier: SongTier, featuring: string[]) => void;
