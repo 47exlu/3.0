@@ -5300,7 +5300,7 @@ export const useRapperGame = create<RapperGameStore>()(
             // Add them back to available team members
             availableTeamMembers: [
               ...(state.availableTeamMembers || []),
-              ...firedMembers.map(member => ({ ...member, hired: false, hiredWeek: undefined }))
+              ...firedMembers.map(member => ({ ...member, hired: false, hiredWeek: undefined, hiredDate: undefined }))
             ]
           }));
           
