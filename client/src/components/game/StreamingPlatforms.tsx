@@ -374,13 +374,13 @@ export function StreamingPlatforms() {
                                       </div>
                                       <div className="whitespace-nowrap">
                                         {selectedPlatform === 'spotify' && spotify ? 
-                                           formatNumber(Math.floor((album.streams || 0) * (0.55 * (0.9 + Math.random() * 0.2)))) :
+                                           formatNumber(Math.floor((album.streams || 0) * 0.55)) :
                                          selectedPlatform === 'youtubeMusic' && youtubeMusic ?
-                                           formatNumber(Math.floor((album.streams || 0) * (0.28 * (0.9 + Math.random() * 0.2)))) :
+                                           formatNumber(Math.floor((album.streams || 0) * 0.28)) :
                                          selectedPlatform === 'itunes' && iTunes ?
-                                           formatNumber(Math.floor((album.streams || 0) * (0.12 * (0.9 + Math.random() * 0.2)))) :
+                                           formatNumber(Math.floor((album.streams || 0) * 0.12)) :
                                          selectedPlatform === 'soundcloud' && soundCloud ?
-                                           formatNumber(Math.floor((album.streams || 0) * (0.05 * (0.9 + Math.random() * 0.2)))) :
+                                           formatNumber(Math.floor((album.streams || 0) * 0.05)) :
                                            formatNumber(album.streams || 0)
                                         } streams
                                       </div>
@@ -428,13 +428,13 @@ export function StreamingPlatforms() {
                                   <div className="text-xs xxs:text-sm sm:text-md font-bold line-clamp-1">{song.title}</div>
                                   <div className="text-[10px] xxs:text-xs text-[#b3b3b3] mt-1 xxs:mt-2 line-clamp-2">
                                     {selectedPlatform === 'spotify' && spotify ? 
-                                       formatNumber(Math.floor(song.streams * (0.55 * (0.9 + Math.random() * 0.2)))) :
+                                       formatNumber(Math.floor(song.streams * 0.55)) :
                                      selectedPlatform === 'youtubeMusic' && youtubeMusic ?
-                                       formatNumber(Math.floor(song.streams * (0.28 * (0.9 + Math.random() * 0.2)))) :
+                                       formatNumber(Math.floor(song.streams * 0.28)) :
                                      selectedPlatform === 'itunes' && iTunes ?
-                                       formatNumber(Math.floor(song.streams * (0.12 * (0.9 + Math.random() * 0.2)))) :
+                                       formatNumber(Math.floor(song.streams * 0.12)) :
                                      selectedPlatform === 'soundcloud' && soundCloud ?
-                                       formatNumber(Math.floor(song.streams * (0.05 * (0.9 + Math.random() * 0.2)))) :
+                                       formatNumber(Math.floor(song.streams * 0.05)) :
                                        formatNumber(song.streams)
                                     } streams • Feat. {song.featuring.length} artist{song.featuring.length > 1 ? 's' : ''}
                                   </div>
