@@ -2186,6 +2186,36 @@ export const useRapperGame = create<RapperGameStore>()(
           actualTier = 3;
         }
         
+        // Check if featuring artists are selected and if player can afford them
+        let featuringCost = 0;
+        if (featuring.length > 0) {
+          // Each featured artist costs money based on their popularity
+          const featuringRappers = currentState.aiRappers.filter(rapper => featuring.includes(rapper.id));
+          if (!featuringRappers.length) {
+            alert("Some selected featured artists couldn't be found!");
+            return;
+          }
+          
+          // Calculate total featuring cost
+          featuringCost = featuringRappers.reduce((total, rapper) => {
+            // Base cost is related to their popularity and relationship
+            const relationship = rapper.relationshipStatus || rapper.relationship || "neutral";
+            const popularityFactor = Math.max(1, Math.floor(rapper.monthlyListeners / 10000));
+            
+            // Friends cost less, enemies won't feature (filtered in UI)
+            const relationshipMultiplier = relationship === "friend" ? 0.75 : 1.0;
+            
+            // Each feature costs based on popularity and relationship
+            return total + (popularityFactor * 500 * relationshipMultiplier);
+          }, 0);
+          
+          // Check if player can afford the featuring costs
+          if (currentState.stats.wealth < featuringCost) {
+            alert(`You don't have enough money to pay for these featured artists (${formatMoney(featuringCost)})!`);
+            return;
+          }
+        }
+        
         const newSong: Song = {
           id: uuidv4(),
           title: songTitle,
@@ -2199,15 +2229,21 @@ export const useRapperGame = create<RapperGameStore>()(
           releasePlatforms: [] // No platforms until released
         };
         
-        // Update state with new song (no cost for free tier)
+        // Update state with new song and reduced wealth for featuring
         set({
           songs: [...currentState.songs, newSong],
           stats: {
             ...currentState.stats,
+            wealth: currentState.stats.wealth - featuringCost, // Pay for features
             // Creating songs increases creativity
             creativity: Math.min(100, currentState.stats.creativity + 1)
           }
         });
+        
+        // Notify user if features were paid for
+        if (featuring.length > 0) {
+          alert(`You paid ${formatMoney(featuringCost)} for featured artists on your song!`);
+        }
         
         return;
       }
@@ -2228,10 +2264,39 @@ export const useRapperGame = create<RapperGameStore>()(
         }
       }
       
-      // Check if player can afford to create this song
-      const cost = SONG_TIER_INFO[tier].cost;
-      if (currentState.stats.wealth < cost) {
-        alert("You don't have enough money to create this song!");
+      // Check if featuring artists are selected and calculate costs
+      let featuringCost = 0;
+      if (featuring.length > 0) {
+        // Each featured artist costs money based on their popularity
+        const featuringRappers = currentState.aiRappers.filter(rapper => featuring.includes(rapper.id));
+        if (!featuringRappers.length) {
+          alert("Some selected featured artists couldn't be found!");
+          return;
+        }
+        
+        // Calculate total featuring cost
+        featuringCost = featuringRappers.reduce((total, rapper) => {
+          // Base cost is related to their popularity and relationship
+          const relationship = rapper.relationshipStatus || rapper.relationship || "neutral";
+          const popularityFactor = Math.max(1, Math.floor(rapper.monthlyListeners / 10000));
+          
+          // Friends cost less, enemies won't feature (filtered in UI)
+          const relationshipMultiplier = relationship === "friend" ? 0.75 : 1.0;
+          
+          // Higher tier songs cost more to feature on
+          const tierMultiplier = Number(tier) / 3;
+          
+          // Each feature costs based on popularity, relationship and song tier
+          return total + (popularityFactor * 500 * relationshipMultiplier * tierMultiplier);
+        }, 0);
+      }
+      
+      // Check if player can afford to create this song plus featuring costs
+      const songCost = SONG_TIER_INFO[tier].cost;
+      const totalCost = songCost + featuringCost;
+      
+      if (currentState.stats.wealth < totalCost) {
+        alert(`You don't have enough money to create this song with features (${formatMoney(totalCost)})!`);
         return;
       }
       
@@ -2257,11 +2322,16 @@ export const useRapperGame = create<RapperGameStore>()(
         songs: [...currentState.songs, newSong],
         stats: {
           ...currentState.stats,
-          wealth: currentState.stats.wealth - cost,
+          wealth: currentState.stats.wealth - totalCost,
           // Creating songs increases creativity
           creativity: Math.min(100, currentState.stats.creativity + 2)
         }
       });
+      
+      // Notify user of the featuring costs if any
+      if (featuring.length > 0) {
+        alert(`You paid ${formatMoney(songCost)} for the song and ${formatMoney(featuringCost)} for featured artists!`);
+      }
     },
     
     buySongFromShop: (shopItemId: string) => {
