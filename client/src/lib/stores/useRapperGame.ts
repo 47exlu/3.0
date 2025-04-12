@@ -5188,6 +5188,157 @@ export const useRapperGame = create<RapperGameStore>()(
       
       return true;
     },
+    
+    // Team management functions
+    hireTeamMember: (teamMemberId: string) => {
+      const currentState = get();
+      
+      // Find the team member in available team members
+      const teamMember = currentState.availableTeamMembers?.find(tm => tm.id === teamMemberId);
+      if (!teamMember) {
+        console.error(`Team member with ID ${teamMemberId} not found`);
+        return;
+      }
+      
+      // Check if player has enough career level
+      if (teamMember.levelRequirement && currentState.stats.careerLevel < teamMember.levelRequirement) {
+        alert(`You need to reach career level ${teamMember.levelRequirement} to hire ${teamMember.name}`);
+        return;
+      }
+      
+      // Check if player has enough money
+      if (currentState.stats.wealth < teamMember.salary) {
+        alert(`You need $${teamMember.salary} to hire ${teamMember.name}`);
+        return;
+      }
+      
+      // Mark as hired and move to active team members
+      const updatedTeamMember = {
+        ...teamMember,
+        hired: true,
+        hiredWeek: currentState.currentWeek
+      };
+      
+      // Update state
+      set(state => ({
+        ...state,
+        // Add to hired team members
+        teamMembers: [...(state.teamMembers || []), updatedTeamMember],
+        // Remove from available team members
+        availableTeamMembers: (state.availableTeamMembers || []).filter(tm => tm.id !== teamMemberId),
+        // Deduct salary
+        stats: {
+          ...state.stats,
+          wealth: state.stats.wealth - teamMember.salary
+        }
+      }));
+      
+      // Show confirmation message
+      alert(`You've hired ${teamMember.name} as your ${teamMember.role}!`);
+    },
+    
+    fireTeamMember: (teamMemberId: string) => {
+      const currentState = get();
+      
+      // Find the team member
+      const teamMember = currentState.teamMembers?.find(tm => tm.id === teamMemberId);
+      if (!teamMember) {
+        console.error(`Team member with ID ${teamMemberId} not found`);
+        return;
+      }
+      
+      // Update state
+      set(state => ({
+        ...state,
+        // Remove from hired team members
+        teamMembers: (state.teamMembers || []).filter(tm => tm.id !== teamMemberId),
+        // Add back to available team members with hired flag reset
+        availableTeamMembers: [
+          ...(state.availableTeamMembers || []), 
+          { ...teamMember, hired: false, hiredWeek: undefined }
+        ]
+      }));
+      
+      // Show confirmation message
+      alert(`You've fired ${teamMember.name}.`);
+    },
+    
+    payTeamSalaries: () => {
+      const currentState = get();
+      
+      // No team members, nothing to pay
+      if (!currentState.teamMembers || currentState.teamMembers.length === 0) {
+        return;
+      }
+      
+      // Calculate total salary
+      const totalSalary = currentState.teamMembers.reduce((total, member) => total + member.salary, 0);
+      
+      // Check if player has enough money
+      if (currentState.stats.wealth < totalSalary) {
+        // Not enough money to pay team
+        alert("You don't have enough money to pay your team's salaries. Some members may quit!");
+        
+        // Chance of team members quitting
+        const updatedTeamMembers = [...currentState.teamMembers];
+        const firedMembers: TeamMember[] = [];
+        
+        updatedTeamMembers.forEach(member => {
+          // 50% chance of quitting if not paid
+          if (Math.random() < 0.5) {
+            firedMembers.push(member);
+          }
+        });
+        
+        // Update state with members who quit
+        if (firedMembers.length > 0) {
+          set(state => ({
+            ...state,
+            // Remove members who quit
+            teamMembers: state.teamMembers?.filter(tm => !firedMembers.some(fired => fired.id === tm.id)) || [],
+            // Add them back to available team members
+            availableTeamMembers: [
+              ...(state.availableTeamMembers || []),
+              ...firedMembers.map(member => ({ ...member, hired: false, hiredWeek: undefined }))
+            ]
+          }));
+          
+          // Show message about who quit
+          const quitNames = firedMembers.map(m => m.name).join(", ");
+          alert(`The following team members have quit: ${quitNames}`);
+        }
+        
+        return;
+      }
+      
+      // Pay salaries
+      set(state => ({
+        ...state,
+        stats: {
+          ...state.stats,
+          wealth: state.stats.wealth - totalSalary
+        }
+      }));
+      
+      // Include salaries in weekly stats
+      const weeklyStats = currentState.weeklyStats || [];
+      const currentWeekStats = weeklyStats.find(stats => stats.week === currentState.currentWeek);
+      
+      if (currentWeekStats) {
+        set(state => ({
+          ...state,
+          weeklyStats: state.weeklyStats?.map(stats => 
+            stats.week === currentState.currentWeek
+              ? { 
+                  ...stats, 
+                  expenses: (stats.expenses || 0) + totalSalary,
+                  teamSalaries: totalSalary
+                }
+              : stats
+          ) || []
+        }));
+      }
+    },
 
     // Process weekly merchandise sales in the advanceWeek function
     processMerchandiseSales: () => {

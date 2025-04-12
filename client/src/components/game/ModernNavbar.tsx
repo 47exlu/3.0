@@ -23,7 +23,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  Book
+  Book,
+  UserCog
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -87,6 +88,12 @@ const screens = [
     id: 'touring', 
     name: 'Touring', 
     icon: <Users className="w-5 h-5" />,
+    category: 'business' 
+  },
+  {
+    id: 'team_management', 
+    name: 'Team', 
+    icon: <UserCog className="w-5 h-5" />,
     category: 'business' 
   },
   { 
@@ -161,6 +168,7 @@ export function ModernNavbar() {
       case 'chart_impact': return 'streaming_impact';
       case 'save_load': return 'save_load';
       case 'touring': return 'touring_concerts';
+      case 'team_management': return 'team_management';
       default: return screenId;
     }
   };
