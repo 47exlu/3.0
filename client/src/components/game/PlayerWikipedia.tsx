@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
 import { 
-  Menu, Music, Users, TrendingUp, Calendar, Star
+  Menu, Music, Users, TrendingUp, Calendar, Star, Trophy
 } from 'lucide-react';
 import { formatNumber } from '@/lib/utils';
 
@@ -290,6 +290,11 @@ export function PlayerWikipedia() {
                         Most popular song: <b>"{mostSuccessfulSong.title}"</b> with {formatNumber(mostSuccessfulSong.streams || 0)} streams.
                       </p>
                     )}
+                    {stats?.chartPosition && (
+                      <p className="text-[15px] mb-2">
+                        Current chart position: <b>#{stats.chartPosition}</b> on Billboard charts.
+                      </p>
+                    )}
                   </div>
                   
                   <div>
@@ -328,6 +333,14 @@ export function PlayerWikipedia() {
               <div className="border border-gray-300 bg-[#f8f9fa]">
                 <div className="bg-[#dcdcdc] border-b border-gray-300 p-2 font-serif text-center font-bold">
                   {artistName}
+                  <div className="flex justify-center items-center mt-1">
+                    {stats?.chartPosition ? (
+                      <div className="flex items-center gap-1">
+                        <Trophy className="w-3 h-3 text-orange-500" />
+                        <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">{stats.chartPosition}</span>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
                 
                 <div className="p-2">
@@ -359,6 +372,17 @@ export function PlayerWikipedia() {
                         <th className="text-left font-bold align-top pr-2 py-1">Years active</th>
                         <td className="py-1">{careerStartYear}–present</td>
                       </tr>
+                      {stats?.chartPosition && (
+                        <tr>
+                          <th className="text-left font-bold align-top pr-2 py-1">Chart ranking</th>
+                          <td className="py-1">
+                            <div className="flex items-center gap-1">
+                              <Trophy className="w-3 h-3 text-orange-500" />
+                              <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">{stats.chartPosition}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                       <tr>
                         <th className="text-left font-bold align-top pr-2 py-1">Total streams</th>
                         <td className="py-1">{formatNumber(totalStreams)}</td>
