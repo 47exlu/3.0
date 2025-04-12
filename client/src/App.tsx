@@ -30,6 +30,7 @@ import TeamManagement from './components/game/TeamManagement';
 import AwardsAndCertifications from './components/game/AwardsAndCertifications';
 import JobsSystem from './components/game/JobsSystem';
 import MusicNews from './components/game/MusicNews';
+import CompanyManagement from './components/game/CompanyManagement';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -319,6 +320,7 @@ function App() {
                   {screen === 'awards_certifications' && <AwardsAndCertifications />}
                   {screen === 'jobs' && <JobsSystem />}
                   {screen === 'music_news' && <MusicNews />}
+                  {screen === 'company_management' && <CompanyManagement />}
                 </GameLayout>
               </LoadingTransition>
             </Route>
