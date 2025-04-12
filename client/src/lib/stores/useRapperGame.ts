@@ -7,6 +7,7 @@ import {
   AlbumType,
   Beef,
   CharacterInfo,
+  Company,
   Concert,
   Controversy,
   ControversySeverity, 
@@ -208,6 +209,14 @@ interface RapperGameActions {
   processMarketTrends: () => void;
   updateTwitterTrends: () => void;
   getTrendEffect: (platformName: string) => number;
+  
+  // Company management system
+  createCompany: (name: string, type: string, description?: string, logo?: string) => string;
+  updateCompany: (updates: Partial<Company>) => void;
+  hireCompanyEmployee: (count: number) => void;
+  fireCompanyEmployee: (count: number) => void;
+  signArtist: (artistId: string) => boolean;
+  dropArtist: (artistId: string) => boolean;
   
   // Jobs system
   checkJobRequirements: (job: any) => boolean;

@@ -554,6 +554,23 @@ export type NewsCategory =
 
 export type NewsImpact = "low" | "medium" | "high";
 
+// Artist-owned company
+export interface Company {
+  id: string;
+  name: string;
+  logo?: string;
+  foundedWeek: number;
+  foundedYear: number;
+  description?: string;
+  type: "record_label" | "production_company" | "clothing_brand" | "media_company" | "other";
+  level: number; // Company growth level
+  value: number; // Company valuation
+  revenue: number; // Total revenue generated
+  artists?: string[]; // Signed artists' IDs (for record labels)
+  employees: number; // Number of employees
+  products?: string[]; // IDs of company products/releases
+}
+
 export interface NewsArticle {
   id: string;
   title: string;
@@ -864,6 +881,10 @@ export interface GameState {
   confirmedMediaEvents?: MediaEvent[]; // Media events the player has confirmed attendance
   completedMediaEvents?: MediaEvent[]; // Historical media events the player has participated in
   missedMediaEvents?: MediaEvent[]; // Media events the player missed or declined
+  
+  // Company management system
+  company?: Company; // Player's company (record label, production company, etc.)
+  signedArtists?: AIRapper[]; // Artists signed to the player's label
   
   // Market trends system
   activeMarketTrends?: MarketTrend[]; // Currently active market trends
