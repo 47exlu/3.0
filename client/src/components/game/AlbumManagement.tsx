@@ -52,9 +52,14 @@ export const AlbumManagement: React.FC = () => {
   
   // Get songs for specific album
   const getAlbumSongs = (albumId: string): Song[] => {
-    // Since Song type doesn't have albumId, we'll assume it's stored in a custom property
-    // We'll cast to any to avoid TypeScript errors while maintaining compatibility
-    return songs?.filter(song => (song as any).albumId === albumId) || [];
+    // Get the album to retrieve its songIds
+    const album = albums?.find(a => a.id === albumId);
+    if (!album || !album.songIds || album.songIds.length === 0) {
+      return [];
+    }
+    
+    // Filter songs based on the songIds in the album
+    return songs?.filter(song => album.songIds.includes(song.id)) || [];
   };
   
   // Calculate album stats
