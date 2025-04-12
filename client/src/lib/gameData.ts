@@ -1,4 +1,4 @@
-import { AIRapper, SongTier } from "./types";
+import { AIRapper, SongTier, TeamMember, TeamMemberBenefit, TeamMemberRole } from "./types";
 
 // Default AI rappers in the game
 export const DEFAULT_AI_RAPPERS: AIRapper[] = [
