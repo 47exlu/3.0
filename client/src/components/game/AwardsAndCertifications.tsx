@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
-import { Award, AwardType, CertificationType, Song } from '@/lib/types';
+import { Award, AwardType, CertificationType, Song, SongCertification } from '@/lib/types';
 import { formatNumber } from '@/lib/utils';
 
 // Define certification thresholds
@@ -91,8 +91,42 @@ const groupAwardsByTypeAndYear = (awards: Award[]): AwardsByType => {
 };
 
 const AwardsAndCertifications: React.FC = () => {
-  const { songs, albums, awards } = useRapperGame();
+  const { songs, albums, awards, updateGameState } = useRapperGame();
   const [activeTab, setActiveTab] = useState<'awards' | 'certifications'>('awards');
+  
+  // Helper function to add a test certification (for testing only)
+  const addTestCertification = () => {
+    if (!songs || songs.length === 0) return;
+    
+    // Find a song with over 500,000 streams 
+    const eligibleSong = songs.find(song => song.streams >= 500000 && (!song.certifications || song.certifications.length === 0));
+    
+    if (eligibleSong) {
+      // Create a new certification
+      const newCertification: SongCertification = {
+        id: `cert_${Date.now()}`,
+        type: 'gold',
+        streams: eligibleSong.streams,
+        dateAwarded: 0, // Current week
+        issuingOrganization: 'RIAA'
+      };
+      
+      // Update the song with the new certification
+      const updatedSongs = songs.map(song => {
+        if (song.id === eligibleSong.id) {
+          const songCertifications = song.certifications || [];
+          return {
+            ...song,
+            certifications: [...songCertifications, newCertification]
+          };
+        }
+        return song;
+      });
+      
+      // Update game state
+      updateGameState?.({ songs: updatedSongs });
+    }
+  };
   
   // Group awards by type and year for better organization
   const awardsByTypeAndYear = awards ? groupAwardsByTypeAndYear(awards) : {
@@ -152,26 +186,34 @@ const AwardsAndCertifications: React.FC = () => {
       </div>
       
       {/* Tabs for awards and certifications */}
-      <div className="tabs flex border-b border-gray-700 mb-6">
+      <div className="flex justify-between items-center mb-6">
+        <div className="tabs flex border-b border-gray-700">
+          <button
+            className={`tab px-6 py-2 text-lg font-medium ${
+              activeTab === 'awards' 
+                ? 'text-yellow-400 border-b-2 border-yellow-400' 
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+            onClick={() => setActiveTab('awards')}
+          >
+            Awards
+          </button>
+          <button
+            className={`tab px-6 py-2 text-lg font-medium ${
+              activeTab === 'certifications' 
+                ? 'text-yellow-400 border-b-2 border-yellow-400' 
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
+            onClick={() => setActiveTab('certifications')}
+          >
+            Certifications
+          </button>
+        </div>
         <button
-          className={`tab px-6 py-2 text-lg font-medium ${
-            activeTab === 'awards' 
-              ? 'text-yellow-400 border-b-2 border-yellow-400' 
-              : 'text-gray-400 hover:text-gray-300'
-          }`}
-          onClick={() => setActiveTab('awards')}
+          className="px-3 py-1 text-sm bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-md hover:from-yellow-600 hover:to-yellow-700 transition"
+          onClick={addTestCertification}
         >
-          Awards
-        </button>
-        <button
-          className={`tab px-6 py-2 text-lg font-medium ${
-            activeTab === 'certifications' 
-              ? 'text-yellow-400 border-b-2 border-yellow-400' 
-              : 'text-gray-400 hover:text-gray-300'
-          }`}
-          onClick={() => setActiveTab('certifications')}
-        >
-          Certifications
+          Certify Eligible Song
         </button>
       </div>
       
