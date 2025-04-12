@@ -97,6 +97,12 @@ const screens = [
     category: 'business' 
   },
   { 
+    id: 'awards_certifications', 
+    name: 'Awards', 
+    icon: <Award className="w-5 h-5" />,
+    category: 'business' 
+  },
+  { 
     id: 'collaborations', 
     name: 'Collabs', 
     icon: <Users className="w-5 h-5" />,
@@ -124,12 +130,6 @@ const screens = [
     id: 'player_wikipedia', 
     name: 'Career Wiki', 
     icon: <Book className="w-5 h-5" />,
-    category: 'other' 
-  },
-  { 
-    id: 'awards_certifications', 
-    name: 'Awards', 
-    icon: <Award className="w-5 h-5" />,
     category: 'other' 
   },
   { 

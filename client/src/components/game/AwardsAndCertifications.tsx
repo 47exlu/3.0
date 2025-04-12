@@ -1,208 +1,439 @@
 import React, { useState } from 'react';
-import { useRapperGame } from '../../lib/stores/useRapperGame';
-import { Award, SongCertification } from '../../lib/types';
-import { formatNumber } from '../../lib/utils';
+import { useRapperGame } from '@/lib/stores/useRapperGame';
+import { Award, AwardType, CertificationType, Song } from '@/lib/types';
+import { formatNumber } from '@/lib/utils';
+
+// Define certification thresholds
+const CERTIFICATION_THRESHOLDS = {
+  gold: 500000, // 500k streams
+  platinum: 1000000, // 1M streams
+  '2xPlatinum': 2000000, // 2M streams
+  '3xPlatinum': 3000000, // 3M streams
+  '4xPlatinum': 4000000, // 4M streams
+  '5xPlatinum': 5000000, // 5M streams
+  diamond: 10000000, // 10M streams
+};
+
+// Award display names
+const AWARD_TYPE_NAMES: Record<AwardType, string> = {
+  grammy: 'Grammy Awards',
+  bet: 'BET Awards',
+  vma: 'Video Music Awards',
+  ama: 'American Music Awards',
+  billboard: 'Billboard Music Awards',
+  iheartradio: 'iHeartRadio Music Awards',
+  apollo: 'Apollo Theater Awards',
+  worldstar: 'WorldStar Hip Hop Awards',
+};
+
+// Award icons (emojis for simplicity, could be replaced with actual icons)
+const AWARD_TYPE_ICONS: Record<AwardType, string> = {
+  grammy: '🏆',
+  bet: '🎭',
+  vma: '📺',
+  ama: '🎵',
+  billboard: '📊',
+  iheartradio: '📻',
+  apollo: '🎤',
+  worldstar: '⭐',
+};
+
+// Certification display names
+const CERTIFICATION_NAMES: Record<CertificationType, string> = {
+  gold: 'Gold',
+  platinum: 'Platinum',
+  '2xPlatinum': '2x Platinum',
+  '3xPlatinum': '3x Platinum',
+  '4xPlatinum': '4x Platinum',
+  '5xPlatinum': '5x Platinum',
+  diamond: 'Diamond',
+};
+
+// Certification icons/colors
+const CERTIFICATION_COLORS: Record<CertificationType, string> = {
+  gold: 'bg-yellow-500',
+  platinum: 'bg-gray-300',
+  '2xPlatinum': 'bg-gray-400',
+  '3xPlatinum': 'bg-gray-400',
+  '4xPlatinum': 'bg-gray-500',
+  '5xPlatinum': 'bg-gray-600',
+  diamond: 'bg-blue-300',
+};
+
+// Record type to organize awards by type/year
+type AwardsByYear = Record<number, Award[]>;
+type AwardsByType = Record<AwardType, AwardsByYear>;
+
+// Helper function to group awards by type and year
+const groupAwardsByTypeAndYear = (awards: Award[]): AwardsByType => {
+  const grouped: Partial<AwardsByType> = {};
+  
+  // Initialize the structure with empty arrays
+  Object.values(AWARD_TYPE_NAMES).forEach(type => {
+    grouped[type as AwardType] = {};
+  });
+  
+  // Group awards by type and year
+  awards.forEach(award => {
+    if (!grouped[award.type]) {
+      grouped[award.type] = {};
+    }
+    
+    if (!grouped[award.type]![award.year]) {
+      grouped[award.type]![award.year] = [];
+    }
+    
+    grouped[award.type]![award.year].push(award);
+  });
+  
+  return grouped as AwardsByType;
+};
 
 const AwardsAndCertifications: React.FC = () => {
-  const { songs, albums, awards, nominations } = useRapperGame();
+  const { songs, albums, awards } = useRapperGame();
   const [activeTab, setActiveTab] = useState<'awards' | 'certifications'>('awards');
-
-  // Get all certified songs
-  const certifiedSongs = songs.filter(song => song.certifications && song.certifications.length > 0);
   
-  // Get all certified albums
-  const certifiedAlbums = albums?.filter(album => album.certifications && album.certifications.length > 0) || [];
-
-  // Format award category for display
-  const formatCategory = (category: string) => {
-    return category
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
-
-  // Award badge component
-  const AwardBadge: React.FC<{ award: Award }> = ({ award }) => {
-    const badgeColor = 
-      award.type === 'grammy' ? 'bg-yellow-500' :
-      award.type === 'bet' ? 'bg-blue-500' : 
-      award.type === 'vma' ? 'bg-red-500' : 
-      'bg-purple-500';
-    
-    return (
-      <div className="relative mb-4 bg-black border border-gray-800 rounded-lg p-4 transition-all hover:border-gray-600">
-        <div className={`absolute top-0 right-0 ${badgeColor} text-white text-xs px-2 py-1 rounded-bl rounded-tr font-bold`}>
-          {award.type.toUpperCase()}
-        </div>
-        <div className="flex items-center">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${badgeColor} mr-4`}>
-            <span className="text-white text-2xl">🏆</span>
-          </div>
-          <div>
-            <h3 className="font-bold text-white">{formatCategory(award.category)}</h3>
-            <p className="text-gray-400 text-sm">{award.name}</p>
-            <div className="mt-1">
-              <span className={`px-2 py-0.5 rounded text-xs ${award.isWinner ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
-                {award.isWinner ? 'Winner' : 'Nominee'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Certification badge component
-  const CertificationBadge: React.FC<{ 
-    title: string, 
-    certification: SongCertification, 
-    streams: number,
-    week: number 
-  }> = ({ title, certification, streams, week }) => {
-    const certColor = {
-      'gold': 'bg-yellow-500',
-      'platinum': 'bg-gray-300',
-      '2xPlatinum': 'bg-gray-300',
-      '3xPlatinum': 'bg-gray-300',
-      '4xPlatinum': 'bg-gray-300',
-      '5xPlatinum': 'bg-gray-300',
-      'diamond': 'bg-blue-400',
-    }[certification.type] || 'bg-gray-500';
-    
-    const certName = {
-      'gold': 'Gold',
-      'platinum': 'Platinum',
-      '2xPlatinum': '2× Platinum',
-      '3xPlatinum': '3× Platinum',
-      '4xPlatinum': '4× Platinum',
-      '5xPlatinum': '5× Platinum',
-      'diamond': 'Diamond',
-    }[certification.type] || certification.type;
-    
-    return (
-      <div className="relative mb-4 bg-black border border-gray-800 rounded-lg p-4 hover:border-gray-600 transition-all">
-        <div className={`absolute top-0 right-0 ${certColor} text-white text-xs px-2 py-1 rounded-bl rounded-tr font-bold`}>
-          {certName}
-        </div>
-        <div className="flex items-center">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${certColor} mr-4`}>
-            <span className="text-white text-xl">💿</span>
-          </div>
-          <div>
-            <h3 className="font-bold text-white truncate max-w-[200px]">{title}</h3>
-            <p className="text-gray-400 text-sm">{formatNumber(streams)} streams</p>
-            <p className="text-gray-500 text-xs mt-1">Awarded on week {certification.dateAwarded}</p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
+  // Group awards by type and year for better organization
+  const awardsByTypeAndYear = awards ? groupAwardsByTypeAndYear(awards) : {};
+  
+  // Filter songs with certifications
+  const songsWithCertifications = songs.filter(song => 
+    song.certifications && song.certifications.length > 0
+  );
+  
+  // Calculate total awards
+  const totalAwards = awards ? awards.length : 0;
+  const totalWonAwards = awards ? awards.filter(award => award.isWinner).length : 0;
+  const totalCertifications = songsWithCertifications.reduce(
+    (count, song) => count + (song.certifications?.length || 0), 
+    0
+  );
+  
   return (
-    <div className="p-4 text-white">
-      <h1 className="text-2xl font-bold mb-4">Awards & Certifications</h1>
+    <div className="awards-certifications-container p-4 h-full overflow-y-auto text-white">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 bg-clip-text text-transparent mb-2">
+          Awards & Certifications
+        </h1>
+        <p className="text-gray-300 mb-6">
+          Your musical achievements and industry recognition
+        </p>
+        
+        {/* Stats overview */}
+        <div className="grid grid-cols-3 gap-4 mb-8 max-w-3xl mx-auto">
+          <div className="bg-gray-800 rounded-lg p-4 shadow-md flex flex-col items-center">
+            <h3 className="text-xl font-semibold text-gray-300">Total Awards</h3>
+            <p className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+              {totalAwards}
+            </p>
+            <p className="text-sm text-gray-400">{totalWonAwards} wins</p>
+          </div>
+          
+          <div className="bg-gray-800 rounded-lg p-4 shadow-md flex flex-col items-center">
+            <h3 className="text-xl font-semibold text-gray-300">Certifications</h3>
+            <p className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-gray-400 to-blue-300 bg-clip-text text-transparent">
+              {totalCertifications}
+            </p>
+            <p className="text-sm text-gray-400">across {songsWithCertifications.length} songs</p>
+          </div>
+          
+          <div className="bg-gray-800 rounded-lg p-4 shadow-md flex flex-col items-center">
+            <h3 className="text-xl font-semibold text-gray-300">Highest Cert</h3>
+            <p className="text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-500 bg-clip-text text-transparent">
+              {getHighestCertification(songsWithCertifications)}
+            </p>
+            <p className="text-sm text-gray-400">achievement level</p>
+          </div>
+        </div>
+      </div>
       
-      {/* Tabs */}
-      <div className="flex mb-6 bg-gray-900 rounded-lg p-1">
-        <button 
-          onClick={() => setActiveTab('awards')} 
-          className={`flex-1 py-2 rounded-lg ${activeTab === 'awards' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
+      {/* Tabs for awards and certifications */}
+      <div className="tabs flex border-b border-gray-700 mb-6">
+        <button
+          className={`tab px-6 py-2 text-lg font-medium ${
+            activeTab === 'awards' 
+              ? 'text-yellow-400 border-b-2 border-yellow-400' 
+              : 'text-gray-400 hover:text-gray-300'
+          }`}
+          onClick={() => setActiveTab('awards')}
         >
           Awards
         </button>
-        <button 
-          onClick={() => setActiveTab('certifications')} 
-          className={`flex-1 py-2 rounded-lg ${activeTab === 'certifications' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
+        <button
+          className={`tab px-6 py-2 text-lg font-medium ${
+            activeTab === 'certifications' 
+              ? 'text-yellow-400 border-b-2 border-yellow-400' 
+              : 'text-gray-400 hover:text-gray-300'
+          }`}
+          onClick={() => setActiveTab('certifications')}
         >
           Certifications
         </button>
       </div>
       
-      {/* Awards content */}
-      {activeTab === 'awards' && (
-        <div>
-          <h2 className="text-xl font-bold mb-4">Your Awards</h2>
-          
-          {awards && awards.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {awards.map(award => (
-                <AwardBadge key={award.id} award={award} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-black/30 rounded-lg p-6 text-center">
-              <p className="text-gray-400">You haven't won any awards yet. Keep creating great music!</p>
-            </div>
-          )}
-          
-          <h2 className="text-xl font-bold mt-8 mb-4">Your Nominations</h2>
-          
-          {nominations && nominations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {nominations.map(nomination => (
-                <AwardBadge key={nomination.id} award={nomination} />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-black/30 rounded-lg p-6 text-center">
-              <p className="text-gray-400">No nominations yet. Keep releasing music to get noticed by award committees.</p>
-            </div>
-          )}
-        </div>
-      )}
-      
-      {/* Certifications content */}
-      {activeTab === 'certifications' && (
-        <div>
-          <h2 className="text-xl font-bold mb-4">Certified Songs</h2>
-          
-          {certifiedSongs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {certifiedSongs.flatMap(song => 
-                song.certifications?.map(cert => (
-                  <CertificationBadge 
-                    key={cert.id} 
-                    title={song.title} 
-                    certification={cert} 
-                    streams={song.streams}
-                    week={cert.dateAwarded}
-                  />
-                )) || []
-              )}
-            </div>
-          ) : (
-            <div className="bg-black/30 rounded-lg p-6 text-center">
-              <p className="text-gray-400">You don't have any certified songs yet. Keep promoting your music!</p>
-              <p className="text-gray-500 text-sm mt-2">Songs need 500,000 streams for Gold certification.</p>
-            </div>
-          )}
-          
-          <h2 className="text-xl font-bold mt-8 mb-4">Certified Albums</h2>
-          
-          {certifiedAlbums.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {certifiedAlbums.flatMap(album => 
-                album.certifications?.map(cert => (
-                  <CertificationBadge 
-                    key={cert.id} 
-                    title={album.title} 
-                    certification={cert} 
-                    streams={album.streams}
-                    week={cert.dateAwarded}
-                  />
-                )) || []
-              )}
-            </div>
-          ) : (
-            <div className="bg-black/30 rounded-lg p-6 text-center">
-              <p className="text-gray-400">You don't have any certified albums yet. Keep creating and promoting albums!</p>
-              <p className="text-gray-500 text-sm mt-2">Albums need 500,000 streams for Gold certification.</p>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Content based on active tab */}
+      <div className="tab-content">
+        {activeTab === 'awards' ? (
+          <AwardsSection awards={awards || []} awardsByTypeAndYear={awardsByTypeAndYear} />
+        ) : (
+          <CertificationsSection songs={songsWithCertifications} />
+        )}
+      </div>
     </div>
   );
 };
+
+// Component to display the awards section
+const AwardsSection: React.FC<{ awards: Award[], awardsByTypeAndYear: AwardsByType }> = ({ 
+  awards, 
+  awardsByTypeAndYear 
+}) => {
+  if (awards.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <div className="text-6xl mb-4">🏆</div>
+        <h3 className="text-xl font-medium text-gray-300 mb-2">No Awards Yet</h3>
+        <p className="text-gray-400 max-w-md mx-auto">
+          Keep releasing hit songs, attending industry events, and growing your reputation to be nominated for music awards.
+        </p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="awards-grid">
+      {Object.entries(awardsByTypeAndYear).map(([awardType, yearGroups]) => {
+        const awardsForType = Object.values(yearGroups).flat();
+        if (awardsForType.length === 0) return null;
+        
+        return (
+          <div key={awardType} className="award-type-section mb-8">
+            <div className="flex items-center mb-4">
+              <span className="text-2xl mr-2">{AWARD_TYPE_ICONS[awardType as AwardType]}</span>
+              <h2 className="text-xl font-bold text-gray-200">
+                {AWARD_TYPE_NAMES[awardType as AwardType]}
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(yearGroups).map(([year, awardsInYear]) => (
+                <div key={year} className="bg-gray-800/50 rounded-lg p-4 shadow">
+                  <h3 className="text-lg font-semibold text-gray-300 mb-3">
+                    {year} {AWARD_TYPE_NAMES[awardType as AwardType]}
+                  </h3>
+                  
+                  <ul className="space-y-2">
+                    {awardsInYear.map(award => (
+                      <li 
+                        key={award.id} 
+                        className={`p-2 rounded ${
+                          award.isWinner 
+                            ? 'bg-gradient-to-r from-yellow-900/30 to-yellow-700/30 border-l-4 border-yellow-500' 
+                            : 'bg-gray-700/30'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          {award.isWinner && (
+                            <span className="text-yellow-500 mr-2">🏆</span>
+                          )}
+                          <div>
+                            <p className="font-medium text-gray-200">
+                              {award.category.split('_').map(word => 
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                              ).join(' ')}
+                            </p>
+                            {award.songId && (
+                              <p className="text-sm text-gray-400">
+                                {getEntityName(award.songId, 'song')}
+                              </p>
+                            )}
+                            {award.albumId && (
+                              <p className="text-sm text-gray-400">
+                                {getEntityName(award.albumId, 'album')}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// Component to display the certifications section
+const CertificationsSection: React.FC<{ songs: Song[] }> = ({ songs }) => {
+  if (songs.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <div className="text-6xl mb-4">💿</div>
+        <h3 className="text-xl font-medium text-gray-300 mb-2">No Certified Songs Yet</h3>
+        <p className="text-gray-400 max-w-md mx-auto">
+          Songs need to reach specific streaming milestones to earn certifications. Keep promoting your music to achieve gold, platinum, and diamond status.
+        </p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {songs.map(song => (
+        <div key={song.id} className="bg-gray-800/50 rounded-lg overflow-hidden shadow">
+          <div className="p-4">
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="text-xl font-semibold text-white">{song.title}</h3>
+              <div className="text-sm text-gray-400">
+                {formatNumber(song.streams)} streams
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mt-3">
+              {song.certifications?.map(cert => (
+                <div 
+                  key={cert.id} 
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${CERTIFICATION_COLORS[cert.type]} text-black flex items-center`}
+                >
+                  {cert.type === 'diamond' ? '💎' : '🏅'} 
+                  {CERTIFICATION_NAMES[cert.type]}
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-3 pt-3 border-t border-gray-700">
+              <div className="text-sm text-gray-400">
+                <span className="font-medium">Latest certification:</span> {getLatestCertification(song)} 
+                ({song.certifications ? formatNumber(song.certifications[song.certifications.length - 1]?.streams || 0) : 0} streams)
+              </div>
+              
+              {/* Streams progress bar to next certification */}
+              <div className="mt-2">
+                <div className="relative">
+                  <div className="text-xs text-gray-400 flex justify-between mb-1">
+                    <span>Current: {getLatestCertification(song)}</span>
+                    <span>Next: {getNextCertification(song)}</span>
+                  </div>
+                  <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-yellow-500 to-yellow-300"
+                      style={{ width: `${getProgressToNextCertification(song)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Helper function to get entity name (song or album)
+function getEntityName(id: string, type: 'song' | 'album'): string {
+  const { songs, albums } = useRapperGame();
+  
+  if (type === 'song') {
+    const song = songs.find(s => s.id === id);
+    return song ? song.title : 'Unknown Song';
+  } else {
+    const album = albums?.find(a => a.id === id);
+    return album ? album.title : 'Unknown Album';
+  }
+}
+
+// Helper function to get the highest certification a song has
+function getLatestCertification(song: Song): string {
+  if (!song.certifications || song.certifications.length === 0) {
+    return 'None';
+  }
+  
+  // Sort by streams to get the highest certification
+  const highestCert = [...song.certifications].sort((a, b) => b.streams - a.streams)[0];
+  return CERTIFICATION_NAMES[highestCert.type];
+}
+
+// Helper function to get the next certification level
+function getNextCertification(song: Song): string {
+  if (!song.certifications || song.certifications.length === 0) {
+    return 'Gold';
+  }
+  
+  // Get the highest certification type
+  const highestCert = [...song.certifications].sort((a, b) => b.streams - a.streams)[0].type;
+  
+  // Determine the next certification level
+  const certLevels: CertificationType[] = [
+    'gold', 'platinum', '2xPlatinum', '3xPlatinum', '4xPlatinum', '5xPlatinum', 'diamond'
+  ];
+  
+  const currentIndex = certLevels.indexOf(highestCert);
+  if (currentIndex === certLevels.length - 1) {
+    return 'Max Achieved';
+  }
+  
+  return CERTIFICATION_NAMES[certLevels[currentIndex + 1]];
+}
+
+// Helper function to calculate progress percentage to next certification
+function getProgressToNextCertification(song: Song): number {
+  if (!song.certifications || song.certifications.length === 0) {
+    // Progress from 0 to gold
+    return Math.min(100, (song.streams / CERTIFICATION_THRESHOLDS.gold) * 100);
+  }
+  
+  // Get the highest certification type
+  const highestCert = [...song.certifications].sort((a, b) => b.streams - a.streams)[0].type;
+  
+  // Determine the next certification level
+  const certLevels: CertificationType[] = [
+    'gold', 'platinum', '2xPlatinum', '3xPlatinum', '4xPlatinum', '5xPlatinum', 'diamond'
+  ];
+  
+  const currentIndex = certLevels.indexOf(highestCert);
+  if (currentIndex === certLevels.length - 1) {
+    return 100; // Already at the highest level
+  }
+  
+  const nextCertType = certLevels[currentIndex + 1];
+  const currentThreshold = CERTIFICATION_THRESHOLDS[highestCert];
+  const nextThreshold = CERTIFICATION_THRESHOLDS[nextCertType];
+  
+  // Calculate progress percentage
+  const progressRange = nextThreshold - currentThreshold;
+  const currentProgress = song.streams - currentThreshold;
+  return Math.min(100, (currentProgress / progressRange) * 100);
+}
+
+// Helper function to get the highest certification across all songs
+function getHighestCertification(songs: Song[]): string {
+  if (songs.length === 0) {
+    return 'None';
+  }
+  
+  const certLevels: CertificationType[] = [
+    'gold', 'platinum', '2xPlatinum', '3xPlatinum', '4xPlatinum', '5xPlatinum', 'diamond'
+  ];
+  
+  let highestCertIndex = -1;
+  
+  songs.forEach(song => {
+    if (song.certifications && song.certifications.length > 0) {
+      song.certifications.forEach(cert => {
+        const certIndex = certLevels.indexOf(cert.type);
+        if (certIndex > highestCertIndex) {
+          highestCertIndex = certIndex;
+        }
+      });
+    }
+  });
+  
+  return highestCertIndex >= 0 ? CERTIFICATION_NAMES[certLevels[highestCertIndex]] : 'None';
+}
 
 export default AwardsAndCertifications;
