@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useRapperGame } from '../../lib/stores/useRapperGame';
-import { toast } from 'react-hot-toast';
+import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '../../lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 
 const CompanyManagement: React.FC = () => {
+  const { toast } = useToast();
   const {
     company,
     aiRappers,
