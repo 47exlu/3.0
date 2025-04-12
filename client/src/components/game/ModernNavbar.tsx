@@ -284,7 +284,7 @@ export function ModernNavbar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <div className="hidden md:flex flex-col bg-gray-900 text-white w-64 h-full overflow-auto border-r border-gray-700">
+      <div className="hidden md:flex flex-col bg-gray-900 text-white w-64 h-full overflow-auto border-r border-gray-700 relative z-40">
         {/* User profile */}
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
