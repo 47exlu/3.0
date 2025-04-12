@@ -1529,12 +1529,27 @@ export const useRapperGame = create<RapperGameStore>()(
         };
       });
       
-      // Calculate total streams across all platforms for career level
+      // Calculate total streams across all songs for accurate stream counting
+      const currentSongTotalStreams = (updatedState.songs || [])
+        .reduce((total, song) => total + (typeof song.streams === 'number' ? song.streams : 0), 0);
+      
+      // Calculate total streams across all songs from previous week  
+      const previousSongTotalStreams = (currentState.songs || [])
+        .reduce((total, song) => total + (typeof song.streams === 'number' ? song.streams : 0), 0);
+        
+      // Calculate total new streams from songs this week - this is more accurate than platform-based calculation
+      const newSongStreamsThisWeek = Math.max(0, currentSongTotalStreams - previousSongTotalStreams);
+      
+      console.log(`STREAMS CALCULATION: Previous total song streams: ${previousSongTotalStreams}`);
+      console.log(`STREAMS CALCULATION: Current total song streams: ${currentSongTotalStreams}`);
+      console.log(`STREAMS CALCULATION: Total new song streams: ${newSongStreamsThisWeek}`);
+      
+      // Calculate total streams across all platforms for career level as well (as fallback)
       const allStreams = (updatedState.streamingPlatforms || [])
         .reduce((total, platform) => total + platform.totalStreams, 0);
-        
-      // Calculate total new streams this week for weekly stats
-      let totalNewStreamsThisWeek = 0;
+      
+      // Calculate total new streams this week from platforms as fallback
+      let totalPlatformStreamsThisWeek = 0;
       
       // Calculate this week's revenue from all platforms
       const weeklyRevenue = (updatedState.streamingPlatforms || [])
@@ -1545,8 +1560,8 @@ export const useRapperGame = create<RapperGameStore>()(
           // Calculate new streams this week
           const newStreams = Math.max(0, platform.totalStreams - lastWeekPlatform.totalStreams);
           
-          // Add to total new streams
-          totalNewStreamsThisWeek += newStreams;
+          // Add to total new streams from platforms
+          totalPlatformStreamsThisWeek += newStreams;
           
           // Calculate revenue from new streams using platform-specific rates
           const platformRevenue = calculateStreamingRevenue(newStreams, platform.name);
@@ -1556,9 +1571,16 @@ export const useRapperGame = create<RapperGameStore>()(
           
           return total + platformRevenue;
         }, 0);
+      
+      // Use the song-based calculation as it's more accurate, but fall back to platform-based
+      // if song calculation is unexpectedly 0
+      const totalNewStreamsThisWeek = newSongStreamsThisWeek > 0 
+        ? newSongStreamsThisWeek 
+        : totalPlatformStreamsThisWeek;
         
       // Log total weekly performance
-      console.log(`Weekly Performance - TOTAL: New streams ${totalNewStreamsThisWeek}, Revenue $${weeklyRevenue.toFixed(2)}`);
+      console.log(`STREAMS SUMMARY - Total from songs: ${newSongStreamsThisWeek}, Total from platforms: ${totalPlatformStreamsThisWeek}`);
+      console.log(`Weekly Performance - FINAL TOTAL: New streams ${totalNewStreamsThisWeek}, Revenue $${weeklyRevenue.toFixed(2)}`);
         
       console.log(`Total weekly revenue: $${weeklyRevenue.toFixed(2)}`);
       
@@ -1652,11 +1674,31 @@ export const useRapperGame = create<RapperGameStore>()(
         song.releaseDate === currentState.currentWeek
       );
       
+      // Calculate total streams properly by summing all song streams
+      const songTotalStreams = updatedState.songs?.reduce((total, song) => 
+        total + (typeof song.streams === 'number' ? song.streams : 0), 0) || 0;
+      
+      // Calculate platform total streams (as a fallback/verification)
+      const platformTotalStreams = updatedState.streamingPlatforms?.reduce((total, platform) => 
+        total + (platform.totalStreams || 0), 0) || 0;
+      
+      // Use the higher value for total streams
+      const totalStreamsCount = Math.max(songTotalStreams, platformTotalStreams);
+      
+      // Make sure newStreamsThisWeek is never negative
+      const safeNewStreamsThisWeek = Math.max(0, totalNewStreamsThisWeek);
+      
+      // Log details for debugging
+      console.log(`WEEKLY STATS - Total streams from songs: ${songTotalStreams}`);
+      console.log(`WEEKLY STATS - Total streams from platforms: ${platformTotalStreams}`);
+      console.log(`WEEKLY STATS - Total new streams this week: ${safeNewStreamsThisWeek}`);
+      console.log(`WEEKLY STATS - Total revenue this week: ${weeklyRevenue}`);
+      
       const weeklyEntry: WeeklyStats = {
         week: newWeek,
-        totalStreams: allStreams,
+        totalStreams: totalStreamsCount,
         // Add total new streams this week to weekly stats
-        newStreamsThisWeek: totalNewStreamsThisWeek,
+        newStreamsThisWeek: safeNewStreamsThisWeek,
         totalFollowers,
         totalListeners,
         wealth: updatedState.stats?.wealth || currentState.stats.wealth,
