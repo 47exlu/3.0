@@ -3,7 +3,7 @@ import { useRapperGame } from '@/lib/stores/useRapperGame';
 import { Play, Heart, MoreHorizontal, Clock, Download, X } from 'lucide-react';
 
 // Helper to format large numbers with appropriate suffix (K, M, B)
-const formatNumberFn = (num: number): string => {
+const formatNumber = (num: number): string => {
   if (num >= 1000000000) {
     return (num / 1000000000).toFixed(1) + 'B';
   } else if (num >= 1000000) {
@@ -15,16 +15,13 @@ const formatNumberFn = (num: number): string => {
   }
 };
 
-// Export the function for component use
-export const formatNumber = formatNumberFn;
-
 interface AlbumDetailProps {
   albumId: string;
   onBack: () => void;
 }
 
 const AlbumDetail: React.FC<AlbumDetailProps> = ({ albumId, onBack }) => {
-  const { albums, songs } = useRapperGame();
+  const { albums = [], songs = [] } = useRapperGame();
   const [isPlaying, setIsPlaying] = useState(false);
   
   // Find the album and its songs
@@ -137,7 +134,7 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({ albumId, onBack }) => {
                       {/* Show song streams on mobile too */}
                       {song.streams > 0 && (
                         <div className="text-[10px] sm:text-xs text-gray-500">
-                          {formatNumberFn(song.streams)} plays
+                          {formatNumber(song.streams)} plays
                         </div>
                       )}
                     </div>

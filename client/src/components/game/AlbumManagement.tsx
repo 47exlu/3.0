@@ -496,33 +496,48 @@ export const AlbumManagement: React.FC = () => {
         </TabsList>
       </Tabs>
       
-      <ScrollArea className="h-[calc(100vh-200px)] pr-4">
-        <div className="space-y-4">
-          {filteredAlbums.length > 0 ? (
-            filteredAlbums.map(album => (
-              <AlbumItem 
-                key={album.id} 
-                album={album} 
-                songs={songs}
-                onReleaseAlbum={handleReleaseAlbum}
-              />
-            ))
-          ) : (
-            <div className="text-center py-16">
-              <Disc className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-              <h3 className="text-xl font-medium text-gray-600">No Albums Found</h3>
-              <p className="text-gray-500 mb-6">
-                {activeTab === 'all' 
-                  ? "You haven't created any albums yet." 
-                  : `You don't have any ${activeTab} albums.`}
-              </p>
-              <Button onClick={() => handleNewAlbumClick('standard')}>
-                <Plus className="mr-2 h-4 w-4" /> Create Your First Album
-              </Button>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
+      <div className="relative flex flex-col h-[calc(100vh-200px)]">
+        <ScrollArea className="flex-1 pr-4 overflow-y-auto">
+          <div className="space-y-4 pb-24"> {/* Add padding at the bottom for fixed create button */}
+            {filteredAlbums.length > 0 ? (
+              filteredAlbums.map(album => (
+                <AlbumItem 
+                  key={album.id} 
+                  album={album} 
+                  songs={songs}
+                  onReleaseAlbum={handleReleaseAlbum}
+                />
+              ))
+            ) : (
+              <div className="text-center py-16">
+                <Disc className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+                <h3 className="text-xl font-medium text-gray-600">No Albums Found</h3>
+                <p className="text-gray-500 mb-6">
+                  {activeTab === 'all' 
+                    ? "You haven't created any albums yet." 
+                    : `You don't have any ${activeTab} albums.`}
+                </p>
+                <Button onClick={() => handleNewAlbumClick('standard')}>
+                  <Plus className="mr-2 h-4 w-4" /> Create Your First Album
+                </Button>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+        
+        {/* Fixed create button that's always visible at the bottom */}
+        {filteredAlbums.length > 0 && (
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+            <Button 
+              size="lg" 
+              className="shadow-lg" 
+              onClick={() => handleNewAlbumClick('standard')}
+            >
+              <PlusCircle className="mr-2 h-5 w-5" /> Create New Album
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
