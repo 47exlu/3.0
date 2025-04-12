@@ -329,19 +329,26 @@ const JobsSystem: React.FC = () => {
           <div className="flex flex-wrap gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium mb-1">Category</label>
-              <select 
-                className="bg-gray-800 text-white rounded px-3 py-2 w-full"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value as JobCategory | 'all')}
-              >
-                <option value="all">All Categories</option>
-                <option value="studio">Studio</option>
-                <option value="performing">Performing</option>
-                <option value="teaching">Teaching</option>
-                <option value="media">Media</option>
-                <option value="industry">Industry</option>
-                <option value="freelance">Freelance</option>
-              </select>
+              <div className="relative">
+                <select 
+                  className="bg-gray-800 text-white rounded px-3 py-2 w-full appearance-none"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value as JobCategory | 'all')}
+                >
+                  <option value="all">All Categories</option>
+                  <option value="studio">Studio</option>
+                  <option value="performing">Performing</option>
+                  <option value="teaching">Teaching</option>
+                  <option value="media">Media</option>
+                  <option value="industry">Industry</option>
+                  <option value="freelance">Freelance</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
             </div>
             
             <div>

@@ -158,7 +158,7 @@ export function ModernNavbar() {
               <div className={`transition-transform ${isActive ? 'scale-110' : ''}`}>
                 {firstScreen.icon}
               </div>
-              <span className={`text-[10px] mt-1 font-medium transition-all ${isActive ? 'font-bold' : ''}`}>
+              <span className={`text-[10px] mt-1 font-medium transition-all truncate w-full ${isActive ? 'font-bold' : ''}`}>
                 {firstScreen.name}
               </span>
             </button>
@@ -185,7 +185,7 @@ export function ModernNavbar() {
           <div className={`transition-transform ${currentScreen === 'settings' ? 'scale-110' : ''}`}>
             <Settings className="w-5 h-5" />
           </div>
-          <span className={`text-[10px] mt-1 font-medium transition-all ${currentScreen === 'settings' ? 'font-bold' : ''}`}>
+          <span className={`text-[10px] mt-1 font-medium transition-all truncate w-full ${currentScreen === 'settings' ? 'font-bold' : ''}`}>
             Settings
           </span>
         </button>
