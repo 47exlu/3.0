@@ -112,8 +112,8 @@ export function MainMenu() {
         </div>
       </div>
       
-      {/* Version info */}
-      <div className="absolute bottom-4 right-4 text-xs text-gray-500">
+      {/* Version info - moved to fit exactly at the bottom with no extra space */}
+      <div className="absolute bottom-0 right-0 text-xs text-gray-500 p-1">
         v2.0
       </div>
       
