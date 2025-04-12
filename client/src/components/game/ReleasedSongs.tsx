@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { SongCertification, CertificationType, Song, AlbumType } from '@/lib/types';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -95,7 +96,7 @@ const ReleasedSongs: React.FC = () => {
   };
 
   // Function to render certifications as badges
-  const renderCertifications = (certifications: any[] | undefined) => {
+  const renderCertifications = (certifications: SongCertification[] | undefined) => {
     if (!certifications || certifications.length === 0) return 'None';
     
     return (
@@ -108,20 +109,28 @@ const ReleasedSongs: React.FC = () => {
   };
 
   // Function to get tier badge style
-  const getTierBadge = (tier: string) => {
-    switch(tier) {
+  const getTierBadge = (tier: number | string) => {
+    // If tier is a number (SongTier), convert to string
+    const tierStr = tier.toString();
+    
+    switch(tierStr) {
       case 'S':
+      case '5':
         return <Badge className="bg-purple-600">S Tier</Badge>;
       case 'A':
+      case '4':
         return <Badge className="bg-red-600">A Tier</Badge>;
       case 'B':
+      case '3':
         return <Badge className="bg-blue-600">B Tier</Badge>;
       case 'C':
+      case '2':
         return <Badge className="bg-green-600">C Tier</Badge>;
       case 'D':
+      case '1':
         return <Badge className="bg-gray-600">D Tier</Badge>;
       default:
-        return <Badge className="bg-gray-600">{tier}</Badge>;
+        return <Badge className="bg-gray-600">{tierStr}</Badge>;
     }
   };
 
@@ -255,14 +264,14 @@ const ReleasedSongs: React.FC = () => {
               </TableCell>
               <TableCell>
                 <Badge className={
-                  album.type === 'studio' ? 'bg-blue-600' :
-                  album.type === 'mixtape' ? 'bg-purple-600' :
-                  album.type === 'deluxe' ? 'bg-pink-600' :
-                  album.type === 'remix' ? 'bg-green-600' :
-                  album.type === 'collaborative' ? 'bg-orange-600' :
+                  String(album.type) === 'standard' ? 'bg-blue-600' :
+                  String(album.type) === 'deluxe' ? 'bg-pink-600' :
+                  String(album.type) === 'remix' ? 'bg-green-600' :
+                  String(album.type) === 'ep' ? 'bg-purple-600' :
+                  String(album.type) === 'compilation' ? 'bg-orange-600' :
                   'bg-gray-600'
                 }>
-                  {album.type.charAt(0).toUpperCase() + album.type.slice(1)}
+                  {String(album.type).charAt(0).toUpperCase() + String(album.type).slice(1)}
                 </Badge>
               </TableCell>
               <TableCell>{album.songIds?.length || 0}</TableCell>
