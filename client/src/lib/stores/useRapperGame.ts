@@ -1532,6 +1532,9 @@ export const useRapperGame = create<RapperGameStore>()(
       // Calculate total streams across all platforms for career level
       const allStreams = (updatedState.streamingPlatforms || [])
         .reduce((total, platform) => total + platform.totalStreams, 0);
+        
+      // Calculate total new streams this week for weekly stats
+      let totalNewStreamsThisWeek = 0;
       
       // Calculate this week's revenue from all platforms
       const weeklyRevenue = (updatedState.streamingPlatforms || [])
@@ -1542,11 +1545,20 @@ export const useRapperGame = create<RapperGameStore>()(
           // Calculate new streams this week
           const newStreams = Math.max(0, platform.totalStreams - lastWeekPlatform.totalStreams);
           
+          // Add to total new streams
+          totalNewStreamsThisWeek += newStreams;
+          
           // Calculate revenue from new streams using platform-specific rates
           const platformRevenue = calculateStreamingRevenue(newStreams, platform.name);
           
+          // Log weekly platform performance for debugging
+          console.log(`Weekly Performance - Platform ${platform.name}: Previous streams ${lastWeekPlatform.totalStreams}, Current streams ${platform.totalStreams}, New streams ${newStreams}, Revenue $${platformRevenue.toFixed(2)}`);
+          
           return total + platformRevenue;
         }, 0);
+        
+      // Log total weekly performance
+      console.log(`Weekly Performance - TOTAL: New streams ${totalNewStreamsThisWeek}, Revenue $${weeklyRevenue.toFixed(2)}`);
         
       console.log(`Total weekly revenue: $${weeklyRevenue.toFixed(2)}`);
       
@@ -1643,9 +1655,12 @@ export const useRapperGame = create<RapperGameStore>()(
       const weeklyEntry: WeeklyStats = {
         week: newWeek,
         totalStreams: allStreams,
+        // Add total new streams this week to weekly stats
+        newStreamsThisWeek: totalNewStreamsThisWeek,
         totalFollowers,
         totalListeners,
         wealth: updatedState.stats?.wealth || currentState.stats.wealth,
+        revenue: weeklyRevenue, // Add this week's revenue
         reputation: updatedState.stats?.reputation || currentState.stats.reputation,
         songsReleased: releasedSongs.length,
         songIds: releasedSongs.map(song => song.id)

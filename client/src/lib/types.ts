@@ -59,10 +59,15 @@ export interface PlayerStats {
 
 export interface WeeklyStats {
   week: number;
-  newFollowers: number;
-  newListeners: number;
-  revenue: number;
-  newSongs: number;
+  totalStreams: number;
+  newStreamsThisWeek: number; // New field to track streams gained this week
+  totalFollowers: number;
+  totalListeners: number;
+  wealth: number;
+  revenue: number; // Revenue gained this week
+  reputation: number;
+  songsReleased: number;
+  songIds: string[]; // IDs of songs released this week
 }
 
 export type SongTier = 1 | 2 | 3 | 4 | 5;
