@@ -36,6 +36,11 @@ const CompanyManagement: React.FC = () => {
     company ? 'overview' : 'create'
   );
   
+  // Make sure viewState updates when company changes
+  useEffect(() => {
+    setViewState(company ? 'overview' : 'create');
+  }, [company]);
+  
   // Calendar state
   const [date, setDate] = useState<Date>(new Date());
   const [events, setEvents] = useState<{date: Date, title: string, type: string}[]>([]);

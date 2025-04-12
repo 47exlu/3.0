@@ -823,13 +823,13 @@ export const useRapperGame = create<RapperGameStore>()(
       
       // Generate a news article about the company founding
       const newsId = uuidv4();
-      const newsArticle = {
+      const newsArticle: NewsArticle = {
         id: newsId,
         title: `${currentState.character?.artistName || 'Artist'} Launches New ${type} Company: ${name}`,
         content: `In an exciting development for the music industry, ${currentState.character?.artistName || 'Artist'} has officially launched ${name}, a new ${type} company. "${description || 'This is just the beginning of something special.'}" said the artist in their announcement. The company is expected to focus on ${companyType === 'record_label' ? 'signing and developing new artists' : companyType === 'production_company' ? 'creating high-quality music and video productions' : companyType === 'clothing_brand' ? 'developing unique merchandise and clothing lines' : companyType === 'media_company' ? 'content creation and media distribution' : 'various entertainment industry ventures'}.`,
         summary: `${currentState.character?.artistName || 'Artist'} launches new company: ${name}`,
-        category: "industry",
-        impact: "medium",
+        category: "industry" as NewsCategory,
+        impact: "medium" as "low" | "medium" | "high",
         publishedWeek: currentState.currentWeek,
         publishedYear: currentState.currentYear,
         sourceName: "Music Industry Today",
@@ -1031,13 +1031,13 @@ export const useRapperGame = create<RapperGameStore>()(
       
       // Generate a news article about signing the artist
       const newsId = uuidv4();
-      const newsArticle = {
+      const newsArticle: NewsArticle = {
         id: newsId,
         title: `${artist.name} Signs with ${currentState.company.name}`,
         content: `In a significant industry development, ${artist.name} has officially signed with ${currentState.company.name}, the ${currentState.company.type} founded by ${currentState.character?.artistName || 'Artist'}. The deal, reportedly worth around $${signingCost}, marks a new chapter for both parties. ${artist.name}, known for ${artist.style} style music, expressed excitement about the partnership: "I'm looking forward to this new journey. The vision at ${currentState.company.name} aligns perfectly with where I want to take my career."`,
         summary: `${artist.name} signs with ${currentState.company.name}`,
-        category: "industry",
-        impact: "medium",
+        category: "industry" as NewsCategory,
+        impact: "medium" as "low" | "medium" | "high",
         publishedWeek: currentState.currentWeek,
         publishedYear: currentState.currentYear,
         sourceName: "Music Industry Today",
@@ -1136,13 +1136,13 @@ export const useRapperGame = create<RapperGameStore>()(
       
       // Generate a news article about dropping the artist
       const newsId = uuidv4();
-      const newsArticle = {
+      const newsArticle: NewsArticle = {
         id: newsId,
         title: `${artist.name} Parts Ways with ${currentState.company.name}`,
         content: `${artist.name} and ${currentState.company.name} have officially ended their partnership, representatives confirmed today. The split, described as "${becomesRival ? 'not entirely amicable' : 'mutual and amicable'}", comes after a period of collaboration between the artist and the ${currentState.company.type} founded by ${currentState.character?.artistName || 'Artist'}. Industry insiders suggest the termination fee was around $${terminationFee}. ${becomesRival ? `Sources close to the artist hint at creative differences and disagreements over future direction.` : `Both parties expressed gratitude for the time working together and wished each other success in future endeavors.`}`,
         summary: `${artist.name} leaves ${currentState.company.name}`,
-        category: "industry",
-        impact: becomesRival ? "high" : "medium",
+        category: "industry" as NewsCategory,
+        impact: (becomesRival ? "high" : "medium") as "low" | "medium" | "high",
         publishedWeek: currentState.currentWeek,
         publishedYear: currentState.currentYear,
         sourceName: "Music Industry Today",
