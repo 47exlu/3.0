@@ -25,6 +25,7 @@ import MerchandiseSalesCharts from './components/game/MerchandiseSalesCharts';
 import FanbaseNameManager from './components/game/FanbaseNameManager';
 import MediaEventsManager from './components/game/MediaEventsManager';
 import BillboardCharts from './components/game/BillboardCharts';
+import { SettingsPage } from './components/game/SettingsPage';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
