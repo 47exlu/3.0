@@ -461,7 +461,7 @@ export function StreamingPlatforms() {
                                         <span>{character?.artistName?.[0] || "R"}</span>
                                       )}
                                       <div className="absolute top-0 right-0 bg-[#1DB954] text-white text-xs rounded-full px-2 py-1 font-bold">
-                                        #{gameState.streamingServices?.spotify?.ranking || "1"}
+                                        #{spotify?.ranking || "1"}
                                       </div>
                                     </div>
                                   </div>
@@ -520,7 +520,7 @@ export function StreamingPlatforms() {
                                               className="bg-[#1DB954] hover:bg-[#1ed760] text-black text-xs h-8"
                                               onClick={() => {
                                                 const updatedCharacter = { ...character, bio: bioText };
-                                                gameState.updateCharacter(updatedCharacter);
+                                                updateCharacter(updatedCharacter);
                                                 setIsEditingBio(false);
                                               }}
                                             >

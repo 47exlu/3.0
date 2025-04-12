@@ -64,6 +64,7 @@ export interface CharacterInfo {
   coverImage?: string;
   aboutBackgroundImage?: string;
   about?: string;
+  bio?: string; // Artist biography
   musicStyle?: string;
   hometown?: string;
   background?: string;
@@ -229,6 +230,7 @@ export interface StreamingPlatform {
   weeklyGrowth?: number; // Weekly growth in streams
   isUnlocked: boolean; // Whether the platform is available to the player
   logo?: string; // Platform logo image
+  ranking?: number; // Artist ranking on the platform
 }
 
 export interface VideosPlatform {
