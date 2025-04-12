@@ -2291,13 +2291,23 @@ export const useRapperGame = create<RapperGameStore>()(
                     if (songIndex !== -1) {
                       // Allocate streams based on song's relative quality
                       const qualityFactor = (song.quality || 50) / averageQuality;
+                      
                       // Each song gets a share of streams based on quality + random factor
-                      const songStreamGrowth = Math.floor(streamGrowth / songs.length * qualityFactor * (0.8 + Math.random() * 0.4));
+                      // Increase the base allocation - songs should get more streams individually
+                      const baseSongStreamGrowth = Math.floor(streamGrowth / songs.length * qualityFactor * (1.5 + Math.random() * 0.5));
+                      
+                      // Add bonus streams for each song independently to ensure higher track streams
+                      // This allows songs to grow independently while still being connected to album performance
+                      const currentSongStreams = updatedState.songs[songIndex].streams || 0;
+                      const bonusGrowth = Math.floor(currentSongStreams * 0.03 * qualityFactor * (0.8 + Math.random() * 0.4));
+                      
+                      // Combine base allocation with bonus growth for more realistic track streams
+                      const songStreamGrowth = baseSongStreamGrowth + bonusGrowth;
                       
                       // Update song streams
                       updatedState.songs[songIndex] = {
                         ...updatedState.songs[songIndex],
-                        streams: (updatedState.songs[songIndex].streams || 0) + songStreamGrowth
+                        streams: currentSongStreams + songStreamGrowth
                       };
                     }
                   });
