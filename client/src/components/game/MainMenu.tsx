@@ -45,7 +45,7 @@ export function MainMenu() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gradient-to-r from-gray-900 via-purple-950 to-gray-900 text-white p-6 relative overflow-hidden">
+    <div className="flex flex-col items-center justify-center h-full bg-gradient-to-r from-gray-900 via-purple-950 to-gray-900 text-white p-6 relative overflow-hidden pb-0">
       {/* Background animated elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/5 w-32 h-32 rounded-full bg-purple-500/10 blur-3xl"></div>
