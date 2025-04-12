@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
+import { format, addDays } from 'date-fns';
 import { 
   Home, 
   Music, 
@@ -171,7 +172,18 @@ const categories = [
 ];
 
 export function ModernNavbar() {
-  const { setScreen, screen: currentScreen, stats, character, currentWeek } = useRapperGame();
+  const { setScreen, screen: currentScreen, stats, character, currentWeek, currentYear } = useRapperGame();
+  
+  // Calculate the simulated date based on the current week and year
+  const calculateGameDate = () => {
+    // Start with January 1st of the game year
+    const startDate = new Date(currentYear || 1990, 0, 1);
+    // Add days based on current week (each week is 7 days)
+    const currentDate = addDays(startDate, ((currentWeek || 1) - 1) * 7);
+    return currentDate;
+  };
+  
+  const gameDate = calculateGameDate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   
@@ -313,9 +325,10 @@ export function ModernNavbar() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-xs text-gray-400"
+                className="text-xs text-gray-400 flex items-center gap-1"
               >
-                Week {currentScreen ? (currentScreen === 'character_creation' ? 0 : currentScreen === 'main_menu' ? 0 : currentWeek || 0) : 0}
+                <Calendar className="w-3 h-3 mr-1 text-blue-400" />
+                {format(gameDate, 'dd/MM/yyyy')} • Week {currentScreen ? (currentScreen === 'character_creation' ? 0 : currentScreen === 'main_menu' ? 0 : currentWeek || 0) : 0}
               </motion.div>
             </div>
           </div>
@@ -447,7 +460,10 @@ export function ModernNavbar() {
             )}
             <div>
               <div className="font-semibold text-sm">{character?.artistName || 'Artist'}</div>
-              <div className="text-xs text-gray-400">Week {currentScreen ? (currentScreen === 'character_creation' ? 0 : currentScreen === 'main_menu' ? 0 : currentWeek || 0) : 0}</div>
+              <div className="text-xs text-gray-400 flex items-center gap-1">
+                <Calendar className="w-3 h-3 mr-1 text-blue-400" />
+                {format(gameDate, 'dd/MM/yyyy')} • Week {currentScreen ? (currentScreen === 'character_creation' ? 0 : currentScreen === 'main_menu' ? 0 : currentWeek || 0) : 0}
+              </div>
             </div>
           </motion.div>
           

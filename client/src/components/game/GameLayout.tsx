@@ -140,7 +140,7 @@ export function GameLayout({ children }: GameLayoutProps) {
         {showNavbar && <ModernNavbar key="navbar" />}
       </AnimatePresence>
       
-      {/* Date Tracker Display */}
+      {/* Date Tracker Display - Added in top right corner */}
       {showNavbar && (
         <motion.div 
           className="fixed top-3 right-4 z-40 flex items-center bg-gray-800/80 backdrop-blur-sm py-1 px-3 rounded-full"
