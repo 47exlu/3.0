@@ -53,7 +53,12 @@ const ArtistProfile: React.FC = () => {
     
     // Find player's position
     const playerIndex = allArtists.findIndex(artist => artist.id === 'player');
-    return playerIndex + 1; // +1 because array index is 0-based but ranks start at 1
+    const calculatedRank = playerIndex + 1; // +1 because array index is 0-based but ranks start at 1
+    
+    console.log("Calculated artist rank:", calculatedRank);
+    console.log("Character ranking from state:", character?.ranking);
+    
+    return calculatedRank;
   };
   
   // Determine rank change based on streams trend
@@ -153,13 +158,19 @@ const ArtistProfile: React.FC = () => {
     }));
   };
   
+  // Calculate current rank with debug output
+  const artistRank = character?.ranking || calculateRank();
+  console.log("ARTIST PROFILE - Final artist rank:", artistRank, 
+    "character.ranking:", character?.ranking,
+    "calculated rank:", calculateRank());
+  
   // Real data from game state
   const artist = {
     name: character?.artistName || 'Your Artist',
     monthlyListeners: formatNumber(monthlyListeners),
     followers: formatNumber(Math.floor(monthlyListeners * 0.4)), // Estimate followers as 40% of monthly listeners
     verified: true,
-    artistRank: character?.ranking || calculateRank(),
+    artistRank: artistRank, // Use the pre-calculated rank for consistency
     rankChange: determineRankChange(),
     bio: character?.about || 'Rising artist making waves in the industry.',
     topTracks: getTopTracks(),
@@ -274,20 +285,39 @@ const ArtistProfile: React.FC = () => {
               
               <h1 className="text-7xl font-bold mb-6">{artist.name}</h1>
               
-              <div className="text-sm flex items-center">
-                <span className="mr-3">{artist.monthlyListeners} monthly listeners</span>
-                <div className="flex items-center bg-gray-800 rounded-full px-3 py-1">
-                  <span className="font-bold mr-1">#{artist.artistRank}</span>
-                  <span className="text-xs text-gray-400">in the world</span>
+              <div className="text-sm flex flex-wrap items-center gap-2">
+                <span className="mr-1">{artist.monthlyListeners} monthly listeners</span>
+                
+                {/* Enhanced artist rank display */}
+                <div className="flex items-center bg-gradient-to-r from-purple-600 to-blue-600 rounded-full px-3 py-1.5 shadow-md">
+                  <svg className="h-4 w-4 mr-1 text-yellow-300" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                  <span className="font-bold text-base mr-1 text-white">#{artist.artistRank}</span>
+                  <span className="text-xs text-white/80">in the world</span>
                   {artist.rankChange === 'up' && (
-                    <svg className="h-3 w-3 ml-1 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M7 14l5-5 5 5H7z"></path>
-                    </svg>
+                    <div className="flex items-center ml-1.5">
+                      <svg className="h-3 w-3 text-green-300" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 14l5-5 5 5H7z"></path>
+                      </svg>
+                      <span className="text-xs text-green-300 ml-0.5">RISING</span>
+                    </div>
                   )}
                   {artist.rankChange === 'down' && (
-                    <svg className="h-3 w-3 ml-1 text-red-500" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M7 10l5 5 5-5H7z"></path>
-                    </svg>
+                    <div className="flex items-center ml-1.5">
+                      <svg className="h-3 w-3 text-red-300" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5H7z"></path>
+                      </svg>
+                      <span className="text-xs text-red-300 ml-0.5">FALLING</span>
+                    </div>
+                  )}
+                  {artist.rankChange === 'same' && (
+                    <div className="flex items-center ml-1.5">
+                      <svg className="h-3 w-3 text-gray-300" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M5 12h14" strokeWidth="2" stroke="currentColor" />
+                      </svg>
+                      <span className="text-xs text-gray-300 ml-0.5">STEADY</span>
+                    </div>
                   )}
                 </div>
               </div>

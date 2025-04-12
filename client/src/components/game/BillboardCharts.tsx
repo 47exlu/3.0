@@ -308,17 +308,46 @@ const BillboardCharts: React.FC = () => {
       .sort((a, b) => b.score - a.score)
       .map((artist, index) => ({...artist, rank: index + 1})); // Assign rankings
 
+    // Find the player's ranking position and ensure it's a valid number
+    const playerArtist = allRankings.find(artist => artist.isPlayer);
+    const playerRankInChart = playerArtist?.rank || 25;
+    
+    // Debug log the ranking information
+    console.log("Billboard Chart Rankings:",
+      allRankings.map(a => ({
+        name: a.name,
+        score: a.score,
+        rank: a.rank,
+        isPlayer: a.isPlayer
+      }))
+    );
+    console.log("Player's Billboard rank:", playerRankInChart);
+    
+    // Update rankings state 
     setArtistRankings(allRankings);
     
-    // Find the player's ranking position and save it to the character
-    const playerRankInChart = allRankings.find(artist => artist.isPlayer)?.rank || 25;
+    // Get the updateCharacter function directly from the store
     const updateCharacter = useRapperGame.getState().updateCharacter;
     
     // Update the character with the Billboard ranking position
     if (updateCharacter && character) {
       const updatedCharacter = { ...character };
       updatedCharacter.ranking = playerRankInChart;
+      console.log("Updating character with ranking:", playerRankInChart);
       updateCharacter(updatedCharacter);
+      
+      // Also update game stats (using setters from the hook)
+      useRapperGame.setState(state => {
+        if (state.stats) {
+          return {
+            stats: {
+              ...state.stats,
+              chartPosition: playerRankInChart
+            }
+          };
+        }
+        return state;
+      });
     }
   };
 
