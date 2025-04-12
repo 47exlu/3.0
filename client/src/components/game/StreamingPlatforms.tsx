@@ -514,7 +514,7 @@ export function StreamingPlatforms() {
                                           </h3>
                                           {/* Rank indicator with orange gradient background */}
                                           <div className="ml-2 bg-gradient-to-r from-orange-500 to-orange-400 text-white text-sm font-bold px-2 py-1 rounded-lg flex items-center">
-                                            #{character?.ranking || "—"}
+                                            #{stats?.chartPosition || character?.ranking || "—"}
                                           </div>
                                         </div>
                                         {!isEditingBio && (
@@ -756,10 +756,7 @@ export function StreamingPlatforms() {
 
       {/* Album Detail Dialog */}
       <Dialog open={showAlbumDetail} onOpenChange={setShowAlbumDetail}>
-        <DialogContent className="sm:max-w-3xl bg-[#121212] text-white border-[#282828]">
-          <DialogHeader>
-            <DialogTitle className="text-white">Album Details</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-3xl bg-[#121212] text-white border-[#282828] p-0">
           {selectedAlbumId && (
             <AlbumDetail 
               albumId={selectedAlbumId} 
