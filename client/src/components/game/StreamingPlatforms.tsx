@@ -278,13 +278,19 @@ export function StreamingPlatforms() {
                                   <div key={song.id} className="flex items-center px-2 xs:px-3 sm:px-5 py-2 xs:py-3 hover:bg-[#282828] rounded-md group">
                                     <div className="w-4 xxs:w-5 xs:w-6 text-center text-[#b3b3b3] mr-2 xxs:mr-3 xs:mr-4 font-normal text-xs xxs:text-sm">{index + 1}</div>
                                     <div className="h-10 w-10 xxs:h-12 xxs:w-12 xs:h-14 xs:w-14 mr-2 xxs:mr-3 xs:mr-4 overflow-hidden flex-shrink-0">
-                                      {song.coverArt ? (
-                                        <img src={song.coverArt} alt={song.title} className="w-full h-full object-cover" />
-                                      ) : (
-                                        <div className="w-full h-full bg-[#333] flex items-center justify-center">
-                                          <MusicIcon size={12} className="text-[#b3b3b3]" />
-                                        </div>
-                                      )}
+                                      {(() => {
+                                        // Find album this song belongs to for the cover art
+                                        const albumWithSong = (albums || []).find(a => a.songIds && a.songIds.includes(song.id));
+                                        const coverArt = albumWithSong?.coverArt || song.coverArt || null;
+                                        
+                                        return coverArt ? (
+                                          <img src={coverArt} alt={song.title} className="w-full h-full object-cover" />
+                                        ) : (
+                                          <div className="w-full h-full bg-[#333] flex items-center justify-center">
+                                            <MusicIcon size={12} className="text-[#b3b3b3]" />
+                                          </div>
+                                        );
+                                      })()}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="font-medium text-xs xxs:text-sm xs:text-md truncate pr-1">{song.title}</div>
@@ -389,13 +395,19 @@ export function StreamingPlatforms() {
                               .map((song) => (
                                 <div key={song.id} className="bg-[#181818] rounded-lg p-2 xxs:p-3 sm:p-4 hover:bg-[#282828] transition-colors cursor-default">
                                   <div className="mb-2 xxs:mb-3 sm:mb-4 rounded overflow-hidden shadow-lg aspect-square">
-                                    {song.coverArt ? (
-                                      <img src={song.coverArt} alt={song.title} className="w-full h-full object-cover" />
-                                    ) : (
-                                      <div className="w-full h-full bg-[#333] flex items-center justify-center">
-                                        <MusicIcon size={20} className="text-[#b3b3b3]" />
-                                      </div>
-                                    )}
+                                    {(() => {
+                                      // Find album this song belongs to for the cover art
+                                      const albumWithSong = (albums || []).find(a => a.songIds && a.songIds.includes(song.id));
+                                      const coverArt = albumWithSong?.coverArt || song.coverArt || null;
+                                      
+                                      return coverArt ? (
+                                        <img src={coverArt} alt={song.title} className="w-full h-full object-cover" />
+                                      ) : (
+                                        <div className="w-full h-full bg-[#333] flex items-center justify-center">
+                                          <MusicIcon size={20} className="text-[#b3b3b3]" />
+                                        </div>
+                                      );
+                                    })()}
                                   </div>
                                   <div className="text-xs xxs:text-sm sm:text-md font-bold line-clamp-1">{song.title}</div>
                                   <div className="text-[10px] xxs:text-xs text-[#b3b3b3] mt-1 xxs:mt-2 line-clamp-2">
