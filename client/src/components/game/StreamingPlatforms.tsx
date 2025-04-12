@@ -229,7 +229,13 @@ export function StreamingPlatforms() {
                           <div className="pb-3 pt-2 px-3 flex flex-col gap-1 relative z-10">
                             {/* Artist Text Info - Compact and stable design */}
                             <div className="text-white w-full">
-                              <h1 className="text-4xl font-bold uppercase">{character?.artistName || "RAPPERNAME"}</h1>
+                              <div className="flex items-center gap-3">
+                                <h1 className="text-4xl font-bold uppercase">{character?.artistName || "RAPPERNAME"}</h1>
+                                {/* Rank indicator with orange highlight */}
+                                <div className="bg-gradient-to-r from-orange-500 to-orange-400 text-white text-sm font-bold px-2 py-1 rounded-lg flex items-center">
+                                  #{character?.ranking || stats?.chartPosition || "0"}
+                                </div>
+                              </div>
                               <div className="flex items-center text-[#b3b3b3] text-xs">
                                 <span>{formatNumber(spotify.listeners)} monthly listeners</span>
                                 <span className="mx-2">•</span>
