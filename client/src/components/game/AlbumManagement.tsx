@@ -1,364 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import {
+  Disc,
+  Plus,
+  Play,
+  Trash,
+  Download,
+  Share,
+  Calendar,
+  Music,
+  X,
+  Check,
+  Edit,
+  Filter,
+  ArrowUp,
+  ArrowDown
+} from 'lucide-react';
 import { useRapperGame } from '../../lib/stores/useRapperGame';
-import { Album, AlbumType, Song } from '../../lib/types';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Card } from '../ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { ScrollArea } from '../ui/scroll-area';
-import { Separator } from '../ui/separator';
-import { Badge } from '../ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { ArrowLeft, Plus, Music, Disc, Star, Calendar, BarChart3, PlusCircle, Edit, ImageIcon, ThumbsUp, Award } from 'lucide-react';
-
-type AlbumFormProps = {
-  type: 'standard' | 'deluxe' | 'remix';
-  parentAlbumId?: string;
-  onSuccess: () => void;
-  onCancel: () => void;
-};
-
-const AlbumForm: React.FC<AlbumFormProps> = ({ type, parentAlbumId, onSuccess, onCancel }) => {
-  const [title, setTitle] = useState('');
-  const [selectedSongs, setSelectedSongs] = useState<string[]>([]);
-  const [remixArtists, setRemixArtists] = useState<string[]>([]);
-  const [coverArt, setCoverArt] = useState('/assets/covers/default_album.jpg');
-  const [showCoverSelector, setShowCoverSelector] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  
-  const { 
-    songs, aiRappers, 
-    createAlbum, createDeluxeAlbum, createRemixAlbum, 
-    updateAlbumCover 
-  } = useRapperGame();
-
-  // Filter available songs for album creation
-  const availableSongs = songs.filter(song => {
-    // For standard albums, we want completed but unreleased songs
-    if (type === 'standard') {
-      return !song.released; // Just check if the song is not already released - removed "completed" condition
-    } else {
-      // For deluxe/remix, any song can be added as exclusive content
-      return true;
-    }
-  });
-  
-  // Cover art options - we'll show a gallery of predefined images
-  const coverArtOptions = [
-    '/assets/covers/album_cover_1.jpg',
-    '/assets/covers/album_cover_2.jpg',
-    '/assets/covers/album_cover_3.jpg',
-    '/assets/covers/album_cover_4.jpg',
-    '/assets/covers/album_cover_5.jpg',
-  ];
-  
-  // Handle image upload from gallery
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    
-    // Read the file as data URL
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const imageUrl = reader.result as string;
-      setUploadedImage(imageUrl);
-      setCoverArt(imageUrl);
-      setShowCoverSelector(false);
-    };
-    reader.readAsDataURL(file);
-  };
-  
-  const handleSubmit = () => {
-    if (!title || selectedSongs.length === 0) {
-      alert('Please provide a title and select at least one song for your album.');
-      return;
-    }
-    
-    let albumId = '';
-    
-    if (type === 'standard') {
-      albumId = createAlbum(title, 'standard', coverArt, selectedSongs);
-    } else if (type === 'deluxe' && parentAlbumId) {
-      albumId = createDeluxeAlbum(parentAlbumId, title, coverArt, selectedSongs);
-    } else if (type === 'remix' && parentAlbumId) {
-      albumId = createRemixAlbum(parentAlbumId, title, coverArt, remixArtists);
-    }
-    
-    if (albumId) {
-      alert(`Your ${type} album "${title}" has been created!`);
-      onSuccess();
-    }
-  };
-  
-  const handleSelectCoverArt = (artUrl: string) => {
-    setCoverArt(artUrl);
-    setShowCoverSelector(false);
-  };
-  
-  return (
-    <div className="p-4 space-y-4">
-      <h2 className="text-2xl font-bold">Create {type.charAt(0).toUpperCase() + type.slice(1)} Album</h2>
-      
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="album-title">Album Title</Label>
-          <Input 
-            id="album-title" 
-            value={title} 
-            onChange={(e) => setTitle(e.target.value)} 
-            placeholder="Enter album title" 
-          />
-        </div>
-        
-        {type === 'remix' ? (
-          <div>
-            <Label>Select Featured Remix Artists</Label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {aiRappers.map(rapper => (
-                <div 
-                  key={rapper.id}
-                  className={`p-2 border rounded cursor-pointer ${
-                    remixArtists.includes(rapper.id) ? 'bg-primary/20 border-primary' : ''
-                  }`}
-                  onClick={() => {
-                    if (remixArtists.includes(rapper.id)) {
-                      setRemixArtists(remixArtists.filter(id => id !== rapper.id));
-                    } else {
-                      setRemixArtists([...remixArtists, rapper.id]);
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
-                      {rapper.image && <img src={rapper.image} alt={rapper.name} className="w-full h-full object-cover" />}
-                    </div>
-                    <span>{rapper.name}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div>
-            <Label>Select Songs</Label>
-            <ScrollArea className="h-60 border rounded-md p-2 mt-2">
-              {availableSongs.length > 0 ? (
-                availableSongs.map(song => (
-                  <div 
-                    key={song.id}
-                    className={`p-2 mb-2 border rounded cursor-pointer ${
-                      selectedSongs.includes(song.id) ? 'bg-primary/20 border-primary' : ''
-                    }`}
-                    onClick={() => {
-                      if (selectedSongs.includes(song.id)) {
-                        setSelectedSongs(selectedSongs.filter(id => id !== song.id));
-                      } else {
-                        setSelectedSongs([...selectedSongs, song.id]);
-                      }
-                    }}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">{song.title}</div>
-                        <div className="text-sm text-gray-500">
-                          Tier {song.tier} • {song.featuring.length > 0 ? `feat. ${song.featuring.join(', ')}` : 'Solo'}
-                        </div>
-                      </div>
-                      {song.coverArt && (
-                        <div className="w-10 h-10 bg-gray-200 rounded overflow-hidden">
-                          <img src={song.coverArt} alt={song.title} className="w-full h-full object-cover" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No available songs. {type === 'standard' ? 'Complete some songs first.' : 'Create songs for your album.'}
-                </div>
-              )}
-            </ScrollArea>
-            <div className="mt-2 text-sm">
-              {selectedSongs.length} songs selected
-            </div>
-          </div>
-        )}
-        
-        <div>
-          <Label>Album Cover</Label>
-          <div className="mt-2 flex items-center gap-4">
-            <div className="w-24 h-24 bg-gray-200 rounded overflow-hidden">
-              {coverArt && (
-                <img src={coverArt} alt="Album cover" className="w-full h-full object-cover" />
-              )}
-            </div>
-            <Button variant="outline" onClick={() => setShowCoverSelector(true)}>
-              <ImageIcon className="mr-2 h-4 w-4" /> 
-              Choose Cover Art
-            </Button>
-          </div>
-          
-          {showCoverSelector && (
-            <div className="mt-4 p-4 border rounded-md">
-              <h3 className="font-medium mb-2">Select Cover Art</h3>
-              
-              {/* File upload option */}
-              <div className="mb-4">
-                <Label htmlFor="cover-upload" className="block mb-2">Upload from your phone gallery</Label>
-                <input 
-                  type="file" 
-                  id="cover-upload"
-                  ref={fileInputRef}
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-md file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-primary file:text-white
-                    hover:file:bg-primary/90"
-                />
-                {uploadedImage && (
-                  <div className="mt-2 p-2 border rounded">
-                    <div className="text-sm mb-1">Uploaded Image:</div>
-                    <div className="w-20 h-20 bg-gray-200 rounded overflow-hidden">
-                      <img src={uploadedImage} alt="Uploaded cover" className="w-full h-full object-cover" />
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <Separator className="my-4" />
-              
-              <div className="mb-2">
-                <Label className="block mb-2">Or choose from gallery</Label>
-                <ScrollArea className="h-40">
-                  <div className="grid grid-cols-3 gap-2">
-                    {coverArtOptions.map((art, index) => (
-                      <div 
-                        key={index}
-                        className="w-full aspect-square bg-gray-200 rounded overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary"
-                        onClick={() => handleSelectCoverArt(art)}
-                      >
-                        <img src={art} alt={`Cover option ${index + 1}`} className="w-full h-full object-cover" />
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
-              
-              <div className="mt-4 flex justify-end">
-                <Button variant="ghost" size="sm" onClick={() => setShowCoverSelector(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        <div className="flex justify-end gap-2 pt-4">
-          <Button variant="outline" onClick={onCancel}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={title === '' || (type !== 'remix' && selectedSongs.length === 0) || (type === 'remix' && remixArtists.length === 0)}>
-            Create Album
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const AlbumItem: React.FC<{ album: Album, songs: Song[], onReleaseAlbum: (albumId: string) => void }> = ({ album, songs, onReleaseAlbum }) => {
-  const albumSongs = songs.filter(song => album.songIds.includes(song.id));
-  
-  return (
-    <Card className="p-4 mb-4">
-      <div className="flex">
-        <div className="w-24 h-24 bg-gray-200 rounded overflow-hidden">
-          {album.coverArt && (
-            <img src={album.coverArt} alt={album.title} className="w-full h-full object-cover" />
-          )}
-        </div>
-        
-        <div className="ml-4 flex-1">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-xl font-bold">{album.title}</h3>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Badge variant={album.type === 'standard' ? 'default' : album.type === 'deluxe' ? 'secondary' : 'outline'}>
-                  {album.type.charAt(0).toUpperCase() + album.type.slice(1)}
-                </Badge>
-                <span>{albumSongs.length} tracks</span>
-                {album.released && (
-                  <>
-                    <span>•</span>
-                    <div className="flex items-center">
-                      <Calendar className="mr-1 h-3 w-3" />
-                      <span>Week {album.releaseDate}</span>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-            
-            {!album.released && (
-              <Button size="sm" onClick={() => onReleaseAlbum(album.id)}>
-                Release
-              </Button>
-            )}
-          </div>
-          
-          {album.released && (
-            <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
-              <div>
-                <div className="text-gray-500">Streams</div>
-                <div className="font-medium">
-                  {typeof album.streams === 'number' && !isNaN(album.streams)
-                    ? album.streams.toLocaleString()
-                    : '0'}
-                </div>
-              </div>
-              <div>
-                <div className="text-gray-500">Critical Rating</div>
-                <div className="font-medium flex items-center">
-                  <Star className="text-yellow-500 h-3 w-3 mr-1" />
-                  {typeof album.criticalRating === 'number' && !isNaN(album.criticalRating) 
-                    ? album.criticalRating.toFixed(1) + '/10'
-                    : 'N/A'}
-                </div>
-              </div>
-              <div>
-                <div className="text-gray-500">Fan Rating</div>
-                <div className="font-medium flex items-center">
-                  <ThumbsUp className="text-blue-500 h-3 w-3 mr-1" />
-                  {typeof album.fanRating === 'number' && !isNaN(album.fanRating) 
-                    ? album.fanRating.toFixed(1) + '/10'
-                    : 'N/A'}
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <div className="mt-2">
-            <ScrollArea className="h-20">
-              {albumSongs.map(song => (
-                <div key={song.id} className="flex items-center text-sm py-1">
-                  <Music className="h-3 w-3 mr-2" />
-                  <span>{song.title}</span>
-                  {song.featuring.length > 0 && (
-                    <span className="text-gray-500 ml-1">feat. {song.featuring.join(', ')}</span>
-                  )}
-                </div>
-              ))}
-            </ScrollArea>
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
-};
+import { Album, Song } from '../../lib/types';
+import { formatDate, formatNumber } from '../../lib/utils';
 
 export const AlbumManagement: React.FC = () => {
   const { 
@@ -369,6 +28,7 @@ export const AlbumManagement: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState<boolean>(false);
   const [formType, setFormType] = useState<'standard' | 'deluxe' | 'remix'>('standard');
   const [selectedParentAlbumId, setSelectedParentAlbumId] = useState<string | undefined>(undefined);
+  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
   
   // Filter albums based on active tab
   const filteredAlbums = albums?.filter(album => {
@@ -386,172 +46,370 @@ export const AlbumManagement: React.FC = () => {
     album.type === 'standard' && album.released
   ) || [];
   
-  const handleNewAlbumClick = (type: 'standard' | 'deluxe' | 'remix') => {
-    setFormType(type);
-    
-    if (type === 'standard') {
-      setSelectedParentAlbumId(undefined);
-      setShowCreateForm(true);
-      return;
-    }
-    
-    // For deluxe or remix, we need to select a parent album first if there are any
-    if (standardAlbums.length === 0) {
-      alert('You need to create and release a standard album first before creating a deluxe or remix version.');
-      return;
-    }
-    
-    // If there's only one standard album, use it automatically
-    if (standardAlbums.length === 1) {
-      setSelectedParentAlbumId(standardAlbums[0].id);
-      setShowCreateForm(true);
-      return;
-    }
-    
-    // Otherwise show album selection dialog (this would be implemented in the UI)
-    // For simplicity, we'll just use the first album for now
-    setSelectedParentAlbumId(standardAlbums[0].id);
-    setShowCreateForm(true);
+  // Get songs for specific album
+  const getAlbumSongs = (albumId: string): Song[] => {
+    return songs?.filter(song => song.albumId === albumId) || [];
   };
   
-  const handleReleaseAlbum = (albumId: string) => {
-    // Confirm release
-    if (window.confirm('Are you sure you want to release this album? Once released, it cannot be modified.')) {
-      releaseAlbum(albumId);
-    }
+  // Calculate album stats
+  const calculateAlbumStats = (album: Album) => {
+    const albumSongs = getAlbumSongs(album.id);
+    const totalStreams = albumSongs.reduce((total, song) => total + (song.streams || 0), 0);
+    const totalDuration = albumSongs.reduce((total, song) => total + (song.duration || 0), 0);
+    const minutes = Math.floor(totalDuration / 60);
+    const seconds = totalDuration % 60;
+    
+    return {
+      totalStreams,
+      songCount: albumSongs.length,
+      duration: `${minutes}:${seconds.toString().padStart(2, '0')}`
+    };
   };
   
-  if (showCreateForm) {
+  const handleCreateAlbum = (event: React.FormEvent) => {
+    event.preventDefault();
+    // In a real implementation, this would create a new album
+    setShowCreateForm(false);
+  };
+  
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+  
+  // Render album details when an album is selected
+  const renderAlbumDetails = () => {
+    if (!selectedAlbum) return null;
+    
+    const albumSongs = getAlbumSongs(selectedAlbum.id);
+    const stats = calculateAlbumStats(selectedAlbum);
+    
     return (
-      <div className="p-4">
-        <Button variant="ghost" size="sm" className="mb-4" onClick={() => setShowCreateForm(false)}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Albums
-        </Button>
-        
-        <ScrollArea className="h-[calc(100vh-180px)] pr-4 overflow-y-auto">
-          <div className="pb-20"> {/* Add extra padding for fixed back button */}
-            <AlbumForm 
-              type={formType}
-              parentAlbumId={selectedParentAlbumId}
-              onSuccess={() => setShowCreateForm(false)}
-              onCancel={() => setShowCreateForm(false)}
-            />
+      <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex flex-col overflow-y-auto">
+        <div className="bg-gradient-to-b from-gray-900 to-black p-4 sm:p-6 max-w-4xl mx-auto w-full h-full overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <button 
+              onClick={() => setSelectedAlbum(null)}
+              className="text-gray-400 hover:text-white"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            
+            <div className="flex space-x-2">
+              <button className="p-2 rounded-full bg-gray-800 hover:bg-gray-700">
+                <Share className="h-5 w-5" />
+              </button>
+              <button className="p-2 rounded-full bg-gray-800 hover:bg-gray-700">
+                <Edit className="h-5 w-5" />
+              </button>
+            </div>
           </div>
-        </ScrollArea>
-        
-        {/* Fixed back button for easier navigation */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-          <Button 
-            variant="outline"
-            size="lg" 
-            className="shadow-lg" 
-            onClick={() => setShowCreateForm(false)}
-          >
-            <ArrowLeft className="mr-2 h-5 w-5" /> Back to Albums
-          </Button>
+          
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
+            <div className="w-48 h-48 sm:w-56 sm:h-56 flex-shrink-0">
+              <img 
+                src={selectedAlbum.coverArt || '/images/default-album.jpg'} 
+                alt={selectedAlbum.title} 
+                className="w-full h-full object-cover rounded-lg shadow-lg"
+              />
+            </div>
+            
+            <div className="flex-1">
+              <div className="uppercase text-xs font-bold text-gray-400 mb-1">{selectedAlbum.type} ALBUM</div>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-2">{selectedAlbum.title}</h1>
+              
+              <div className="text-sm text-gray-400 mb-4">
+                <span className="text-white font-medium">{character?.artistName}</span> • {selectedAlbum.releaseDate ? formatDate(selectedAlbum.releaseDate) : 'Unreleased'} • {stats.songCount} songs, {stats.duration}
+              </div>
+              
+              <div className="flex items-center space-x-4 mb-6">
+                <button className="bg-gradient-to-r from-purple-600 to-blue-500 rounded-full p-3">
+                  <Play className="h-6 w-6 text-white" />
+                </button>
+                
+                {!selectedAlbum.released && (
+                  <button 
+                    className="bg-gradient-to-r from-green-600 to-emerald-500 text-white py-2 px-4 rounded-full text-sm font-medium flex items-center"
+                    onClick={() => {
+                      releaseAlbum?.(selectedAlbum.id);
+                      setSelectedAlbum({...selectedAlbum, released: true});
+                    }}
+                  >
+                    <Check className="h-4 w-4 mr-1" />
+                    Release Album
+                  </button>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
+                <div className="bg-gray-800 bg-opacity-50 rounded-lg p-3">
+                  <div className="text-gray-400 text-xs mb-1">Total Streams</div>
+                  <div className="text-xl font-bold">{formatNumber(stats.totalStreams)}</div>
+                </div>
+                
+                <div className="bg-gray-800 bg-opacity-50 rounded-lg p-3">
+                  <div className="text-gray-400 text-xs mb-1">Songs</div>
+                  <div className="text-xl font-bold">{stats.songCount}</div>
+                </div>
+                
+                <div className="bg-gray-800 bg-opacity-50 rounded-lg p-3">
+                  <div className="text-gray-400 text-xs mb-1">Duration</div>
+                  <div className="text-xl font-bold">{stats.duration}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-3">Tracks</h2>
+            <div className="bg-gray-900 bg-opacity-50 rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="border-b border-gray-800">
+                  <tr>
+                    <th className="text-left py-2 px-4 text-gray-400 font-medium text-sm">#</th>
+                    <th className="text-left py-2 px-4 text-gray-400 font-medium text-sm">Title</th>
+                    <th className="text-right py-2 px-4 text-gray-400 font-medium text-sm">Streams</th>
+                    <th className="text-right py-2 px-4 text-gray-400 font-medium text-sm">Duration</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {albumSongs.map((song, index) => {
+                    const minutes = Math.floor((song.duration || 0) / 60);
+                    const seconds = (song.duration || 0) % 60;
+                    const duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    return (
+                      <tr key={song.id} className="border-b border-gray-800 hover:bg-gray-800">
+                        <td className="py-3 px-4 text-gray-300">{index + 1}</td>
+                        <td className="py-3 px-4">
+                          <div className="font-medium">{song.title}</div>
+                          {song.featuring && (
+                            <div className="text-sm text-gray-400">feat. {song.featuring}</div>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-right text-gray-300">{formatNumber(song.streams || 0)}</td>
+                        <td className="py-3 px-4 text-right text-gray-300">{duration}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     );
-  }
+  };
   
-  return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <Button variant="ghost" size="sm" onClick={() => setScreen('career_dashboard')}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Career
-        </Button>
-        <h1 className="text-3xl font-bold">Album Management</h1>
-        
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> New Album
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Create New Album</AlertDialogTitle>
-              <AlertDialogDescription>
-                What type of album would you like to create?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="grid grid-cols-3 gap-4 my-4">
-              <Card className="p-4 cursor-pointer hover:bg-primary/5" onClick={() => handleNewAlbumClick('standard')}>
-                <Disc className="h-8 w-8 mb-2 text-primary" />
-                <h3 className="font-bold">Standard Album</h3>
-                <p className="text-sm text-gray-500">A collection of your songs</p>
-              </Card>
-              <Card className="p-4 cursor-pointer hover:bg-secondary/5" onClick={() => handleNewAlbumClick('deluxe')}>
-                <Award className="h-8 w-8 mb-2 text-secondary" />
-                <h3 className="font-bold">Deluxe Edition</h3>
-                <p className="text-sm text-gray-500">Add bonus tracks to an existing album</p>
-              </Card>
-              <Card className="p-4 cursor-pointer hover:bg-gray-100" onClick={() => handleNewAlbumClick('remix')}>
-                <PlusCircle className="h-8 w-8 mb-2 text-gray-700" />
-                <h3 className="font-bold">Remix Album</h3>
-                <p className="text-sm text-gray-500">Collaborate with others to remix your album</p>
-              </Card>
+  // Create album form
+  const renderCreateForm = () => {
+    if (!showCreateForm) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4">
+        <div className="bg-gray-900 rounded-lg max-w-md w-full p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Create New Album</h2>
+            <button 
+              onClick={() => setShowCreateForm(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          
+          <form onSubmit={handleCreateAlbum}>
+            <div className="mb-4">
+              <label className="block text-gray-400 text-sm font-medium mb-2">Album Title</label>
+              <input 
+                type="text" 
+                className="w-full bg-gray-800 border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter album title"
+              />
             </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-      
-      <Tabs defaultValue="all" className="mb-6" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-6">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="unreleased">Unreleased</TabsTrigger>
-          <TabsTrigger value="released">Released</TabsTrigger>
-          <TabsTrigger value="standard">Standard</TabsTrigger>
-          <TabsTrigger value="deluxe">Deluxe</TabsTrigger>
-          <TabsTrigger value="remix">Remix</TabsTrigger>
-        </TabsList>
-      </Tabs>
-      
-      <div className="relative flex flex-col h-[calc(100vh-200px)]">
-        <ScrollArea className="flex-1 pr-4 overflow-y-auto">
-          <div className="space-y-4 pb-24"> {/* Add padding at the bottom for fixed create button */}
-            {filteredAlbums.length > 0 ? (
-              filteredAlbums.map(album => (
-                <AlbumItem 
-                  key={album.id} 
-                  album={album} 
-                  songs={songs}
-                  onReleaseAlbum={handleReleaseAlbum}
-                />
-              ))
-            ) : (
-              <div className="text-center py-16">
-                <Disc className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                <h3 className="text-xl font-medium text-gray-600">No Albums Found</h3>
-                <p className="text-gray-500 mb-6">
-                  {activeTab === 'all' 
-                    ? "You haven't created any albums yet." 
-                    : `You don't have any ${activeTab} albums.`}
-                </p>
-                <Button onClick={() => handleNewAlbumClick('standard')}>
-                  <Plus className="mr-2 h-4 w-4" /> Create Your First Album
-                </Button>
+            
+            <div className="mb-4">
+              <label className="block text-gray-400 text-sm font-medium mb-2">Album Type</label>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  className={`py-2 px-3 rounded-md text-center text-sm ${formType === 'standard' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'}`}
+                  onClick={() => setFormType('standard')}
+                >
+                  Standard
+                </button>
+                <button
+                  type="button"
+                  className={`py-2 px-3 rounded-md text-center text-sm ${formType === 'deluxe' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'}`}
+                  onClick={() => setFormType('deluxe')}
+                >
+                  Deluxe
+                </button>
+                <button
+                  type="button"
+                  className={`py-2 px-3 rounded-md text-center text-sm ${formType === 'remix' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'}`}
+                  onClick={() => setFormType('remix')}
+                >
+                  Remix
+                </button>
+              </div>
+            </div>
+            
+            {(formType === 'deluxe' || formType === 'remix') && standardAlbums.length > 0 && (
+              <div className="mb-4">
+                <label className="block text-gray-400 text-sm font-medium mb-2">Parent Album</label>
+                <select 
+                  className="w-full bg-gray-800 border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={selectedParentAlbumId}
+                  onChange={(e) => setSelectedParentAlbumId(e.target.value)}
+                >
+                  <option value="">Select parent album</option>
+                  {standardAlbums.map(album => (
+                    <option key={album.id} value={album.id}>{album.title}</option>
+                  ))}
+                </select>
               </div>
             )}
-          </div>
-        </ScrollArea>
-        
-        {/* Fixed create button that's always visible at the bottom */}
-        {filteredAlbums.length > 0 && (
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-            <Button 
-              size="lg" 
-              className="shadow-lg" 
-              onClick={() => handleNewAlbumClick('standard')}
-            >
-              <PlusCircle className="mr-2 h-5 w-5" /> Create New Album
-            </Button>
-          </div>
-        )}
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowCreateForm(false)}
+                className="px-4 py-2 text-gray-300 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-md"
+              >
+                Create Album
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
+    );
+  };
+  
+  // Main component render
+  return (
+    <div className="albums-container p-4 text-white overflow-y-auto h-full">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Albums</h1>
+        <button
+          onClick={() => {
+            setFormType('standard');
+            setShowCreateForm(true);
+          }}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full text-sm flex items-center"
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          New Album
+        </button>
+      </div>
+      
+      <div className="flex space-x-2 overflow-x-auto mb-6 pb-2">
+        <button
+          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${activeTab === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-800/50 text-gray-400'}`}
+          onClick={() => handleTabChange('all')}
+        >
+          All Albums
+        </button>
+        <button
+          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${activeTab === 'unreleased' ? 'bg-gray-800 text-white' : 'bg-gray-800/50 text-gray-400'}`}
+          onClick={() => handleTabChange('unreleased')}
+        >
+          Unreleased
+        </button>
+        <button
+          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${activeTab === 'released' ? 'bg-gray-800 text-white' : 'bg-gray-800/50 text-gray-400'}`}
+          onClick={() => handleTabChange('released')}
+        >
+          Released
+        </button>
+        <button
+          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${activeTab === 'standard' ? 'bg-gray-800 text-white' : 'bg-gray-800/50 text-gray-400'}`}
+          onClick={() => handleTabChange('standard')}
+        >
+          Standard
+        </button>
+        <button
+          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${activeTab === 'deluxe' ? 'bg-gray-800 text-white' : 'bg-gray-800/50 text-gray-400'}`}
+          onClick={() => handleTabChange('deluxe')}
+        >
+          Deluxe
+        </button>
+        <button
+          className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap ${activeTab === 'remix' ? 'bg-gray-800 text-white' : 'bg-gray-800/50 text-gray-400'}`}
+          onClick={() => handleTabChange('remix')}
+        >
+          Remix
+        </button>
+      </div>
+      
+      {filteredAlbums.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Disc className="w-16 h-16 text-gray-600 mb-4" />
+          <h2 className="text-xl font-bold mb-2">No Albums Found</h2>
+          <p className="text-gray-400 max-w-md mb-6">
+            {activeTab === 'all' 
+              ? "You haven't created any albums yet. Create your first album to start building your discography."
+              : `No ${activeTab} albums found. Try a different filter or create a new album.`}
+          </p>
+          <button
+            onClick={() => {
+              setFormType('standard');
+              setShowCreateForm(true);
+            }}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full text-sm flex items-center"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create New Album
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredAlbums.map(album => {
+            const stats = calculateAlbumStats(album);
+            
+            return (
+              <div 
+                key={album.id}
+                className="bg-gray-900 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedAlbum(album)}
+              >
+                <div className="aspect-square relative overflow-hidden">
+                  <img 
+                    src={album.coverArt || '/images/default-album.jpg'} 
+                    alt={album.title}
+                    className="w-full h-full object-cover transition-transform hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+                    <div>
+                      <div className="uppercase text-xs font-bold text-gray-400 mb-1">{album.type}</div>
+                      <h3 className="text-lg font-bold line-clamp-2">{album.title}</h3>
+                    </div>
+                  </div>
+                  {!album.released && (
+                    <div className="absolute top-2 right-2 bg-yellow-600 text-xs px-2 py-1 rounded-full font-medium">
+                      Unreleased
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 pt-2">
+                  <div className="flex justify-between text-sm text-gray-400">
+                    <span>{stats.songCount} songs</span>
+                    <span>{formatNumber(stats.totalStreams)} streams</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      
+      {selectedAlbum && renderAlbumDetails()}
+      {renderCreateForm()}
     </div>
   );
 };

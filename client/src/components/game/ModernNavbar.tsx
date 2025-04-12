@@ -72,8 +72,7 @@ export function ModernNavbar() {
     { id: 'main', name: 'Main' },
     { id: 'music', name: 'Music' },
     { id: 'marketing', name: 'Marketing' },
-    { id: 'business', name: 'Business' },
-    { id: 'system', name: 'System' }
+    { id: 'business', name: 'Business' }
   ];
 
   // All available screens with their icons and categories
@@ -110,11 +109,10 @@ export function ModernNavbar() {
     { id: 'charts', name: 'Charts', category: 'business', icon: <BarChart className="w-5 h-5" /> },
     { id: 'investments', name: 'Invest', category: 'business', icon: <TrendingUp className="w-5 h-5" /> },
     
-    // System category
-    { id: 'system', name: 'System', category: 'system', icon: <Settings className="w-5 h-5" /> },
-    { id: 'settings', name: 'Settings', category: 'system', icon: <Settings className="w-5 h-5" /> },
-    { id: 'help', name: 'Help', category: 'system', icon: <HelpCircle className="w-5 h-5" /> },
-    { id: 'debug', name: 'Debug', category: 'system', icon: <Activity className="w-5 h-5" /> }
+    // Settings - not in a category, managed separately
+    { id: 'settings', name: 'Settings', category: 'settings', icon: <Settings className="w-5 h-5" /> },
+    { id: 'help', name: 'Help', category: 'settings', icon: <HelpCircle className="w-5 h-5" /> },
+    { id: 'debug', name: 'Debug', category: 'settings', icon: <Activity className="w-5 h-5" /> }
   ];
   
   // Skip rendering navbar on main menu
@@ -132,7 +130,7 @@ export function ModernNavbar() {
           boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)'
         }}
       >
-        {['main', 'music', 'marketing', 'business', 'system'].map((categoryId, idx) => {
+        {['main', 'music', 'marketing', 'business'].map((categoryId, idx) => {
           // Get first item from each category for quick access
           const firstScreen = screens.find(s => s.category === categoryId);
           if (!firstScreen) return null;

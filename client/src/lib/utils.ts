@@ -25,6 +25,30 @@ export function formatMoney(num: number | undefined | null): string {
 }
 
 /**
+ * Format a number as currency (alias for formatMoney)
+ */
+export function formatCurrency(num: number | undefined | null): string {
+  return formatMoney(num);
+}
+
+/**
+ * Format a date number or string into a human-readable date
+ */
+export function formatDate(date: number | string | undefined): string {
+  if (!date) return 'Unknown date';
+  
+  const dateObj = typeof date === 'number' 
+    ? new Date(date) 
+    : new Date(date);
+    
+  return dateObj.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
+/**
  * Get an item from localStorage with type safety
  */
 export function getLocalStorage<T>(key: string, defaultValue: T): T {
