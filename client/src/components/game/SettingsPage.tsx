@@ -15,12 +15,17 @@ export function SettingsPage() {
   const { loadingAnimationsEnabled, toggleLoadingAnimations, highQualityGraphics, toggleHighQualityGraphics } = useSettings();
   const { setScreen } = useRapperGame();
   
-  // Handle sound toggle
+  // Handle sound toggle using the settings store (which will then sync with audio store)
+  const { soundEnabled, toggleSound } = useSettings();
+  
   const handleSoundToggle = () => {
-    toggleMute();
-    if (!isMuted) { // Will be muted after toggle, so play sound before
+    // Play success sound before potentially muting
+    if (!isMuted && soundEnabled) {
       playSuccess();
     }
+    
+    // Use the settings store to toggle sound (which syncs with audio store)
+    toggleSound();
   };
   
   // Handle back button
@@ -97,7 +102,7 @@ export function SettingsPage() {
                 </div>
                 <Switch 
                   id="sound-toggle" 
-                  checked={!isMuted}
+                  checked={soundEnabled}
                   onCheckedChange={handleSoundToggle}
                   className="data-[state=checked]:bg-gradient-to-r from-purple-600 to-pink-600"
                 />
@@ -230,7 +235,19 @@ export function SettingsPage() {
                 <Button 
                   variant="outline" 
                   className="w-full bg-gray-800/40 border-gray-700 hover:bg-gray-700/60 text-gray-200"
-                  onClick={() => window.confirm('Are you sure you want to reset your settings to default?')}
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to reset your settings to default?')) {
+                      // Reset all settings to default
+                      if (!loadingAnimationsEnabled) toggleLoadingAnimations();
+                      if (!highQualityGraphics) toggleHighQualityGraphics();
+                      if (!soundEnabled) toggleSound();
+                      
+                      // Play success sound after reset if sound is enabled
+                      setTimeout(() => {
+                        if (soundEnabled) playSuccess();
+                      }, 300);
+                    }
+                  }}
                 >
                   Reset Settings
                 </Button>
