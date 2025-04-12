@@ -33,6 +33,8 @@ export const AlbumManagement: React.FC = () => {
   const [albumTitle, setAlbumTitle] = useState<string>('');
   const [selectedSongIds, setSelectedSongIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [albumCoverArt, setAlbumCoverArt] = useState<string>('');
+  const [showCoverGallery, setShowCoverGallery] = useState<boolean>(false);
   
   // Filter albums based on active tab
   const filteredAlbums = albums?.filter(album => {
@@ -125,6 +127,35 @@ export const AlbumManagement: React.FC = () => {
     });
   };
 
+  // Handle file upload for album cover
+  const handleCoverArtUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    
+    if (file) {
+      // Create a URL for the selected image file
+      const imageUrl = URL.createObjectURL(file);
+      setAlbumCoverArt(imageUrl);
+    }
+  };
+  
+  // Open device image gallery
+  const openImageGallery = () => {
+    // Create a file input and programmatically click it
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = (event) => {
+      // Type casting to fix the TypeScript error
+      if (event && event.target) {
+        const inputEvent = {
+          target: event.target
+        } as React.ChangeEvent<HTMLInputElement>;
+        handleCoverArtUpload(inputEvent);
+      }
+    };
+    fileInput.click();
+  };
+  
   const handleCreateAlbum = (event: React.FormEvent) => {
     event.preventDefault();
     
@@ -139,12 +170,12 @@ export const AlbumManagement: React.FC = () => {
       return;
     }
     
-    // Generate a default album cover (in a real app, this would be customizable)
-    const defaultCoverArt = "/images/default-album.jpg";
+    // Use the selected cover art or default if none was selected
+    const coverArt = albumCoverArt || "/images/default-album.jpg";
     
     // Create the album using the store function
     try {
-      const albumId = createAlbum(albumTitle, formType, defaultCoverArt, selectedSongIds);
+      const albumId = createAlbum(albumTitle, formType, coverArt, selectedSongIds);
       
       if (albumId) {
         // Reset form state
@@ -152,6 +183,7 @@ export const AlbumManagement: React.FC = () => {
         setSelectedSongIds([]);
         setShowCreateForm(false);
         setSearchQuery('');
+        setAlbumCoverArt('');
         
         // Show confirmation message
         alert(`Album "${albumTitle}" created successfully!`);
@@ -319,6 +351,30 @@ export const AlbumManagement: React.FC = () => {
                 className="w-full bg-gray-800 border border-gray-700 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter album title"
               />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-gray-400 text-sm font-medium mb-2">Album Cover</label>
+              <div className="flex items-center space-x-4">
+                <div className="w-24 h-24 bg-gray-800 border border-gray-700 rounded-md overflow-hidden flex items-center justify-center">
+                  {albumCoverArt ? (
+                    <img src={albumCoverArt} alt="Album Cover" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-gray-500 text-center text-xs p-2">
+                      <Image className="h-8 w-8 mx-auto mb-1" />
+                      <span>No cover selected</span>
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={openImageGallery}
+                  className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-md px-4 py-2 text-sm text-white"
+                >
+                  Select from Gallery
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Select an image from your device</p>
             </div>
             
             <div className="mb-4">
