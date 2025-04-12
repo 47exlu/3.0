@@ -251,6 +251,92 @@ canvas {
     transform: translateY(-2px) scale(1.01);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
   }
+  
+  /* Responsive design utilities */
+  .responsive-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .responsive-p {
+    padding: 0.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-p {
+      padding: 1rem;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .responsive-p {
+      padding: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .responsive-p {
+      padding: 2rem;
+    }
+  }
+  
+  /* Touch-friendly controls for mobile */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile-specific scroll handling */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  
+  /* Ensure text readability on all devices */
+  .min-readable-text {
+    font-size: clamp(14px, 4vw, 16px);
+    line-height: 1.5;
+  }
+  
+  /* Fluid typography for responsive text scaling */
+  .fluid-text-xs {
+    font-size: clamp(0.75rem, 2vw, 0.875rem);
+  }
+  
+  .fluid-text-sm {
+    font-size: clamp(0.875rem, 2.5vw, 1rem); 
+  }
+  
+  .fluid-text-base {
+    font-size: clamp(1rem, 3vw, 1.125rem);
+  }
+  
+  .fluid-text-lg {
+    font-size: clamp(1.125rem, 3.5vw, 1.25rem);
+  }
+  
+  .fluid-text-xl {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+  }
+  
+  .fluid-text-2xl {
+    font-size: clamp(1.5rem, 5vw, 1.875rem);
+  }
+  
+  /* Flex gap that's responsive to screen size */
+  .responsive-gap {
+    gap: clamp(0.5rem, 2vw, 1rem);
+  }
+  
+  /* Safe area insets for modern mobile devices */
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* Social media custom styling */

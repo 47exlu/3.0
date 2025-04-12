@@ -166,6 +166,13 @@ const SCREEN_LOADING_MESSAGES: Record<string, string[]> = {
     "Analyzing your accomplishments...",
     "Creating your music biography...",
   ],
+  settings: [
+    "Loading preferences...",
+    "Preparing settings menu...",
+    "Configuring game options...",
+    "Setting up customization...",
+    "Optimizing for your device...",
+  ],
 };
 
 // Get a random loading message for the current screen
@@ -289,6 +296,7 @@ function App() {
                   {screen === 'media_events' && <MediaEventsManager />}
                   {screen === 'billboard_charts' && <BillboardCharts />}
                   {screen === 'player_wikipedia' && <PlayerWikipedia />}
+                  {screen === 'settings' && <SettingsPage />}
                 </GameLayout>
               </LoadingTransition>
             </Route>
