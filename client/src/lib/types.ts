@@ -30,6 +30,7 @@ export type GameScreen =
   | "media_events" // Media events screen (festivals, talk shows, interviews)
   | "billboard_charts" // Billboard Hot 100 and album charts screen
   | "player_wikipedia" // Player's career Wikipedia-style page
+  | "team_management" // Team management screen - for hiring manager, publicist, etc.
   | "settings" // Game settings page
 
 export interface CharacterInfo {
@@ -433,6 +434,34 @@ export interface Skill {
   trainingCost: number;
 }
 
+// Team management system interfaces
+export type TeamMemberRole = "manager" | "publicist" | "producer" | "tourManager" | "socialMediaManager" | "securityGuard" | "stylist";
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: TeamMemberRole;
+  hired: boolean;
+  hiredDate?: number; // Week when hired
+  contractLength?: number; // In weeks
+  contractEnds?: number; // Week when contract expires
+  salary: number; // Weekly salary
+  quality: number; // 1-100 rating of skill
+  experience: number; // 1-100 rating of experience
+  specialization?: string; // Additional area of expertise
+  bio?: string;
+  image?: string; // Profile picture
+  benefits: TeamMemberBenefit[];
+  levelRequirement?: number; // Career level required to hire
+}
+
+export interface TeamMemberBenefit {
+  type: "revenueBoost" | "streamingBoost" | "socialMediaBoost" | "productionSpeed" | "tourRevenue" | "merchandiseSales" | "controversyProtection" | "skillBoost";
+  description: string;
+  value: number; // Percentage boost or flat value
+  affectedArea?: string; // Specific area affected (e.g., "twitter" for social media)
+}
+
 // Merchandise system interfaces
 export type MerchandiseType = "clothing" | "accessories" | "collectibles" | "digital" | "limited";
 export type MerchandiseSize = "xs" | "s" | "m" | "l" | "xl" | "xxl" | "one-size";
@@ -664,6 +693,10 @@ export interface GameState {
   // Market trends system
   activeMarketTrends?: MarketTrend[]; // Currently active market trends
   pastMarketTrends?: MarketTrend[]; // Historical market trends
+  
+  // Team management system
+  teamMembers?: TeamMember[]; // Current team members (hired staff)
+  availableTeamMembers?: TeamMember[]; // Staff available to hire
   
   // Premium store properties
   week?: number; // Alias for currentWeek for NewStorePanel
