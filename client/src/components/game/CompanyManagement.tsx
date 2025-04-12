@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRapperGame } from '../../lib/stores/useRapperGame';
 import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '../../lib/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { Calendar } from '@/components/ui/calendar';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Calendar } from 'lucide-react';
 import { format, addMonths, subMonths } from 'date-fns';
 import { Button } from '@/components/ui/button';
 
@@ -13,6 +14,8 @@ const CompanyManagement: React.FC = () => {
     company,
     aiRappers,
     stats,
+    currentWeek,
+    currentYear,
     createCompany,
     updateCompany,
     hireCompanyEmployee,
@@ -25,9 +28,13 @@ const CompanyManagement: React.FC = () => {
   const [companyType, setCompanyType] = useState<string>('record_label');
   const [companyDescription, setCompanyDescription] = useState('');
   const [employeeCount, setEmployeeCount] = useState(1);
-  const [viewState, setViewState] = useState<'overview' | 'create' | 'manage' | 'artists'>(
+  const [viewState, setViewState] = useState<'overview' | 'create' | 'manage' | 'artists' | 'calendar'>(
     company ? 'overview' : 'create'
   );
+  
+  // Calendar state
+  const [date, setDate] = useState<Date>(new Date());
+  const [events, setEvents] = useState<{date: Date, title: string, type: string}[]>([]);
 
   // Cost calculation
   const startupCost = 10000;
@@ -378,7 +385,7 @@ const CompanyManagement: React.FC = () => {
           </div>
         )}
         
-        <div className="flex space-x-3">
+        <div className="flex space-x-3 mb-4">
           <button 
             onClick={() => setViewState('manage')} 
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -395,6 +402,14 @@ const CompanyManagement: React.FC = () => {
             </button>
           )}
         </div>
+        
+        <button 
+          onClick={() => setViewState('calendar')} 
+          className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center"
+        >
+          <Calendar className="w-4 h-4 mr-2" />
+          Company Calendar
+        </button>
       </div>
     );
   };
@@ -585,6 +600,143 @@ const CompanyManagement: React.FC = () => {
     );
   };
 
+  // Render calendar view
+  const renderCalendar = () => {
+    if (!company) return null;
+    
+    // Create some example events based on company founding date
+    useEffect(() => {
+      if (company && events.length === 0) {
+        // Add founding event
+        const foundingDate = new Date();
+        foundingDate.setDate(foundingDate.getDate() - (company.foundedWeek * 7));
+        
+        // Add some sample events
+        const newEvents = [
+          {
+            date: foundingDate,
+            title: `${company.name} Founded`,
+            type: 'milestone'
+          },
+          {
+            date: new Date(), // Today
+            title: 'Weekly Financial Review',
+            type: 'meeting'
+          },
+          {
+            date: new Date(new Date().setDate(new Date().getDate() + 7)), // Next week
+            title: 'Quarterly Planning',
+            type: 'meeting'
+          }
+        ];
+        setEvents(newEvents);
+      }
+    }, [company]);
+
+    const getFormattedDate = () => {
+      return format(date, 'dd/MM/yyyy');
+    };
+    
+    // Get events for the selected date
+    const selectedDateEvents = events.filter(event => {
+      return new Date(event.date).toDateString() === new Date(date).toDateString();
+    });
+
+    return (
+      <div className="bg-gray-900 rounded-lg p-6 shadow-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-white">Company Calendar</h2>
+          <button 
+            onClick={() => setViewState('overview')} 
+            className="text-blue-400 hover:text-blue-300"
+          >
+            Back to Overview
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-800 rounded p-4">
+            <div className="text-white text-center mb-4">
+              <h3 className="font-semibold text-lg">Current Date: Week {currentWeek}, Year {currentYear}</h3>
+              <p className="text-gray-400 text-sm">Selected: {getFormattedDate()}</p>
+            </div>
+            
+            <div className="bg-gray-700 rounded overflow-hidden">
+              <CalendarComponent
+                mode="single"
+                selected={date}
+                onSelect={(newDate) => newDate && setDate(newDate)}
+                className="text-white"
+              />
+            </div>
+            
+            <div className="mt-4 flex justify-center space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setDate(subMonths(date, 1))}
+              >
+                Previous Month
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setDate(new Date())}
+              >
+                Today
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setDate(addMonths(date, 1))}
+              >
+                Next Month
+              </Button>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded p-4">
+            <h3 className="font-bold text-white mb-3">Events for {format(date, 'MMMM dd, yyyy')}</h3>
+            
+            {selectedDateEvents.length > 0 ? (
+              <div className="space-y-3">
+                {selectedDateEvents.map((event, index) => (
+                  <div key={index} className="bg-gray-700 rounded p-3 border-l-4 border-blue-500">
+                    <div className="font-medium text-white">{event.title}</div>
+                    <div className="text-xs text-gray-400">
+                      {event.type === 'milestone' ? 'Company Milestone' : 
+                       event.type === 'meeting' ? 'Business Meeting' : 'Event'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-gray-700 rounded p-4 text-gray-400 italic">
+                No events scheduled for this date
+              </div>
+            )}
+            
+            <div className="mt-4">
+              <h4 className="font-semibold text-white mb-2">All Company Events</h4>
+              <div className="max-h-60 overflow-y-auto pr-2 space-y-2">
+                {events.map((event, index) => (
+                  <div 
+                    key={index} 
+                    className="flex justify-between bg-gray-700 p-2 rounded text-sm hover:bg-gray-600 cursor-pointer"
+                    onClick={() => setDate(new Date(event.date))}
+                  >
+                    <span className="text-white">{event.title}</span>
+                    <span className="text-gray-400">{format(new Date(event.date), 'dd/MM/yyyy')}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Determine which view to render
   const renderContent = () => {
     switch (viewState) {
@@ -596,6 +748,8 @@ const CompanyManagement: React.FC = () => {
         return renderManageEmployees();
       case 'artists':
         return renderManageArtists();
+      case 'calendar':
+        return renderCalendar();
       default:
         return company ? renderCompanyOverview() : renderCreateCompany();
     }
