@@ -528,8 +528,7 @@ canvas {
     
     /* Fix for the buttons in CareerDashboard.tsx */
     .btn-group-save-game-row,
-    .game-action-buttons,
-    .hide-on-tablet-desktop {
+    .game-action-buttons {
       display: none !important;
     }
   }
