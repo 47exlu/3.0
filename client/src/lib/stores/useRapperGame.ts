@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
+import { formatNumber } from '@/lib/utils';
 import { 
   AIRapper,
   Album,
