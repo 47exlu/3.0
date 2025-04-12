@@ -428,14 +428,28 @@ export const AlbumManagement: React.FC = () => {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Albums
         </Button>
         
-        <ScrollArea className="h-[calc(100vh-150px)] pr-4">
-          <AlbumForm 
-            type={formType}
-            parentAlbumId={selectedParentAlbumId}
-            onSuccess={() => setShowCreateForm(false)}
-            onCancel={() => setShowCreateForm(false)}
-          />
+        <ScrollArea className="h-[calc(100vh-180px)] pr-4 overflow-y-auto">
+          <div className="pb-20"> {/* Add extra padding for fixed back button */}
+            <AlbumForm 
+              type={formType}
+              parentAlbumId={selectedParentAlbumId}
+              onSuccess={() => setShowCreateForm(false)}
+              onCancel={() => setShowCreateForm(false)}
+            />
+          </div>
         </ScrollArea>
+        
+        {/* Fixed back button for easier navigation */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+          <Button 
+            variant="outline"
+            size="lg" 
+            className="shadow-lg" 
+            onClick={() => setShowCreateForm(false)}
+          >
+            <ArrowLeft className="mr-2 h-5 w-5" /> Back to Albums
+          </Button>
+        </div>
       </div>
     );
   }
