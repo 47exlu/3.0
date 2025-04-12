@@ -33,6 +33,7 @@ export type GameScreen =
   | "team_management" // Team management screen - for hiring manager, publicist, etc.
   | "awards_certifications" // Awards and certifications screen
   | "settings" // Game settings page
+  | "jobs" // Jobs screen for taking on part-time music industry jobs
 
 export interface CharacterInfo {
   id: string;
@@ -551,6 +552,66 @@ export interface SkillTraining {
   cost: number;
 }
 
+// Jobs System
+export type JobCategory = 
+  | "studio" 
+  | "performing" 
+  | "teaching" 
+  | "media" 
+  | "industry"
+  | "freelance";
+
+export type JobDifficulty = "entry" | "basic" | "intermediate" | "advanced" | "expert";
+
+export interface Job {
+  id: string;
+  title: string;
+  description: string;
+  category: JobCategory;
+  difficulty: JobDifficulty;
+  duration: number; // Duration in weeks
+  payRate: number; // Money earned per week
+  reputationGain: number; // Reputation gained upon completion
+  skillGains: Partial<Record<SkillName, number>>; // Skills improved by doing this job
+  requirementsMet: boolean; // Whether player meets requirements for this job
+  requirements?: {
+    reputation?: number; // Min reputation required
+    skills?: Partial<Record<SkillName, number>>; // Min skills required
+    careerLevel?: number; // Min career level required
+  };
+  available: boolean; // Whether this job is currently available
+  appliedDate?: number; // Week when the player applied
+  acceptedDate?: number; // Week when the job was accepted
+  endDate?: number; // Week when the job ends
+  status: "available" | "applied" | "working" | "completed" | "failed" | "quit";
+  hoursPerWeek: number; // Hours required per week (affects player's ability to do other tasks)
+  successChance: number; // Chance of success (0-1)
+}
+
+export interface ActiveJob {
+  jobId: string;
+  startWeek: number;
+  endWeek: number; // When the job will end
+  weeklyPay: number;
+  hoursPerWeek: number;
+  totalPay: number; // Total accumulated pay
+  weeksWorked: number;
+  performance: number; // 0-100 rating of job performance
+  warnings: number; // Number of warnings received (can lead to getting fired)
+}
+
+export interface JobHistory {
+  jobId: string;
+  title: string;
+  category: JobCategory;
+  startWeek: number;
+  endWeek: number;
+  totalPay: number;
+  completed: boolean;
+  performance: number; // 0-100 rating
+  reference?: string; // Positive reference that can help with future jobs
+}
+
 // Hype system for upcoming releases
 export type ReleaseType = 'single' | 'album' | 'ep' | 'deluxe' | 'remix' | 'tour';
 
@@ -777,6 +838,12 @@ export interface GameState {
   // Team management system
   teamMembers?: TeamMember[]; // Current team members (hired staff)
   availableTeamMembers?: TeamMember[]; // Staff available to hire
+  
+  // Jobs system
+  availableJobs?: Job[]; // Jobs available to apply for
+  appliedJobs?: Job[]; // Jobs the player has applied for but not started
+  activeJobs?: ActiveJob[]; // Jobs currently being worked
+  completedJobs?: JobHistory[]; // Jobs completed in the past
   
   // Premium store properties
   week?: number; // Alias for currentWeek for NewStorePanel

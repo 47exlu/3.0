@@ -1,4 +1,4 @@
-import { AIRapper, SongTier, TeamMember, TeamMemberBenefit, TeamMemberRole } from "./types";
+import { AIRapper, Job, JobCategory, JobDifficulty, SongTier, TeamMember, TeamMemberBenefit, TeamMemberRole } from "./types";
 
 // Default AI rappers in the game
 export const DEFAULT_AI_RAPPERS: AIRapper[] = [
@@ -1010,5 +1010,326 @@ export const DEFAULT_TEAM_MEMBERS: TeamMember[] = [
       }
     ],
     levelRequirement: 3
+  }
+];
+
+// Default jobs available in the game
+export const DEFAULT_JOBS: Job[] = [
+  {
+    id: "job_studio_assistant_1",
+    title: "Studio Assistant",
+    description: "Help recording artists set up equipment and handle basic tasks in a local recording studio.",
+    category: "studio",
+    difficulty: "entry",
+    duration: 4, // 4 weeks
+    payRate: 300, // $ per week
+    reputationGain: 5,
+    skillGains: {
+      creativity: 1,
+      networking: 2,
+      production: 3
+    },
+    requirementsMet: true,
+    requirements: {
+      reputation: 0,
+      careerLevel: 0
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 15,
+    successChance: 0.95
+  },
+  {
+    id: "job_sound_technician_1",
+    title: "Sound Technician",
+    description: "Operate sound equipment for small live performances and events.",
+    category: "performing",
+    difficulty: "basic",
+    duration: 6,
+    payRate: 450,
+    reputationGain: 8,
+    skillGains: {
+      production: 2,
+      performance: 2,
+      networking: 1
+    },
+    requirementsMet: true,
+    requirements: {
+      reputation: 10,
+      careerLevel: 1
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 20,
+    successChance: 0.9
+  },
+  {
+    id: "job_beatmaker_1",
+    title: "Freelance Beat Producer",
+    description: "Create and sell beats to up-and-coming artists in your local scene.",
+    category: "freelance",
+    difficulty: "basic",
+    duration: 8,
+    payRate: 500,
+    reputationGain: 10,
+    skillGains: {
+      creativity: 4,
+      production: 3,
+      business: 1
+    },
+    requirementsMet: true,
+    requirements: {
+      reputation: 15,
+      skills: {
+        creativity: 20,
+        production: 15
+      },
+      careerLevel: 1
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 25,
+    successChance: 0.85
+  },
+  {
+    id: "job_music_blogger_1",
+    title: "Music Blogger",
+    description: "Write articles and reviews for a hip-hop blog, covering new releases and upcoming artists.",
+    category: "media",
+    difficulty: "entry",
+    duration: 10,
+    payRate: 350,
+    reputationGain: 12,
+    skillGains: {
+      marketing: 3,
+      networking: 2,
+      business: 1
+    },
+    requirementsMet: true,
+    requirements: {
+      reputation: 5,
+      careerLevel: 0
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 10,
+    successChance: 0.95
+  },
+  {
+    id: "job_radio_host_1",
+    title: "College Radio Host",
+    description: "Host a weekly hip-hop show on your local college radio station.",
+    category: "media",
+    difficulty: "intermediate",
+    duration: 12,
+    payRate: 600,
+    reputationGain: 25,
+    skillGains: {
+      networking: 4,
+      marketing: 3,
+      performance: 2
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 30,
+      careerLevel: 2
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 15,
+    successChance: 0.8
+  },
+  {
+    id: "job_venue_promoter_1",
+    title: "Venue Promoter",
+    description: "Promote events and concerts at a local music venue, handling ticket sales and marketing.",
+    category: "industry",
+    difficulty: "intermediate",
+    duration: 8,
+    payRate: 700,
+    reputationGain: 20,
+    skillGains: {
+      marketing: 5,
+      networking: 4,
+      business: 3
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 40,
+      skills: {
+        marketing: 25,
+        networking: 20
+      },
+      careerLevel: 2
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 30,
+    successChance: 0.75
+  },
+  {
+    id: "job_music_teacher_1",
+    title: "Music Production Teacher",
+    description: "Teach basic music production skills at a community center to aspiring producers.",
+    category: "teaching",
+    difficulty: "intermediate",
+    duration: 10,
+    payRate: 550,
+    reputationGain: 15,
+    skillGains: {
+      creativity: 2,
+      production: 3,
+      business: 1
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 25,
+      skills: {
+        production: 35
+      },
+      careerLevel: 2
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 12,
+    successChance: 0.9
+  },
+  {
+    id: "job_social_media_manager_1",
+    title: "Artist Social Media Manager",
+    description: "Manage social media accounts for a small roster of local artists, increasing their online presence.",
+    category: "industry",
+    difficulty: "advanced",
+    duration: 14,
+    payRate: 900,
+    reputationGain: 30,
+    skillGains: {
+      marketing: 6,
+      networking: 4,
+      business: 3
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 60,
+      skills: {
+        marketing: 40,
+        networking: 30
+      },
+      careerLevel: 3
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 25,
+    successChance: 0.7
+  },
+  {
+    id: "job_studio_producer_1",
+    title: "Assistant Producer",
+    description: "Work alongside an established producer in a professional recording studio, helping with various aspects of music production.",
+    category: "studio",
+    difficulty: "advanced",
+    duration: 16,
+    payRate: 1200,
+    reputationGain: 40,
+    skillGains: {
+      creativity: 5,
+      production: 8,
+      networking: 3
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 70,
+      skills: {
+        creativity: 45,
+        production: 50
+      },
+      careerLevel: 3
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 40,
+    successChance: 0.65
+  },
+  {
+    id: "job_label_scout_1",
+    title: "Record Label Talent Scout",
+    description: "Discover new talent for an independent record label, attending shows and reviewing demos.",
+    category: "industry",
+    difficulty: "expert",
+    duration: 20,
+    payRate: 1500,
+    reputationGain: 50,
+    skillGains: {
+      networking: 7,
+      business: 5,
+      marketing: 3
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 85,
+      skills: {
+        networking: 60,
+        business: 45
+      },
+      careerLevel: 4
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 35,
+    successChance: 0.6
+  },
+  {
+    id: "job_tour_dj_1",
+    title: "Supporting Tour DJ",
+    description: "Perform as an opening DJ for a popular artist's regional tour dates.",
+    category: "performing",
+    difficulty: "expert",
+    duration: 12,
+    payRate: 2000,
+    reputationGain: 60,
+    skillGains: {
+      performance: 10,
+      networking: 8,
+      marketing: 4
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 100,
+      skills: {
+        performance: 70,
+        networking: 50
+      },
+      careerLevel: 4
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 50,
+    successChance: 0.5
+  },
+  {
+    id: "job_ghostwriter_1",
+    title: "Ghostwriter",
+    description: "Write lyrics for established artists without public credit. High pay but no public recognition.",
+    category: "freelance",
+    difficulty: "expert",
+    duration: 6,
+    payRate: 2500,
+    reputationGain: 0, // No reputation gain since it's ghost work
+    skillGains: {
+      creativity: 12,
+      production: 5
+    },
+    requirementsMet: false,
+    requirements: {
+      reputation: 50,
+      skills: {
+        creativity: 75
+      },
+      careerLevel: 4
+    },
+    available: true,
+    status: "available",
+    hoursPerWeek: 30,
+    successChance: 0.7
   }
 ];
