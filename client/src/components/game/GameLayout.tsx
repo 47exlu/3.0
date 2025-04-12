@@ -23,8 +23,9 @@ export function GameLayout({ children }: GameLayoutProps) {
   
   // Calculate the simulated date based on the current week and year
   const calculateGameDate = () => {
-    // Start with January 1st of the game year
-    const startDate = new Date(currentYear, 0, 1);
+    // Start with January 1st of 2025 (base year) + (currentYear - 1) for subsequent years
+    const gameYear = 2025 + (currentYear - 1);
+    const startDate = new Date(gameYear, 0, 1);
     // Add days based on current week (each week is 7 days)
     const currentDate = addDays(startDate, (currentWeek - 1) * 7);
     return currentDate;
