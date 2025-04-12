@@ -161,11 +161,12 @@ export function GameLayout({ children }: GameLayoutProps) {
 
   return (
     <motion.div 
-      className="w-full h-full flex flex-col bg-gray-900 text-white overflow-hidden"
+      className="w-full min-h-screen flex flex-col bg-gray-900 text-white"
       initial="hidden"
       animate="visible"
       exit="exit"
       variants={pageTransition}
+      style={{ overflowY: 'auto', overflowX: 'hidden', position: 'relative' }}
     >
       {/* Modern Navigation Bar */}
       <AnimatePresence mode="wait">
@@ -207,13 +208,14 @@ export function GameLayout({ children }: GameLayoutProps) {
       
       {/* Main content - enhanced for better responsive viewing with improved mobile support */}
       <motion.main 
-        className="w-full h-full overflow-auto flex-1 bg-gradient-to-b from-gray-900 to-gray-800 pb-safe mobile-scroll relative z-10"
+        className="w-full min-h-[90vh] flex-1 bg-gradient-to-b from-gray-900 to-gray-800 relative z-10 pb-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
+        style={{ overflowY: 'visible' }}
       >
         <motion.div 
-          className={`h-full w-full ${screen === 'main_menu' ? 'pb-0' : 'pb-10 sm:pb-8 md:pb-0'}`}
+          className={`w-full ${screen === 'main_menu' ? 'pb-0' : 'pb-24 sm:pb-20 md:pb-24'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
