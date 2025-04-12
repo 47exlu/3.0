@@ -445,7 +445,8 @@ export const SONG_TIER_INFO = {
     popularityWeeks: 8,  // Significantly increased from 1 week
     cost: 500,
     minStreams: 0,
-    maxStreams: 10000
+    maxStreams: 10000,
+    minQuality: 20
   },
   2: {
     name: "Mid",
@@ -454,7 +455,8 @@ export const SONG_TIER_INFO = {
     popularityWeeks: 12, // Significantly increased from 2 weeks
     cost: 1000,
     minStreams: 10000,
-    maxStreams: 100000
+    maxStreams: 100000,
+    minQuality: 30
   },
   3: {
     name: "Normal",
@@ -463,7 +465,8 @@ export const SONG_TIER_INFO = {
     popularityWeeks: 20, // Significantly increased from 4 weeks
     cost: 2500,
     minStreams: 100000,
-    maxStreams: 1000000
+    maxStreams: 1000000,
+    minQuality: 50
   },
   4: {
     name: "Hit",
@@ -472,7 +475,8 @@ export const SONG_TIER_INFO = {
     popularityWeeks: 104, // 2 years
     cost: 10000,
     minStreams: 1000000,
-    maxStreams: 900000000
+    maxStreams: 900000000,
+    minQuality: 75
   },
   5: {
     name: "Banger",
@@ -481,7 +485,8 @@ export const SONG_TIER_INFO = {
     popularityWeeks: -1, // Never expires
     cost: 25000,
     minStreams: 10000000,
-    maxStreams: 2000000000 // 2 billion streams cap (instead of unlimited)
+    maxStreams: 2000000000, // 2 billion streams cap (instead of unlimited)
+    minQuality: 90
   }
 } as Record<SongTier, {
   name: string;
@@ -491,6 +496,7 @@ export const SONG_TIER_INFO = {
   cost: number;
   minStreams: number;
   maxStreams: number;
+  minQuality: number;
 }>;
 
 // Default shop items (purchasable songs)

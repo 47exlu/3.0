@@ -248,6 +248,7 @@ export interface Song {
   aiRapperOwner?: string;
   aiRapperFeaturesPlayer?: boolean;
   platformStreamDistribution?: Record<string, number>; // Platform-specific stream distribution
+  producedByPlayer?: boolean; // Indicates this song was produced by player for another artist
   hype?: number; // Hype level from promotion activities
 }
 

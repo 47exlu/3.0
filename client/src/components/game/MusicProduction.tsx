@@ -431,6 +431,183 @@ export function MusicProduction() {
             </CardContent>
           </Card>
         </TabsContent>
+        
+        {/* Ghost Production Tab */}
+        <TabsContent value="produce" className="space-y-4">
+          <Card className="bg-indigo-950/50 border-indigo-800">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <MusicIcon size={18} className="mr-2 text-indigo-400" />
+                Ghost Production for Other Artists
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="p-3 bg-gradient-to-r from-green-900/50 to-green-800/30 rounded-md border border-green-700/50">
+                <p className="text-sm text-green-200">
+                  Create songs for other artists and earn money! As a ghost producer, you'll get paid upfront but won't be credited on the track.
+                  Friends will pay you more than neutral artists, and enemies won't work with you at all.
+                </p>
+              </div>
+              
+              <div>
+                <Label htmlFor="ghostSongTitle">Song Title (Optional)</Label>
+                <Input 
+                  id="ghostSongTitle"
+                  value={ghostSongTitle}
+                  onChange={(e) => setGhostSongTitle(e.target.value)}
+                  placeholder="Enter song title (or leave blank for random)"
+                  className="bg-indigo-900/40 border-indigo-700 mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="ghostSongTier">Song Tier</Label>
+                <Select 
+                  value={ghostSongTier.toString()} 
+                  onValueChange={(value) => setGhostSongTier(parseInt(value) as SongTier)}
+                >
+                  <SelectTrigger className="bg-indigo-900/40 border-indigo-700 mt-1">
+                    <SelectValue placeholder="Select tier" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-indigo-950 border-indigo-800 text-white">
+                    <SelectItem value="1">
+                      Tier 1: Bad - ${formatNumber(SONG_TIER_INFO[1].cost * 1.2)} fee
+                    </SelectItem>
+                    <SelectItem value="2">
+                      Tier 2: Mid - ${formatNumber(SONG_TIER_INFO[2].cost * 1.2)} fee
+                    </SelectItem>
+                    <SelectItem value="3">
+                      Tier 3: Normal - ${formatNumber(SONG_TIER_INFO[3].cost * 1.2)} fee
+                    </SelectItem>
+                    <SelectItem value="4">
+                      Tier 4: Hit - ${formatNumber(SONG_TIER_INFO[4].cost * 1.2)} fee
+                    </SelectItem>
+                    <SelectItem value="5">
+                      Tier 5: Banger - ${formatNumber(SONG_TIER_INFO[5].cost * 1.2)} fee
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <div className="mt-2 text-sm text-gray-400">
+                  <p>Higher tier tracks pay better but require more skill to produce successfully.</p>
+                  <p>You'll get paid ${formatNumber(Math.round(SONG_TIER_INFO[ghostSongTier].cost * (selectedArtist && aiRappers.find(r => r.id === selectedArtist)?.relationshipStatus === "friend" ? 1.5 : 1.2)))} for this production.</p>
+                  <p>Artist relations impact payment: friends pay 50% more than standard rate.</p>
+                </div>
+              </div>
+              
+              <div>
+                <Label>Select Artist to Produce For</Label>
+                <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {aiRappers
+                    .filter(rapper => (rapper.relationshipStatus || rapper.relationship) !== "enemy" && (rapper.relationshipStatus || rapper.relationship) !== "rival")
+                    .map(rapper => (
+                      <div 
+                        key={rapper.id}
+                        className={`flex items-center justify-between p-2 rounded border ${
+                          selectedArtist === rapper.id
+                            ? 'bg-indigo-800 border-indigo-600' 
+                            : 'bg-indigo-900/30 border-indigo-800 hover:bg-indigo-900/60'
+                        } cursor-pointer transition-colors`}
+                        onClick={() => setSelectedArtist(rapper.id)}
+                      >
+                        <div>
+                          <div className="font-medium">{rapper.name}</div>
+                          <div className="text-xs text-gray-400">
+                            {formatNumber(rapper.monthlyListeners)} monthly listeners
+                          </div>
+                        </div>
+                        <Badge className={`${
+                          (rapper.relationshipStatus || rapper.relationship) === "friend" ? 'bg-green-600' : 'bg-gray-600'
+                        }`}>
+                          {(rapper.relationshipStatus || rapper.relationship) === "friend" ? "Friend (+50%)" : "Neutral"}
+                        </Badge>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-2">
+              <Button 
+                className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+                onClick={() => {
+                  if (!selectedArtist) {
+                    alert("Please select an artist to produce for");
+                    return;
+                  }
+                  const success = produceForArtist(selectedArtist, ghostSongTier, ghostSongTitle);
+                  if (success) {
+                    playSuccess();
+                    setGhostSongTitle('');
+                    setSelectedArtist('');
+                  }
+                }}
+                disabled={!selectedArtist}
+              >
+                {selectedArtist 
+                  ? `Produce for ${aiRappers.find(r => r.id === selectedArtist)?.name}`
+                  : 'Select an Artist'
+                }
+              </Button>
+              <div className="text-xs text-teal-400 text-center">
+                Your career level and creativity skill affect the song quality
+              </div>
+            </CardFooter>
+          </Card>
+          
+          <Card className="bg-indigo-950/50 border-indigo-800">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <MusicIcon size={18} className="mr-2 text-indigo-400" />
+                Your Ghost Production Credits
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {songs.filter(song => song.producedByPlayer && song.aiRapperOwner).length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  You haven't produced any songs for other artists yet.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {songs
+                    .filter(song => song.producedByPlayer && song.aiRapperOwner)
+                    .sort((a, b) => (b.releaseDate || 0) - (a.releaseDate || 0))
+                    .map(song => {
+                      const owner = aiRappers.find(r => r.id === song.aiRapperOwner);
+                      return (
+                        <div 
+                          key={song.id}
+                          className="flex flex-col md:flex-row md:items-center justify-between p-3 rounded bg-indigo-900/30 border border-indigo-800"
+                        >
+                          <div className="mb-2 md:mb-0">
+                            <div className="font-medium flex items-center">
+                              "{song.title}" for {owner?.name || "Unknown Artist"}
+                              <Badge className={`ml-2 ${getTierColor(song.tier)}`}>
+                                Tier {song.tier}
+                              </Badge>
+                            </div>
+                            
+                            <div className="text-sm text-gray-400 mt-1">
+                              Produced: Week {song.releaseDate}
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <div className="font-semibold text-amber-400">
+                              {formatNumber(song.streams)} streams
+                            </div>
+                            <div className="text-xs text-green-400">
+                              ${formatNumber(Math.round(SONG_TIER_INFO[song.tier].cost * (owner?.relationshipStatus === "friend" ? 1.5 : 1.2)))} production fee
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
