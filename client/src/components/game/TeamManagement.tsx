@@ -108,7 +108,7 @@ export function TeamManagement() {
                 <Info className="h-4 w-4 text-blue-400" />
                 <span>Description</span>
               </h4>
-              <p className="mt-1 text-sm text-gray-300">{member.description}</p>
+              <p className="mt-1 text-sm text-gray-300">{member.description || member.bio}</p>
             </div>
             
             <div className="mt-4">
@@ -123,10 +123,10 @@ export function TeamManagement() {
               <div className="mt-4">
                 <div className="flex items-center space-x-2 mb-3">
                   <Badge variant="secondary" className="bg-blue-900/30 text-blue-300 border-blue-600">
-                    Hired Week {member.hiredWeek}
+                    Hired Week {member.hiredWeek || member.hiredDate}
                   </Badge>
                   <Badge variant="secondary" className="bg-green-900/30 text-green-300 border-green-600">
-                    {currentWeek - (member.hiredWeek || 0)} weeks employed
+                    {currentWeek - (member.hiredWeek || member.hiredDate || 0)} weeks employed
                   </Badge>
                 </div>
                 <Button 
