@@ -849,6 +849,7 @@ export interface GameState {
   albums?: Album[]; // Added for album system
   socialMedia: SocialMediaPlatform[];
   socialMediaStats?: SocialMediaStats; // Added for enhanced social media system
+  company?: Company; // Player's company (record label, production company, etc.)
   streamingPlatforms: StreamingPlatform[];
   videosPlatforms: VideosPlatform[];
   stats: PlayerStats;
@@ -883,7 +884,6 @@ export interface GameState {
   missedMediaEvents?: MediaEvent[]; // Media events the player missed or declined
   
   // Company management system
-  company?: Company; // Player's company (record label, production company, etc.)
   signedArtists?: AIRapper[]; // Artists signed to the player's label
   
   // Market trends system

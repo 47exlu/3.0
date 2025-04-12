@@ -762,6 +762,414 @@ export const useRapperGame = create<RapperGameStore>()(
       }, 1.0);
     },
     
+    // Company Management System
+    createCompany: (name: string, type: string, description?: string, logo?: string): string => {
+      const currentState = get();
+      
+      // Check if player already has a company
+      if (currentState.company) {
+        console.warn("Player already has a company");
+        return currentState.company.id;
+      }
+      
+      // Check if player has enough reputation and wealth to start a company
+      const minReputation = 25; // Minimum reputation required
+      const minWealth = 10000; // Minimum wealth required
+      
+      if (currentState.stats.reputation < minReputation) {
+        console.warn(`Not enough reputation to start a company. Need ${minReputation}`);
+        return "";
+      }
+      
+      if (currentState.stats.wealth < minWealth) {
+        console.warn(`Not enough money to start a company. Need $${minWealth}`);
+        return "";
+      }
+      
+      // Create new company
+      const companyId = uuidv4();
+      const companyType = type as "record_label" | "production_company" | "clothing_brand" | "media_company" | "other";
+      
+      const newCompany: Company = {
+        id: companyId,
+        name,
+        type: companyType,
+        description: description || `${name} - a new ${type} company`,
+        logo: logo || "/assets/default-company-logo.png",
+        foundedWeek: currentState.currentWeek,
+        foundedYear: currentState.currentYear,
+        level: 1,
+        value: minWealth, // Initial company valuation
+        revenue: 0,
+        employees: 1, // Start with just the player
+        artists: [], // No signed artists initially
+        products: [] // No products initially
+      };
+      
+      // Deduct the startup cost from player's wealth
+      const startupCost = minWealth;
+      const updatedWealth = currentState.stats.wealth - startupCost;
+      
+      // Update state
+      set(state => ({
+        ...state,
+        company: newCompany,
+        stats: {
+          ...state.stats,
+          wealth: updatedWealth
+        },
+        cash: updatedWealth // Update the cash alias as well
+      }));
+      
+      // Generate a news article about the company founding
+      const newsId = uuidv4();
+      const newsArticle = {
+        id: newsId,
+        title: `${currentState.character?.artistName || 'Artist'} Launches New ${type} Company: ${name}`,
+        content: `In an exciting development for the music industry, ${currentState.character?.artistName || 'Artist'} has officially launched ${name}, a new ${type} company. "${description || 'This is just the beginning of something special.'}" said the artist in their announcement. The company is expected to focus on ${companyType === 'record_label' ? 'signing and developing new artists' : companyType === 'production_company' ? 'creating high-quality music and video productions' : companyType === 'clothing_brand' ? 'developing unique merchandise and clothing lines' : companyType === 'media_company' ? 'content creation and media distribution' : 'various entertainment industry ventures'}.`,
+        summary: `${currentState.character?.artistName || 'Artist'} launches new company: ${name}`,
+        category: "industry",
+        impact: "medium",
+        publishedWeek: currentState.currentWeek,
+        publishedYear: currentState.currentYear,
+        sourceName: "Music Industry Today",
+        playerMentioned: true,
+        hasBeenRead: false,
+        isPremium: false,
+        reactions: {
+          views: Math.floor(Math.random() * 1000) + 500,
+          likes: Math.floor(Math.random() * 300) + 100,
+          shares: Math.floor(Math.random() * 150) + 50,
+          comments: Math.floor(Math.random() * 50) + 10
+        },
+        tags: ["new company", "business", "entrepreneurship", companyType]
+      };
+      
+      set(state => ({
+        ...state,
+        newsArticles: [
+          newsArticle,
+          ...(state.newsArticles || [])
+        ],
+        unreadNewsCount: (state.unreadNewsCount || 0) + 1
+      }));
+      
+      return companyId;
+    },
+    
+    updateCompany: (updates: Partial<Company>) => {
+      const currentState = get();
+      
+      // Check if player has a company
+      if (!currentState.company) {
+        console.warn("Player doesn't have a company to update");
+        return;
+      }
+      
+      // Update the company
+      set(state => ({
+        ...state,
+        company: {
+          ...state.company!,
+          ...updates
+        }
+      }));
+    },
+    
+    hireCompanyEmployee: (count: number) => {
+      const currentState = get();
+      
+      // Check if player has a company
+      if (!currentState.company) {
+        console.warn("Player doesn't have a company to hire employees for");
+        return;
+      }
+      
+      // Calculate cost: higher company level = more expensive employees
+      const costPerEmployee = 500 * currentState.company.level;
+      const totalCost = costPerEmployee * count;
+      
+      // Check if player can afford it
+      if (currentState.stats.wealth < totalCost) {
+        console.warn(`Not enough money to hire ${count} employees. Need $${totalCost}`);
+        return;
+      }
+      
+      // Update company and player wealth
+      const updatedWealth = currentState.stats.wealth - totalCost;
+      const updatedEmployees = currentState.company.employees + count;
+      
+      set(state => ({
+        ...state,
+        company: {
+          ...state.company!,
+          employees: updatedEmployees,
+          value: state.company!.value + (costPerEmployee * count * 0.8) // Company value increases with employees
+        },
+        stats: {
+          ...state.stats,
+          wealth: updatedWealth
+        },
+        cash: updatedWealth // Update cash alias
+      }));
+    },
+    
+    fireCompanyEmployee: (count: number) => {
+      const currentState = get();
+      
+      // Check if player has a company
+      if (!currentState.company) {
+        console.warn("Player doesn't have a company to fire employees from");
+        return;
+      }
+      
+      // Make sure the company has enough employees (always keep at least 1 - the player)
+      const maxFireable = Math.max(0, currentState.company.employees - 1);
+      if (count > maxFireable) {
+        console.warn(`Can't fire ${count} employees. Company only has ${maxFireable} employees that can be fired.`);
+        count = maxFireable;
+      }
+      
+      if (count === 0) return; // Nothing to do
+      
+      // Firing cost - severance packages
+      const costPerEmployee = 250 * currentState.company.level;
+      const totalCost = costPerEmployee * count;
+      
+      // Check if player can afford severance
+      if (currentState.stats.wealth < totalCost) {
+        console.warn(`Not enough money for severance packages. Need $${totalCost}`);
+        return;
+      }
+      
+      // Update company and player wealth
+      const updatedWealth = currentState.stats.wealth - totalCost;
+      const updatedEmployees = currentState.company.employees - count;
+      
+      set(state => ({
+        ...state,
+        company: {
+          ...state.company!,
+          employees: updatedEmployees,
+          value: Math.max(1000, state.company!.value * 0.95) // Company value decreases slightly when firing employees
+        },
+        stats: {
+          ...state.stats,
+          wealth: updatedWealth
+        },
+        cash: updatedWealth // Update cash alias
+      }));
+    },
+    
+    signArtist: (artistId: string): boolean => {
+      const currentState = get();
+      
+      // Check if player has a record label
+      if (!currentState.company) {
+        console.warn("Player doesn't have a company to sign artists to");
+        return false;
+      }
+      
+      // Make sure the company is a record label
+      if (currentState.company.type !== "record_label") {
+        console.warn("Only record labels can sign artists");
+        return false;
+      }
+      
+      // Find the artist
+      const artist = currentState.aiRappers.find(a => a.id === artistId);
+      if (!artist) {
+        console.warn(`Artist with ID ${artistId} not found`);
+        return false;
+      }
+      
+      // Check if artist is already signed
+      if (currentState.company.artists?.includes(artistId)) {
+        console.warn(`Artist ${artist.name} is already signed to your label`);
+        return false;
+      }
+      
+      // Calculate signing cost based on artist popularity
+      const signingCost = artist.popularity * 1000;
+      
+      // Check if player can afford it
+      if (currentState.stats.wealth < signingCost) {
+        console.warn(`Not enough money to sign ${artist.name}. Need $${signingCost}`);
+        return false;
+      }
+      
+      // Update company, player wealth, and signed artists list
+      const updatedWealth = currentState.stats.wealth - signingCost;
+      const updatedArtists = [...(currentState.company.artists || []), artistId];
+      
+      // Update artist's relationship status to "friend"
+      const updatedAiRappers = currentState.aiRappers.map(a => {
+        if (a.id === artistId) {
+          return {
+            ...a,
+            relationshipStatus: "friend" as "neutral" | "friend" | "rival" | "enemy"
+          };
+        }
+        return a;
+      });
+      
+      set(state => ({
+        ...state,
+        company: {
+          ...state.company!,
+          artists: updatedArtists,
+          value: state.company!.value + (signingCost * 1.5) // Company value increases significantly with signed artists
+        },
+        stats: {
+          ...state.stats,
+          wealth: updatedWealth,
+          reputation: state.stats.reputation + Math.floor(artist.popularity / 10) // Signing popular artists boosts reputation
+        },
+        aiRappers: updatedAiRappers,
+        cash: updatedWealth // Update cash alias
+      }));
+      
+      // Generate a news article about signing the artist
+      const newsId = uuidv4();
+      const newsArticle = {
+        id: newsId,
+        title: `${artist.name} Signs with ${currentState.company.name}`,
+        content: `In a significant industry development, ${artist.name} has officially signed with ${currentState.company.name}, the ${currentState.company.type} founded by ${currentState.character?.artistName || 'Artist'}. The deal, reportedly worth around $${signingCost}, marks a new chapter for both parties. ${artist.name}, known for ${artist.style} style music, expressed excitement about the partnership: "I'm looking forward to this new journey. The vision at ${currentState.company.name} aligns perfectly with where I want to take my career."`,
+        summary: `${artist.name} signs with ${currentState.company.name}`,
+        category: "industry",
+        impact: "medium",
+        publishedWeek: currentState.currentWeek,
+        publishedYear: currentState.currentYear,
+        sourceName: "Music Industry Today",
+        playerMentioned: true,
+        hasBeenRead: false,
+        isPremium: false,
+        reactions: {
+          views: Math.floor(Math.random() * 1000) + 1000,
+          likes: Math.floor(Math.random() * 500) + 200,
+          shares: Math.floor(Math.random() * 200) + 100,
+          comments: Math.floor(Math.random() * 100) + 20
+        },
+        tags: ["signing", "record deal", "artist development", artist.name]
+      };
+      
+      set(state => ({
+        ...state,
+        newsArticles: [
+          newsArticle,
+          ...(state.newsArticles || [])
+        ],
+        unreadNewsCount: (state.unreadNewsCount || 0) + 1
+      }));
+      
+      return true;
+    },
+    
+    dropArtist: (artistId: string): boolean => {
+      const currentState = get();
+      
+      // Check if player has a record label
+      if (!currentState.company) {
+        console.warn("Player doesn't have a company to drop artists from");
+        return false;
+      }
+      
+      // Make sure the company is a record label
+      if (currentState.company.type !== "record_label") {
+        console.warn("Only record labels can drop artists");
+        return false;
+      }
+      
+      // Find the artist
+      const artist = currentState.aiRappers.find(a => a.id === artistId);
+      if (!artist) {
+        console.warn(`Artist with ID ${artistId} not found`);
+        return false;
+      }
+      
+      // Check if artist is signed to player's label
+      if (!currentState.company.artists?.includes(artistId)) {
+        console.warn(`Artist ${artist.name} is not signed to your label`);
+        return false;
+      }
+      
+      // Calculate contract termination fee
+      const terminationFee = artist.popularity * 500;
+      
+      // Check if player can afford it
+      if (currentState.stats.wealth < terminationFee) {
+        console.warn(`Not enough money to terminate contract with ${artist.name}. Need $${terminationFee}`);
+        return false;
+      }
+      
+      // Update company, player wealth, and signed artists list
+      const updatedWealth = currentState.stats.wealth - terminationFee;
+      const updatedArtists = currentState.company.artists.filter(id => id !== artistId);
+      
+      // Update artist's relationship status to either neutral or rival (50% chance)
+      const becomesRival = Math.random() > 0.5;
+      const updatedAiRappers = currentState.aiRappers.map(a => {
+        if (a.id === artistId) {
+          return {
+            ...a,
+            relationshipStatus: becomesRival ? "rival" : "neutral" as "neutral" | "friend" | "rival" | "enemy"
+          };
+        }
+        return a;
+      });
+      
+      set(state => ({
+        ...state,
+        company: {
+          ...state.company!,
+          artists: updatedArtists,
+          value: Math.max(1000, state.company!.value * 0.9) // Company value decreases when dropping artists
+        },
+        stats: {
+          ...state.stats,
+          wealth: updatedWealth,
+          reputation: Math.max(1, state.stats.reputation - Math.floor(artist.popularity / 15)) // Dropping artists might hurt reputation
+        },
+        aiRappers: updatedAiRappers,
+        cash: updatedWealth // Update cash alias
+      }));
+      
+      // Generate a news article about dropping the artist
+      const newsId = uuidv4();
+      const newsArticle = {
+        id: newsId,
+        title: `${artist.name} Parts Ways with ${currentState.company.name}`,
+        content: `${artist.name} and ${currentState.company.name} have officially ended their partnership, representatives confirmed today. The split, described as "${becomesRival ? 'not entirely amicable' : 'mutual and amicable'}", comes after a period of collaboration between the artist and the ${currentState.company.type} founded by ${currentState.character?.artistName || 'Artist'}. Industry insiders suggest the termination fee was around $${terminationFee}. ${becomesRival ? `Sources close to the artist hint at creative differences and disagreements over future direction.` : `Both parties expressed gratitude for the time working together and wished each other success in future endeavors.`}`,
+        summary: `${artist.name} leaves ${currentState.company.name}`,
+        category: "industry",
+        impact: becomesRival ? "high" : "medium",
+        publishedWeek: currentState.currentWeek,
+        publishedYear: currentState.currentYear,
+        sourceName: "Music Industry Today",
+        playerMentioned: true,
+        hasBeenRead: false,
+        isPremium: false,
+        reactions: {
+          views: Math.floor(Math.random() * 1000) + 800,
+          likes: Math.floor(Math.random() * 300) + 100,
+          shares: Math.floor(Math.random() * 150) + 50,
+          comments: Math.floor(Math.random() * 200) + 50
+        },
+        tags: ["contract termination", "label split", "artist development", artist.name]
+      };
+      
+      set(state => ({
+        ...state,
+        newsArticles: [
+          newsArticle,
+          ...(state.newsArticles || [])
+        ],
+        unreadNewsCount: (state.unreadNewsCount || 0) + 1
+      }));
+      
+      return true;
+    },
+    
     // Game navigation
     setScreen: (screen) => {
       const currentState = get();
