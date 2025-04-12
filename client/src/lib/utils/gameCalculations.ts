@@ -5,7 +5,7 @@ import { CAREER_LEVELS, FEATURE_REQUEST_CHANCES, SONG_TIER_INFO } from '../gameD
 const VIRAL_CHANCE_BASE = 0.02; // 2% baseline chance for a song to go viral
 const VIRAL_MULTIPLIER_MIN = 3; // Minimum viral multiplier (reduced from 5)
 const VIRAL_MULTIPLIER_MAX = 8; // Maximum viral multiplier (reduced from 20)
-const VIRAL_DURATION_WEEKS = 2; // How long viral status lasts
+const VIRAL_DURATION_WEEKS = 10; // How long viral status lasts (increased from 2 to 10 weeks)
 
 const FLOP_CHANCE_BASE = 0.05; // 5% baseline chance for a song to flop
 const FLOP_MULTIPLIER = 0.2; // How much streams are reduced for flops (80% reduction)

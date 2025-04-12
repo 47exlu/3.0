@@ -1594,10 +1594,27 @@ export const useRapperGame = create<RapperGameStore>()(
         
       console.log(`Total weekly revenue: $${weeklyRevenue.toFixed(2)}`);
       
+      // Calculate new career level
+      const newCareerLevel = calculateCareerLevel(allStreams);
+      
+      // Check if level up occurred
+      if (newCareerLevel > currentState.stats.careerLevel) {
+        // Show level up notification
+        alert(`Congratulations! You've reached level ${newCareerLevel}!`);
+        
+        // Add level up bonuses here if needed
+        // For example, give some bonus cash or fans on level up
+        const levelUpBonus = newCareerLevel * 1000; // Bonus cash on level up
+        updatedState.stats = {
+          ...updatedState.stats,
+          wealth: (updatedState.stats.wealth || 0) + levelUpBonus
+        };
+      }
+      
       // Update career stats
       updatedState.stats = {
         ...currentState.stats,
-        careerLevel: calculateCareerLevel(allStreams),
+        careerLevel: newCareerLevel,
         // Add weekly revenue to wealth
         wealth: currentState.stats.wealth + weeklyRevenue,
         // Small natural increase in creativity each week

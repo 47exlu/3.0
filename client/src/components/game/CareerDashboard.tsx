@@ -249,13 +249,8 @@ export function CareerDashboard() {
     return '$' + formatNumber(amount);
   };
 
-  // Add reference to bottomRef at the end of the component to auto scroll there
-  useEffect(() => {
-    // Scroll to the bottom of content to eliminate any gap
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, []);
+  // Removed auto-scroll behavior to prevent dashboard from pulling down
+  // This fixes the issue where the dashboard pulls down when navigating to it
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-0">
