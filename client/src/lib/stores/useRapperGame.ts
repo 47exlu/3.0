@@ -896,35 +896,70 @@ export const useRapperGame = create<RapperGameStore>()(
     // Generate awards (Grammys, BET, VMAs, etc.)
     generateAwards: () => {
       const currentState = get();
-      const { currentWeek, songs, albums, character } = currentState;
+      const { currentWeek, currentYear, songs, albums, character } = currentState;
       
       // Only generate awards during specific weeks
       // Grammy Awards - Week 4 of the year (January)
       // BET Awards - Week 25 (June)
       // VMAs - Week 34 (August)
+      // Billboard Music Awards - Week 18 (May)
+      // American Music Awards - Week 46 (November)
       
-      const weekInYear = currentWeek % 52;
+      const weekInYear = (currentWeek - 1) % 52 + 1; // Ensure week is 1-52 range
       
-      // Check if it's award season
-      if (weekInYear !== 4 && weekInYear !== 25 && weekInYear !== 34) {
+      // Define award show weeks and their types
+      const awardShows = [
+        { week: 4, type: 'grammy', name: 'Grammy Awards' },
+        { week: 18, type: 'billboard', name: 'Billboard Music Awards' },
+        { week: 25, type: 'bet', name: 'BET Awards' },
+        { week: 34, type: 'vma', name: 'Video Music Awards' },
+        { week: 46, type: 'ama', name: 'American Music Awards' }
+      ];
+      
+      // Find if current week matches an award show
+      const currentAwardShow = awardShows.find(show => show.week === weekInYear);
+      
+      // If not an award week, exit the function
+      if (!currentAwardShow) {
         return;
       }
       
-      // Determine which award show
-      let awardType: AwardType;
-      let awardName: string;
-      let year = Math.floor(currentWeek / 52) + 2025; // Start at 2025 and increment by year
+      // Create a social media post about the upcoming award show
+      const socialAnnouncement = {
+        id: `post_award_announcement_${Date.now()}`,
+        platformName: 'twitter',
+        content: `The ${currentAwardShow.name} ${2024 + currentYear} are coming up soon! Who's excited? #${currentAwardShow.type.toUpperCase()} #MusicAwards`,
+        postWeek: currentWeek,
+        date: new Date(),
+        likes: 500 + Math.floor(Math.random() * 1000),
+        comments: 20 + Math.floor(Math.random() * 50),
+        shares: 10 + Math.floor(Math.random() * 30),
+        viralStatus: 'none',
+        viralMultiplier: 1,
+        followerGain: 0,
+        reputationGain: 0,
+        wealthGain: 0
+      };
       
-      if (weekInYear === 4) {
-        awardType = 'grammy';
-        awardName = `Grammy Awards ${year}`;
-      } else if (weekInYear === 25) {
-        awardType = 'bet';
-        awardName = `BET Awards ${year}`;
-      } else {
-        awardType = 'vma';
-        awardName = `Video Music Awards ${year}`;
+      // Add social media announcement
+      if (currentState.socialMediaStats?.twitter) {
+        set(state => ({
+          socialMediaStats: {
+            ...state.socialMediaStats,
+            twitter: {
+              ...state.socialMediaStats!.twitter,
+              tweets: [...(state.socialMediaStats?.twitter.tweets || []), socialAnnouncement]
+            }
+          }
+        }));
       }
+      
+      // Generate nominations and winners
+      // Determine which award show
+      let awardType: AwardType = currentAwardShow.type as AwardType;
+      let awardName: string = `${currentAwardShow.name} ${2024 + currentYear}`;
+      
+      // Award name is already set correctly from currentAwardShow
       
       // Find eligible songs (released in the past year)
       const eligibleSongs = songs.filter(song => 
@@ -990,12 +1025,12 @@ export const useRapperGame = create<RapperGameStore>()(
     // Award a nomination to the player
     awardPlayerNomination: (category: string, awardType: string) => {
       const currentState = get();
-      const { currentWeek, character } = currentState;
+      const { currentWeek, currentYear, character } = currentState;
       
       if (!character) return;
       
-      // Calculate year based on week number
-      const year = Math.floor(currentWeek / 52) + 2025; // Start from 2025
+      // Use the current year property instead of calculating from weeks
+      const year = 2024 + currentYear; // Start from 2025 for year 1
       
       const award: Award = {
         id: uuidv4(),
@@ -1049,7 +1084,40 @@ export const useRapperGame = create<RapperGameStore>()(
       // Check if we need to increment the year (end of week 52)
       if (newWeek > 0 && newWeek % 52 === 1) {
         newYear += 1;
-        // Could add "New Year" announcement or special event here
+        
+        // Create a New Year announcement on social media
+        const yearNumber = 2024 + newYear;
+        const newYearMessage = {
+          id: `post_new_year_${Date.now()}`,
+          platformName: 'twitter',
+          content: `Happy New Year ${yearNumber}! 🎉 This is going to be my biggest year yet. New music, new moves, bigger goals. Let's get it! #NewYear #NewGoals #${yearNumber}`,
+          postWeek: newWeek,
+          date: new Date(),
+          likes: 1000 + Math.floor(Math.random() * 2000),
+          comments: 100 + Math.floor(Math.random() * 200),
+          shares: 50 + Math.floor(Math.random() * 100),
+          viralStatus: 'none',
+          viralMultiplier: 1,
+          followerGain: 20 + Math.floor(Math.random() * 50),
+          reputationGain: 5,
+          wealthGain: 0
+        };
+        
+        // Add new year social media post
+        if (currentState.socialMediaStats?.twitter) {
+          set(state => ({
+            socialMediaStats: {
+              ...state.socialMediaStats,
+              twitter: {
+                ...state.socialMediaStats!.twitter,
+                tweets: [...(state.socialMediaStats?.twitter.tweets || []), newYearMessage]
+              }
+            }
+          }));
+        }
+        
+        // Display an alert to the user
+        alert(`🎉 Happy New Year ${yearNumber}! A new year of opportunities awaits you in the music industry.`);
       }
       
       // Create a copy of the current state
