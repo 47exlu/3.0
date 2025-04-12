@@ -33,6 +33,7 @@ import MusicNews from './components/game/MusicNews';
 import CompanyManagement from './components/game/CompanyManagement';
 import { BusinessOverview } from './components/game/BusinessOverview';
 import { Awards } from './components/game/Awards';
+import RecordDeal from './components/game/RecordDeal';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -208,6 +209,13 @@ const SCREEN_LOADING_MESSAGES: Record<string, string[]> = {
     "Reviewing industry recognitions...",
     "Loading your hall of fame...",
   ],
+  record_deal: [
+    "Contacting record labels...",
+    "Reviewing contract terms...",
+    "Negotiating your advance...",
+    "Analyzing royalty rates...",
+    "Planning your label meetings...",
+  ],
 };
 
 // Get a random loading message for the current screen
@@ -339,6 +347,24 @@ function App() {
                   {screen === 'company_management' && <CompanyManagement />}
                   {screen === 'business_overview' && <BusinessOverview />}
                   {screen === 'awards' && <Awards />}
+                  {screen === 'record_deal' && <RecordDeal />}
+                  
+                  {/* Alias screens */}
+                  {screen === 'main' && <MainMenu />}
+                  {screen === 'dashboard' && <CareerDashboard />}
+                  {screen === 'music' && <MusicProduction />}
+                  {screen === 'albums' && <AlbumManagement />}
+                  {screen === 'perform' && <TouringConcerts />}
+                  {screen === 'marketing' && <SongPromotion />}
+                  {screen === 'team' && <TeamManagement />}
+                  {screen === 'social' && <SocialMediaHub />}
+                  {screen === 'twitter' && <SocialMediaHub />}
+                  {screen === 'instagram' && <SocialMediaHub />}
+                  {screen === 'youtube' && <MusicVideos />}
+                  {screen === 'merch' && <MerchandiseManagement />}
+                  {screen === 'job_board' && <JobsSystem />}
+                  {screen === 'company' && <CompanyManagement />}
+                  {screen === 'interviews' && <MediaEventsManager />}
                 </GameLayout>
               </LoadingTransition>
             </Route>

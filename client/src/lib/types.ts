@@ -3,6 +3,7 @@ export type GameScreen =
   | "main_menu" 
   | "character_creation" 
   | "career_dashboard" 
+  | "dashboard" // Dashboard alias
   | "studio" 
   | "social_media" 
   | "social_media_hub" // Social media hub screen
@@ -22,22 +23,37 @@ export type GameScreen =
   | "music_charts" // Music charts and rankings screen
   | "hype_tester" // Hype and controversy tester screen
   | "album_management" // Album management screen
+  | "albums" // Albums alias
   | "song_promotion" // Song promotion screen
   | "merchandise" // Merchandise management screen
+  | "merch" // Merch alias
   | "merchandise_management" // Merchandise management screen
   | "merchandise_sales_charts" // Merchandise sales charts and analytics
   | "fanbase_naming" // Fanbase naming screen
   | "media_events" // Media events screen (festivals, talk shows, interviews)
+  | "interviews" // Interviews alias
   | "music_news" // Music industry news and magazine screen
   | "billboard_charts" // Billboard Hot 100 and album charts screen
   | "player_wikipedia" // Player's career Wikipedia-style page
   | "team_management" // Team management screen - for hiring manager, publicist, etc.
+  | "team" // Team alias
   | "awards_certifications" // Awards and certifications screen
   | "settings" // Game settings page
   | "jobs" // Jobs screen for taking on part-time music industry jobs
+  | "job_board" // Job board alias  
   | "company_management" // Company management screen for label and studio ownership
+  | "company" // Company alias
   | "business_overview" // Business financial overview screen
   | "awards" // Awards and recognition screen
+  | "main" // Main menu alias
+  | "music" // Music production alias
+  | "perform" // Perform alias
+  | "marketing" // Marketing alias
+  | "social" // Social media alias
+  | "twitter" // Twitter alias
+  | "instagram" // Instagram alias
+  | "youtube" // YouTube alias
+  | "record_deal" // Record deal screen
 
 export interface CharacterInfo {
   id: string;
