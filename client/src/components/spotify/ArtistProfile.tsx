@@ -159,7 +159,7 @@ const ArtistProfile: React.FC = () => {
     monthlyListeners: formatNumber(monthlyListeners),
     followers: formatNumber(Math.floor(monthlyListeners * 0.4)), // Estimate followers as 40% of monthly listeners
     verified: true,
-    artistRank: calculateRank(),
+    artistRank: character?.ranking || calculateRank(),
     rankChange: determineRankChange(),
     bio: character?.about || 'Rising artist making waves in the industry.',
     topTracks: getTopTracks(),
