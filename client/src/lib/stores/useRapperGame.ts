@@ -48,6 +48,7 @@ import { useAudio } from './useAudio';
 import { useEnergyStore } from './useEnergyStore';
 import { DEFAULT_AI_RAPPERS, DEFAULT_SHOP_ITEMS, DEFAULT_SKILLS, DEFAULT_VENUES, DEFAULT_TEAM_MEMBERS, SOCIAL_MEDIA_COSTS, SONG_TIER_INFO, CAREER_LEVELS } from '../gameData';
 import { getRandomEventForWeek } from '../utils/randomEvents';
+import { formatMoney } from '../utils';
 // Import all game calculations functions
 import { 
   calculateCareerLevel,
