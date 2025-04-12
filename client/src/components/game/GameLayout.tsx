@@ -15,7 +15,7 @@ interface GameLayoutProps {
 }
 
 export function GameLayout({ children }: GameLayoutProps) {
-  const { backgroundMusic, isMuted, toggleMute } = useAudio();
+  const { backgroundMusic, isMuted, toggleMute, resumeAudio } = useAudio();
   const { loadingAnimationsEnabled, toggleLoadingAnimations } = useSettings();
   const { screen } = useRapperGame();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -59,6 +59,25 @@ export function GameLayout({ children }: GameLayoutProps) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [toggleMute]);
+  
+  // Setup visibility change detection to handle background/foreground transitions
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        // Page is now visible (user returned to tab)
+        console.log('Page became visible, resuming audio if needed');
+        resumeAudio();
+      }
+    };
+    
+    // Listen for visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Cleanup listener on unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [resumeAudio]);
   
   // Play background music only when the component mounts and when muted status changes
   useEffect(() => {
