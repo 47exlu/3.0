@@ -29,6 +29,7 @@ import { SettingsPage } from './components/game/SettingsPage';
 import TeamManagement from './components/game/TeamManagement';
 import AwardsAndCertifications from './components/game/AwardsAndCertifications';
 import JobsSystem from './components/game/JobsSystem';
+import MusicNews from './components/game/MusicNews';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -317,6 +318,7 @@ function App() {
                   {screen === 'team_management' && <TeamManagement />}
                   {screen === 'awards_certifications' && <AwardsAndCertifications />}
                   {screen === 'jobs' && <JobsSystem />}
+                  {screen === 'music_news' && <MusicNews />}
                 </GameLayout>
               </LoadingTransition>
             </Route>

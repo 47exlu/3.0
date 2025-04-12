@@ -1,4 +1,4 @@
-import { AIRapper, Job, JobCategory, JobDifficulty, SongTier, TeamMember, TeamMemberBenefit, TeamMemberRole } from "./types";
+import { AIRapper, Job, JobCategory, JobDifficulty, NewsArticle, NewsCategory, NewsImpact, SongTier, TeamMember, TeamMemberBenefit, TeamMemberRole } from "./types";
 
 // Default AI rappers in the game
 export const DEFAULT_AI_RAPPERS: AIRapper[] = [

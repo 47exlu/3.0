@@ -47,6 +47,7 @@ import {
 import { useAudio } from './useAudio';
 import { useEnergyStore } from './useEnergyStore';
 import { DEFAULT_AI_RAPPERS, DEFAULT_SHOP_ITEMS, DEFAULT_SKILLS, DEFAULT_VENUES, DEFAULT_TEAM_MEMBERS, SOCIAL_MEDIA_COSTS, SONG_TIER_INFO, CAREER_LEVELS, DEFAULT_JOBS } from '../gameData';
+import { DEFAULT_NEWS_ARTICLES } from '../data/newsArticles';
 import { getRandomEventForWeek } from '../utils/randomEvents';
 import { formatMoney } from '../utils';
 import { CERTIFICATION_THRESHOLDS, CertificationType } from '../types';
@@ -479,7 +480,11 @@ const initialState: GameState = {
   activeJobs: [],
   appliedJobs: [],
   availableJobs: DEFAULT_JOBS,
-  completedJobs: []
+  completedJobs: [],
+  
+  // News system
+  newsArticles: DEFAULT_NEWS_ARTICLES,
+  unreadNewsCount: DEFAULT_NEWS_ARTICLES.length
 };
 
 // Create the store with combined state and actions
