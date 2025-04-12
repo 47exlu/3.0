@@ -123,12 +123,12 @@ export function ModernNavbar() {
     <div className="w-full z-50">
       {/* Bottom tab bar for main navigation */}
       <div 
-        className="bottom-nav w-full flex justify-around items-center py-1 px-2 fixed bottom-0 left-0 right-0 bg-gray-900/95 border-t border-purple-800/30 z-[9999]"
+        className="bottom-nav w-full flex justify-around items-center py-1 px-2 fixed bottom-0 left-0 right-0 bg-gradient-to-t from-black to-gray-900/95 border-t border-purple-800/30 z-[9999] backdrop-blur-md"
         style={{ 
           display: 'flex',
-          height: '60px', 
+          height: '64px', 
           paddingBottom: '8px',
-          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)'
+          boxShadow: '0 -10px 25px rgba(0, 0, 0, 0.4)'
         }}
       >
         {['main', 'music', 'marketing', 'business'].map((categoryId, idx) => {
@@ -142,16 +142,25 @@ export function ModernNavbar() {
             <button
               key={categoryId}
               className={cn(
-                "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-colors max-w-[20%]",
-                isActive ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
+                "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-all max-w-[20%] relative",
+                isActive 
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 scale-110" 
+                  : "text-gray-500 hover:text-gray-300"
               )}
               onClick={() => handleScreenChange(getActualScreenId(firstScreen.id))}
             >
               {isActive && (
-                <div className="absolute -top-1 w-1/6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
+                <>
+                  <div className="absolute -top-1 w-12 h-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full" />
+                  <div className="absolute -z-10 inset-0 bg-gray-800/40 rounded-full blur-xl opacity-80 scale-75"></div>
+                </>
               )}
-              {firstScreen.icon}
-              <span className="text-[10px] mt-1">{firstScreen.name}</span>
+              <div className={`transition-transform ${isActive ? 'scale-110' : ''}`}>
+                {firstScreen.icon}
+              </div>
+              <span className={`text-[10px] mt-1 font-medium transition-all ${isActive ? 'font-bold' : ''}`}>
+                {firstScreen.name}
+              </span>
             </button>
           );
         })}
@@ -160,24 +169,35 @@ export function ModernNavbar() {
         <button
           key="settings"
           className={cn(
-            "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-colors max-w-[20%]",
-            currentScreen === 'settings' ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
+            "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-all max-w-[20%] relative",
+            currentScreen === 'settings' 
+              ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 scale-110" 
+              : "text-gray-500 hover:text-gray-300"
           )}
           onClick={() => handleScreenChange('settings')}
         >
           {currentScreen === 'settings' && (
-            <div className="absolute -top-1 w-1/6 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
+            <>
+              <div className="absolute -top-1 w-12 h-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full" />
+              <div className="absolute -z-10 inset-0 bg-gray-800/40 rounded-full blur-xl opacity-80 scale-75"></div>
+            </>
           )}
-          <Settings className="w-5 h-5" />
-          <span className="text-[10px] mt-1">Settings</span>
+          <div className={`transition-transform ${currentScreen === 'settings' ? 'scale-110' : ''}`}>
+            <Settings className="w-5 h-5" />
+          </div>
+          <span className={`text-[10px] mt-1 font-medium transition-all ${currentScreen === 'settings' ? 'font-bold' : ''}`}>
+            Settings
+          </span>
         </button>
         
         {/* More Menu Button */}
         <button
-          className="flex flex-1 flex-col items-center justify-center py-2 px-0 text-gray-500 hover:text-gray-300 max-w-[20%]"
+          className="flex flex-1 flex-col items-center justify-center py-2 px-0 text-gray-500 hover:text-gray-300 max-w-[20%] transition-transform hover:scale-110"
           onClick={() => setMobileMenuOpen(true)}
         >
-          <Menu size={20} />
+          <div className="p-1.5 rounded-full bg-gray-800/70 hover:bg-gray-700/70 transition-colors">
+            <Menu size={18} />
+          </div>
           <span className="text-[10px] mt-1">More</span>
         </button>
       </div>
@@ -194,19 +214,19 @@ export function ModernNavbar() {
             variants={backdropVariants}
           >
             <motion.div 
-              className="bg-gray-900 border-t border-gray-700 rounded-t-xl pb-20 pt-2 max-h-[80vh] overflow-y-auto" 
+              className="bg-gradient-to-b from-gray-900 to-black border-t border-gray-700/50 rounded-t-xl pb-20 pt-2 max-h-[80vh] overflow-y-auto shadow-2xl" 
               onClick={e => e.stopPropagation()}
               variants={sheetVariants}
             >
               {/* Pull indicator */}
-              <div className="flex justify-center mb-2">
-                <div className="w-12 h-1 bg-gray-700 rounded-full"></div>
+              <div className="flex justify-center mb-3">
+                <div className="w-12 h-1.5 bg-gradient-to-r from-purple-500/60 to-pink-500/60 rounded-full"></div>
               </div>
               
               {/* Close button */}
               <div className="absolute top-2 right-2">
                 <button 
-                  className="p-2 rounded-full bg-gray-800 text-gray-400 hover:bg-gray-700"
+                  className="p-2 rounded-full bg-black/40 text-gray-400 hover:bg-gray-800/80 backdrop-blur-sm border border-gray-800/50 transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <X size={16} />
@@ -219,9 +239,13 @@ export function ModernNavbar() {
                 if (categoryScreens.length === 0) return null;
                 
                 return (
-                  <div key={category.id} className="mb-4">
-                    <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase">{category.name}</div>
-                    <div className="grid grid-cols-3 gap-2 px-2">
+                  <div key={category.id} className="mb-6">
+                    <div className="px-4 mb-2">
+                      <span className="text-xs uppercase font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        {category.name}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 px-3">
                       {categoryScreens.map((screen) => {
                         const isActive = currentScreen === getActualScreenId(screen.id);
                         
@@ -229,15 +253,22 @@ export function ModernNavbar() {
                           <button
                             key={screen.id}
                             className={cn(
-                              "flex flex-col items-center justify-center space-y-1 p-3 rounded-md text-center transition-all",
+                              "flex flex-col items-center justify-center p-3 rounded-lg text-center transition-all shadow-md",
                               isActive 
-                                ? "bg-gradient-to-r from-purple-800 to-purple-700 text-white border border-purple-600" 
-                                : "bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700"
+                                ? "bg-gradient-to-br from-purple-900 to-purple-800 text-white border border-purple-500/50" 
+                                : "bg-gradient-to-br from-gray-800 to-gray-900 text-gray-300 hover:text-white border border-gray-700/50 hover:border-gray-600/50 hover:scale-105"
                             )}
                             onClick={() => handleScreenChange(getActualScreenId(screen.id))}
                           >
-                            {screen.icon}
-                            <span className="text-xs font-medium">{screen.name}</span>
+                            <div className={`mb-1.5 ${isActive ? 'text-purple-300' : 'text-gray-400'}`}>
+                              {screen.icon}
+                            </div>
+                            <span className="text-xs font-medium">
+                              {screen.name}
+                            </span>
+                            {isActive && (
+                              <div className="w-1.5 h-1.5 rounded-full bg-purple-400 absolute -bottom-0.5"></div>
+                            )}
                           </button>
                         );
                       })}

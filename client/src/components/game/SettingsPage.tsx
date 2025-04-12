@@ -101,9 +101,12 @@ export function SettingsPage() {
         animate="visible"
       >
         <motion.div className="flex items-center" variants={itemVariants}>
-          <Settings className="h-8 w-8 mr-3 text-gradient" />
+          <div className="relative mr-3">
+            <Settings className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400" />
+            <div className="absolute inset-0 bg-purple-500/20 blur-xl rounded-full -z-10 opacity-70"></div>
+          </div>
           <div>
-            <h1 className="text-2xl font-bold fluid-text-xl">Settings</h1>
+            <h1 className="text-2xl font-bold fluid-text-xl bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Settings</h1>
             <p className="text-sm text-gray-400 fluid-text-xs">Customize your game experience</p>
           </div>
         </motion.div>
@@ -111,7 +114,7 @@ export function SettingsPage() {
         <motion.div variants={itemVariants}>
           <Button 
             variant="outline" 
-            className="bg-transparent border-gray-600 hover:bg-gray-800 rounded-button touch-target"
+            className="bg-gradient-to-r from-gray-900 to-black border border-gray-700/50 hover:border-purple-500/30 hover:shadow-purple-500/10 hover:shadow-md rounded-button touch-target transition-all"
             onClick={handleBack}
           >
             Back to Game
@@ -268,21 +271,30 @@ export function SettingsPage() {
               variants={itemVariants}
               className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4"
             >
-              <div className="flex flex-col items-center p-4 bg-card-gradient rounded-soft border-soft shadow-inner-highlight hover-glow">
-                <Smartphone className="h-10 w-10 mb-2 text-gradient-blue" />
-                <h3 className="font-medium text-gray-200 fluid-text-sm">Mobile</h3>
+              <div className="flex flex-col items-center p-5 bg-gradient-to-br from-gray-900 to-black rounded-xl border border-gray-800/50 shadow-lg hover:shadow-blue-500/10 hover:border-blue-500/30 transition-all duration-300 transform hover:-translate-y-1">
+                <div className="relative mb-3">
+                  <Smartphone className="h-10 w-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400" />
+                  <div className="absolute -inset-1 bg-blue-500/20 blur-xl rounded-full -z-10 opacity-70"></div>
+                </div>
+                <h3 className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 fluid-text-sm">Mobile</h3>
                 <p className="text-xs text-gray-400 text-center mt-1 fluid-text-xs">Optimized for handheld devices</p>
               </div>
               
-              <div className="flex flex-col items-center p-4 bg-card-gradient rounded-soft border-soft shadow-inner-highlight hover-glow">
-                <Tablet className="h-10 w-10 mb-2 text-gradient" />
-                <h3 className="font-medium text-gray-200 fluid-text-sm">Tablet</h3>
+              <div className="flex flex-col items-center p-5 bg-gradient-to-br from-gray-900 to-black rounded-xl border border-gray-800/50 shadow-lg hover:shadow-purple-500/10 hover:border-purple-500/30 transition-all duration-300 transform hover:-translate-y-1">
+                <div className="relative mb-3">
+                  <Tablet className="h-10 w-10 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400" />
+                  <div className="absolute -inset-1 bg-purple-500/20 blur-xl rounded-full -z-10 opacity-70"></div>
+                </div>
+                <h3 className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 fluid-text-sm">Tablet</h3>
                 <p className="text-xs text-gray-400 text-center mt-1 fluid-text-xs">Enhanced for mid-size screens</p>
               </div>
               
-              <div className="flex flex-col items-center p-4 bg-card-gradient rounded-soft border-soft shadow-inner-highlight hover-glow">
-                <Laptop className="h-10 w-10 mb-2 text-gradient-gold" />
-                <h3 className="font-medium text-gray-200 fluid-text-sm">Desktop</h3>
+              <div className="flex flex-col items-center p-5 bg-gradient-to-br from-gray-900 to-black rounded-xl border border-gray-800/50 shadow-lg hover:shadow-amber-500/10 hover:border-amber-500/30 transition-all duration-300 transform hover:-translate-y-1">
+                <div className="relative mb-3">
+                  <Laptop className="h-10 w-10 text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-400" />
+                  <div className="absolute -inset-1 bg-amber-500/20 blur-xl rounded-full -z-10 opacity-70"></div>
+                </div>
+                <h3 className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-400 fluid-text-sm">Desktop</h3>
                 <p className="text-xs text-gray-400 text-center mt-1 fluid-text-xs">Full experience on large screens</p>
               </div>
             </motion.div>
@@ -312,17 +324,20 @@ export function SettingsPage() {
               <motion.div variants={itemVariants}>
                 <Button 
                   variant="outline" 
-                  className="w-full bg-card-gradient border-soft rounded-button shadow-inner-highlight hover-scale touch-target"
+                  className="w-full bg-gradient-to-r from-blue-900/50 to-blue-900/20 border border-blue-500/30 hover:border-blue-400/50 rounded-lg p-6 shadow-lg hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1"
                   onClick={() => setScreen('save_load')}
                 >
-                  Save & Load Game
+                  <div className="flex flex-col items-center justify-center">
+                    <Save className="h-6 w-6 mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-500" />
+                    <span className="text-white font-medium">Save & Load Game</span>
+                  </div>
                 </Button>
               </motion.div>
               
               <motion.div variants={itemVariants}>
                 <Button 
                   variant="outline" 
-                  className="w-full bg-card-gradient border-soft rounded-button shadow-inner-highlight hover-scale touch-target"
+                  className="w-full bg-gradient-to-r from-pink-900/50 to-pink-900/20 border border-pink-500/30 hover:border-pink-400/50 rounded-lg p-6 shadow-lg hover:shadow-pink-500/20 transition-all duration-300 hover:-translate-y-1"
                   onClick={() => {
                     if (window.confirm('Are you sure you want to reset your settings to default?')) {
                       // Reset all settings to default
@@ -337,7 +352,10 @@ export function SettingsPage() {
                     }
                   }}
                 >
-                  Reset Settings
+                  <div className="flex flex-col items-center justify-center">
+                    <Settings className="h-6 w-6 mb-2 text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-500" />
+                    <span className="text-white font-medium">Reset Settings</span>
+                  </div>
                 </Button>
               </motion.div>
             </div>
