@@ -153,7 +153,7 @@ export function GameLayout({ children }: GameLayoutProps) {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <motion.div 
-          className={`h-full ${screen === 'main_menu' ? 'pb-0' : 'pb-16 sm:pb-20 md:pb-6'}`}
+          className={`h-full ${screen === 'main_menu' ? 'pb-0' : 'pb-14 sm:pb-14 md:pb-6'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}

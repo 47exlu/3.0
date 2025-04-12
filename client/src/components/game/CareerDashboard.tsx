@@ -248,7 +248,7 @@ export function CareerDashboard() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-14">
+    <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-12">
       {/* Header with career info */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div className="flex items-start gap-4">
