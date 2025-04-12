@@ -462,6 +462,8 @@ canvas {
     padding-bottom: env(safe-area-inset-bottom);
   }
   
+  /* ==== Fixes for navigation duplication issues ==== */
+  
   /* Fix for duplicate bottom navigation elements (for all screen sizes) */
   /* Target specifically the bottom action buttons that are displaying incorrectly */
   .bottom-nav:nth-of-type(2),
@@ -492,11 +494,57 @@ canvas {
   }
   
   /* Additional fix for specific elements at the bottom */
-  .flex.justify-around.fixed.bottom-0:not(.bottom-nav),
+  .fixed.bottom-0:not(.bottom-nav),
   div[class*="fixed bottom-0"]:not(.bottom-nav),
+  .fixed.bottom-0.flex:not(.bottom-nav),
+  .flex.justify-around.fixed.bottom-0:not(.bottom-nav),
   .flex.items-center.justify-around.fixed.bottom-0:not(.bottom-nav),
-  .fixed.bottom-0:not(.bottom-nav) {
+  .justify-around.items-center.fixed.bottom-0:not(.bottom-nav),
+  div[style*="position: fixed"][style*="bottom: 0"]:not(.bottom-nav) {
     display: none !important;
+  }
+  
+  /* Critical fix for the footer buttons on tablet/desktop */
+  @media (min-width: 768px) {
+    /* Target the exact game buttons at the bottom that appear in the screenshot */
+    [role="dialog"] .bg-gray-800,
+    [role="dialog"] .bg-black,
+    [id="radix-:r0:"] .bg-gray-800,
+    [id="radix-:r0:"] .bg-black,
+    div[style*="position: fixed; bottom: 0"],
+    div[style*="position:fixed;bottom:0"] {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    /* Prevent anything from showing at the bottom of tablet/desktop except bottom-nav */
+    .tablet-device .fixed.bottom-0:not(.bottom-nav),
+    .desktop-device .fixed.bottom-0:not(.bottom-nav) {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    /* Fix for the buttons in CareerDashboard.tsx */
+    .btn-group-save-game-row,
+    .game-action-buttons {
+      display: none !important;
+    }
+  }
+  
+  /* Fix for mobile and iOS specific issues with duplicate navigation */
+  @media (max-width: 767px) {
+    /* Only show the intended bottom navigation */
+    .bottom-nav {
+      display: flex !important;
+      z-index: 1000 !important;
+    }
+    
+    /* Ensure all content has enough bottom padding for the navigation */
+    main {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 60px) !important;
+    }
   }
   
   /* Add a subtle glow to the bottom nav active elements */

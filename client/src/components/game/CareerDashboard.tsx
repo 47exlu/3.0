@@ -295,7 +295,7 @@ export function CareerDashboard() {
           </div>
         </div>
         
-        <div className="flex flex-wrap mt-4 md:mt-0 gap-2">
+        <div className="flex flex-wrap mt-4 md:mt-0 gap-2 game-action-buttons">
           <Button 
             onClick={() => setScreen('save_load')} 
             variant="outline" 
