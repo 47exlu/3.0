@@ -478,7 +478,7 @@ export function ModernNavbar() {
                 transition={{ delay: 0.1 * idx + 0.3, duration: 0.5 }}
                 whileTap={{ scale: 0.9 }}
                 className={cn(
-                  "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors",
+                  "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors touch-target",
                   isActive ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
                 )}
                 onClick={() => handleScreenChange(getActualScreenId(firstScreen.id))}
@@ -503,7 +503,7 @@ export function ModernNavbar() {
             transition={{ delay: 0.7, duration: 0.5 }}
             whileTap={{ scale: 0.9 }}
             className={cn(
-              "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors",
+              "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors touch-target",
               currentScreen === 'settings' ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
             )}
             onClick={() => handleScreenChange('settings')}
@@ -524,7 +524,7 @@ export function ModernNavbar() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.5 }}
             whileTap={{ scale: 0.9 }}
-            className="flex flex-col items-center justify-center py-2 px-1 text-gray-500 hover:text-gray-300"
+            className="flex flex-col items-center justify-center py-2 px-1 text-gray-500 hover:text-gray-300 touch-target"
             onClick={() => setMobileMenuOpen(true)}
           >
             <Menu size={20} />

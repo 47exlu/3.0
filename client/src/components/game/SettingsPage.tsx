@@ -55,9 +55,9 @@ export function SettingsPage() {
   };
   
   return (
-    <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto">
+    <div className="p-4 sm:p-6 md:p-8 h-full overflow-y-auto mobile-scroll pb-safe">
       <motion.div 
-        className="flex items-center justify-between mb-8"
+        className="flex flex-col sm:flex-row items-center justify-between mb-6 sm:mb-8 gap-4"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -65,15 +65,15 @@ export function SettingsPage() {
         <motion.div className="flex items-center" variants={itemVariants}>
           <Settings className="h-8 w-8 mr-3 text-gradient" />
           <div>
-            <h1 className="text-2xl font-bold">Settings</h1>
-            <p className="text-sm text-gray-400">Customize your game experience</p>
+            <h1 className="text-2xl font-bold fluid-text-xl">Settings</h1>
+            <p className="text-sm text-gray-400 fluid-text-xs">Customize your game experience</p>
           </div>
         </motion.div>
         
         <motion.div variants={itemVariants}>
           <Button 
             variant="outline" 
-            className="bg-transparent border-gray-600 hover:bg-gray-800"
+            className="bg-transparent border-gray-600 hover:bg-gray-800 rounded-button touch-target"
             onClick={handleBack}
           >
             Back to Game
@@ -178,24 +178,24 @@ export function SettingsPage() {
             
             <motion.div 
               variants={itemVariants}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4"
             >
-              <div className="flex flex-col items-center p-4 bg-gray-800/40 rounded-lg border border-gray-700">
-                <Smartphone className="h-10 w-10 mb-2 text-blue-400" />
-                <h3 className="font-medium text-gray-200">Mobile</h3>
-                <p className="text-xs text-gray-400 text-center mt-1">Optimized for handheld devices</p>
+              <div className="flex flex-col items-center p-4 bg-card-gradient rounded-soft border-soft shadow-inner-highlight hover-glow">
+                <Smartphone className="h-10 w-10 mb-2 text-gradient-blue" />
+                <h3 className="font-medium text-gray-200 fluid-text-sm">Mobile</h3>
+                <p className="text-xs text-gray-400 text-center mt-1 fluid-text-xs">Optimized for handheld devices</p>
               </div>
               
-              <div className="flex flex-col items-center p-4 bg-gray-800/40 rounded-lg border border-gray-700">
-                <Tablet className="h-10 w-10 mb-2 text-purple-400" />
-                <h3 className="font-medium text-gray-200">Tablet</h3>
-                <p className="text-xs text-gray-400 text-center mt-1">Enhanced for mid-size screens</p>
+              <div className="flex flex-col items-center p-4 bg-card-gradient rounded-soft border-soft shadow-inner-highlight hover-glow">
+                <Tablet className="h-10 w-10 mb-2 text-gradient" />
+                <h3 className="font-medium text-gray-200 fluid-text-sm">Tablet</h3>
+                <p className="text-xs text-gray-400 text-center mt-1 fluid-text-xs">Enhanced for mid-size screens</p>
               </div>
               
-              <div className="flex flex-col items-center p-4 bg-gray-800/40 rounded-lg border border-gray-700">
-                <Laptop className="h-10 w-10 mb-2 text-green-400" />
-                <h3 className="font-medium text-gray-200">Desktop</h3>
-                <p className="text-xs text-gray-400 text-center mt-1">Full experience on large screens</p>
+              <div className="flex flex-col items-center p-4 bg-card-gradient rounded-soft border-soft shadow-inner-highlight hover-glow">
+                <Laptop className="h-10 w-10 mb-2 text-gradient-gold" />
+                <h3 className="font-medium text-gray-200 fluid-text-sm">Desktop</h3>
+                <p className="text-xs text-gray-400 text-center mt-1 fluid-text-xs">Full experience on large screens</p>
               </div>
             </motion.div>
             
@@ -220,11 +220,11 @@ export function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <motion.div variants={itemVariants}>
                 <Button 
                   variant="outline" 
-                  className="w-full bg-gray-800/40 border-gray-700 hover:bg-gray-700/60 text-gray-200"
+                  className="w-full bg-card-gradient border-soft rounded-button shadow-inner-highlight hover-scale touch-target"
                   onClick={() => setScreen('save_load')}
                 >
                   Save & Load Game
@@ -234,7 +234,7 @@ export function SettingsPage() {
               <motion.div variants={itemVariants}>
                 <Button 
                   variant="outline" 
-                  className="w-full bg-gray-800/40 border-gray-700 hover:bg-gray-700/60 text-gray-200"
+                  className="w-full bg-card-gradient border-soft rounded-button shadow-inner-highlight hover-scale touch-target"
                   onClick={() => {
                     if (window.confirm('Are you sure you want to reset your settings to default?')) {
                       // Reset all settings to default
