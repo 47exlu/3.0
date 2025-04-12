@@ -253,7 +253,7 @@ export function CareerDashboard() {
   // This fixes the issue where the dashboard pulls down when navigating to it
 
   return (
-    <div className="flex flex-col h-full w-full md:min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-0 relative z-10">
+    <div className="universal-container flex flex-col h-full w-full md:min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-0 relative z-10 notch-aware">
       {/* Header with career info */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div className="flex items-start gap-4">
@@ -360,12 +360,13 @@ export function CareerDashboard() {
       )}
       
       {/* Career stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 tablet-layout desktop-layout">
         <MetricsCard
           title="Monthly Listeners"
           value={formatNumber(totalMonthlyListeners)}
           icon={<SpotifyIcon size={20} />}
           trend={{ value: 12, direction: 'up' }}
+          className="samsung-a54-container"
         />
         
         <MetricsCard
@@ -373,6 +374,7 @@ export function CareerDashboard() {
           value={formatNumber(totalFollowers)}
           icon={<TwitterIcon size={20} />}
           trend={{ value: 8, direction: 'up' }}
+          className="samsung-a54-container"
         />
         
         <MetricsCard
@@ -380,6 +382,7 @@ export function CareerDashboard() {
           value={formatMoney(stats?.wealth || 0)}
           icon={<DollarIcon size={20} />}
           trend={{ value: 5, direction: 'up' }}
+          className="samsung-a54-container"
         />
       </div>
       
@@ -551,7 +554,7 @@ export function CareerDashboard() {
       )}
       
       {/* Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 tablet-layout desktop-layout responsive-gap notch-aware">
         <Card 
           className="bg-gradient-to-br from-purple-900/70 to-indigo-900/70 border-indigo-800 cursor-pointer hover:from-purple-800/70 hover:to-indigo-800/70 transition-colors"
           onClick={() => setScreen('music_production')}
@@ -617,7 +620,7 @@ export function CareerDashboard() {
         </Card>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 tablet-layout desktop-layout responsive-gap">
         <Card 
           className="bg-gradient-to-br from-orange-900/70 to-red-900/70 border-red-800 cursor-pointer hover:from-orange-800/70 hover:to-red-800/70 transition-colors"
           onClick={() => setScreen('unreleased_songs')}
@@ -671,7 +674,7 @@ export function CareerDashboard() {
       </div>
       
       {/* Album Management */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 tablet-layout desktop-layout responsive-gap">
         <Card 
           className="bg-gradient-to-br from-purple-900/70 to-indigo-900/70 border-indigo-800 cursor-pointer hover:from-purple-800/70 hover:to-indigo-800/70 transition-colors col-span-full"
           onClick={() => setScreen('album_management')}
