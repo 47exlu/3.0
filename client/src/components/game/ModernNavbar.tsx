@@ -144,7 +144,7 @@ export function ModernNavbar() {
               className={cn(
                 "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-all max-w-[20%] relative",
                 isActive 
-                  ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 scale-110" 
+                  ? "scale-110" 
                   : "text-gray-500 hover:text-gray-300"
               )}
               onClick={() => handleScreenChange(getActualScreenId(firstScreen.id))}
@@ -158,7 +158,11 @@ export function ModernNavbar() {
               <div className={`transition-transform ${isActive ? 'scale-110' : ''}`}>
                 {firstScreen.icon}
               </div>
-              <span className={`text-[10px] mt-1 font-medium transition-all truncate w-full ${isActive ? 'font-bold' : ''}`}>
+              <span className={`text-[10px] mt-1 font-medium transition-all truncate w-full ${
+                isActive 
+                  ? 'font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400' 
+                  : ''
+              }`}>
                 {firstScreen.name}
               </span>
             </button>
@@ -171,7 +175,7 @@ export function ModernNavbar() {
           className={cn(
             "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-all max-w-[20%] relative",
             currentScreen === 'settings' 
-              ? "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 scale-110" 
+              ? "scale-110" 
               : "text-gray-500 hover:text-gray-300"
           )}
           onClick={() => handleScreenChange('settings')}
@@ -185,7 +189,11 @@ export function ModernNavbar() {
           <div className={`transition-transform ${currentScreen === 'settings' ? 'scale-110' : ''}`}>
             <Settings className="w-5 h-5" />
           </div>
-          <span className={`text-[10px] mt-1 font-medium transition-all truncate w-full ${currentScreen === 'settings' ? 'font-bold' : ''}`}>
+          <span className={`text-[10px] mt-1 font-medium transition-all truncate w-full ${
+            currentScreen === 'settings' 
+              ? 'font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400' 
+              : ''
+          }`}>
             Settings
           </span>
         </button>
