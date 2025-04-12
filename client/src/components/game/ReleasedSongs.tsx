@@ -12,11 +12,14 @@ import {
   Minus, 
   Award, 
   Music, 
-  Calendar, 
+  Calendar,
   BarChart3, 
   Play, 
   Users,
-  Disc
+  Disc,
+  Star,
+  Flame,
+  Sparkles
 } from 'lucide-react';
 
 const ReleasedSongs: React.FC = () => {
@@ -33,8 +36,8 @@ const ReleasedSongs: React.FC = () => {
   const renderPerformanceStatus = (status: string | undefined, isViral: boolean = false) => {
     if (isViral) {
       return (
-        <Badge className="bg-gradient-to-r from-purple-600 to-pink-600">
-          <TrendingUp className="w-3 h-3 mr-1" />
+        <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 flex items-center gap-1 text-white shadow-lg">
+          <Flame className="w-3 h-3" />
           Viral
         </Badge>
       );
@@ -43,30 +46,37 @@ const ReleasedSongs: React.FC = () => {
     switch(status) {
       case 'rising':
         return (
-          <Badge className="bg-green-600">
-            <TrendingUp className="w-3 h-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-green-500 to-green-700 flex items-center gap-1 text-white shadow-sm">
+            <TrendingUp className="w-3 h-3" />
             Rising
           </Badge>
         );
       case 'declining':
         return (
-          <Badge className="bg-red-600">
-            <TrendingDown className="w-3 h-3 mr-1" />
-            Declining
+          <Badge className="bg-gradient-to-r from-red-500 to-red-700 flex items-center gap-1 text-white shadow-sm">
+            <TrendingDown className="w-3 h-3" />
+            Falling
           </Badge>
         );
       case 'peaking':
         return (
-          <Badge className="bg-blue-600">
-            <TrendingUp className="w-3 h-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 flex items-center gap-1 text-white shadow-sm">
+            <TrendingUp className="w-3 h-3" />
             Peaking
+          </Badge>
+        );
+      case 'flop':
+        return (
+          <Badge className="bg-gradient-to-r from-orange-500 to-orange-700 flex items-center gap-1 text-white shadow-sm">
+            <TrendingDown className="w-3 h-3" />
+            Flop
           </Badge>
         );
       case 'stable':
       default:
         return (
-          <Badge className="bg-gray-600">
-            <Minus className="w-3 h-3 mr-1" />
+          <Badge className="bg-gradient-to-r from-gray-600 to-gray-800 flex items-center gap-1 text-white shadow-sm">
+            <Minus className="w-3 h-3" />
             Stable
           </Badge>
         );
@@ -77,19 +87,54 @@ const ReleasedSongs: React.FC = () => {
   const getCertificationBadge = (certType: string) => {
     switch(certType) {
       case 'gold':
-        return <Badge className="bg-yellow-600">Gold</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-700 flex items-center gap-1 text-yellow-100">
+            <Star className="w-3 h-3" />
+            Gold
+          </Badge>
+        );
       case 'platinum':
-        return <Badge className="bg-gray-400">Platinum</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 flex items-center gap-1 text-white">
+            <Star className="w-3 h-3" />
+            Platinum
+          </Badge>
+        );
       case '2xPlatinum':
-        return <Badge className="bg-gray-400">2× Platinum</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 flex items-center gap-1 text-white">
+            <Star className="w-3 h-3" />
+            2× Plat
+          </Badge>
+        );
       case '3xPlatinum':
-        return <Badge className="bg-gray-400">3× Platinum</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 flex items-center gap-1 text-white">
+            <Star className="w-3 h-3" />
+            3× Plat
+          </Badge>
+        );
       case '4xPlatinum':
-        return <Badge className="bg-gray-400">4× Platinum</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 flex items-center gap-1 text-white">
+            <Star className="w-3 h-3" />
+            4× Plat
+          </Badge>
+        );
       case '5xPlatinum':
-        return <Badge className="bg-gray-400">5× Platinum</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-gray-400 to-gray-600 flex items-center gap-1 text-white">
+            <Star className="w-3 h-3" />
+            5× Plat
+          </Badge>
+        );
       case 'diamond':
-        return <Badge className="bg-blue-400">Diamond</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-blue-400 to-blue-600 flex items-center gap-1 text-white">
+            <Sparkles className="w-3 h-3" />
+            Diamond
+          </Badge>
+        );
       default:
         return null;
     }
@@ -116,21 +161,51 @@ const ReleasedSongs: React.FC = () => {
     switch(tierStr) {
       case 'S':
       case '5':
-        return <Badge className="bg-purple-600">S Tier</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-purple-500 to-purple-700 flex items-center gap-1 text-white shadow-sm">
+            <Sparkles className="w-3 h-3" />
+            S Tier
+          </Badge>
+        );
       case 'A':
       case '4':
-        return <Badge className="bg-red-600">A Tier</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-red-500 to-red-700 flex items-center gap-1 text-white shadow-sm">
+            <Star className="w-3 h-3" />
+            A Tier
+          </Badge>
+        );
       case 'B':
       case '3':
-        return <Badge className="bg-blue-600">B Tier</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-blue-500 to-blue-700 flex items-center gap-1 text-white shadow-sm">
+            <Star className="w-3 h-3" />
+            B Tier
+          </Badge>
+        );
       case 'C':
       case '2':
-        return <Badge className="bg-green-600">C Tier</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-green-500 to-green-700 flex items-center gap-1 text-white shadow-sm">
+            <Star className="w-3 h-3" />
+            C Tier
+          </Badge>
+        );
       case 'D':
       case '1':
-        return <Badge className="bg-gray-600">D Tier</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-gray-500 to-gray-700 flex items-center gap-1 text-white shadow-sm">
+            <Star className="w-3 h-3" />
+            D Tier
+          </Badge>
+        );
       default:
-        return <Badge className="bg-gray-600">{tierStr}</Badge>;
+        return (
+          <Badge className="bg-gradient-to-r from-gray-500 to-gray-700 flex items-center gap-1 text-white shadow-sm">
+            <Star className="w-3 h-3" />
+            {tierStr}
+          </Badge>
+        );
     }
   };
 
@@ -162,18 +237,18 @@ const ReleasedSongs: React.FC = () => {
         </TableHeader>
         <TableBody>
           {sortedSongs.map((song, index) => (
-            <TableRow key={song.id} className={index % 2 === 0 ? 'bg-gray-900/30' : 'bg-gray-900/10'}>
+            <TableRow key={song.id} className={`${index % 2 === 0 ? 'bg-gray-900/30' : 'bg-gray-900/10'} hover:bg-gray-800/40 transition-colors`}>
               <TableCell className="text-center font-bold">{index + 1}</TableCell>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium min-w-[180px]">
                 <div className="flex items-center gap-2">
                   {song.icon && (
-                    <div className="w-8 h-8 rounded overflow-hidden bg-gray-800 flex items-center justify-center">
+                    <div className="min-w-[32px] w-8 h-8 rounded-md overflow-hidden bg-gray-800 flex items-center justify-center flex-shrink-0 shadow-inner">
                       {typeof song.icon === 'string' ? song.icon : '🎵'}
                     </div>
                   )}
-                  <div>
-                    <div>{song.title}</div>
-                    <div className="text-xs text-gray-400">
+                  <div className="overflow-hidden">
+                    <div className="truncate font-semibold">{song.title}</div>
+                    <div className="text-xs text-gray-400 truncate">
                       {song.featuring && song.featuring.length > 0 
                         ? `feat. ${song.featuring.join(', ')}` 
                         : 'Solo'}
@@ -184,10 +259,13 @@ const ReleasedSongs: React.FC = () => {
               <TableCell className="hidden md:table-cell">
                 {getTierBadge(song.tier)}
               </TableCell>
-              <TableCell className="font-mono">
-                {formatNumber(song.streams)}
+              <TableCell className="font-mono whitespace-nowrap">
+                <span className="flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3 text-green-500" />
+                  <span className="font-semibold">{formatNumber(song.streams)}</span>
+                </span>
               </TableCell>
-              <TableCell className="hidden md:table-cell">
+              <TableCell className="hidden md:table-cell text-gray-400 text-sm">
                 {song.releaseDate 
                   ? formatDate(song.releaseDate)
                   : 'Unknown'}
@@ -241,12 +319,12 @@ const ReleasedSongs: React.FC = () => {
         </TableHeader>
         <TableBody>
           {sortedAlbums.map((album, index) => (
-            <TableRow key={album.id} className={index % 2 === 0 ? 'bg-gray-900/30' : 'bg-gray-900/10'}>
+            <TableRow key={album.id} className={`${index % 2 === 0 ? 'bg-gray-900/30' : 'bg-gray-900/10'} hover:bg-gray-800/40 transition-colors`}>
               <TableCell className="text-center font-bold">{index + 1}</TableCell>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium min-w-[180px]">
                 <div className="flex items-center gap-2">
                   {album.coverArt && (
-                    <div className="w-10 h-10 rounded overflow-hidden">
+                    <div className="min-w-[40px] w-10 h-10 rounded-md overflow-hidden flex-shrink-0 shadow-md">
                       <img 
                         src={album.coverArt} 
                         alt={`${album.title} cover`} 
@@ -254,31 +332,39 @@ const ReleasedSongs: React.FC = () => {
                       />
                     </div>
                   )}
-                  <div>
-                    <div>{album.title}</div>
-                    <div className="text-xs text-gray-400">
-                      {album.description || album.type}
+                  <div className="overflow-hidden">
+                    <div className="truncate font-semibold">{album.title}</div>
+                    <div className="text-xs text-gray-400 truncate">
+                      {album.description || String(album.type).charAt(0).toUpperCase() + String(album.type).slice(1)}
                     </div>
                   </div>
                 </div>
               </TableCell>
               <TableCell>
                 <Badge className={
-                  String(album.type) === 'standard' ? 'bg-blue-600' :
-                  String(album.type) === 'deluxe' ? 'bg-pink-600' :
-                  String(album.type) === 'remix' ? 'bg-green-600' :
-                  String(album.type) === 'ep' ? 'bg-purple-600' :
-                  String(album.type) === 'compilation' ? 'bg-orange-600' :
-                  'bg-gray-600'
+                  String(album.type) === 'standard' ? 'bg-gradient-to-r from-blue-500 to-blue-700 flex items-center gap-1 text-white shadow-sm' :
+                  String(album.type) === 'deluxe' ? 'bg-gradient-to-r from-pink-500 to-pink-700 flex items-center gap-1 text-white shadow-sm' :
+                  String(album.type) === 'remix' ? 'bg-gradient-to-r from-green-500 to-green-700 flex items-center gap-1 text-white shadow-sm' :
+                  String(album.type) === 'ep' ? 'bg-gradient-to-r from-purple-500 to-purple-700 flex items-center gap-1 text-white shadow-sm' :
+                  String(album.type) === 'compilation' ? 'bg-gradient-to-r from-orange-500 to-orange-700 flex items-center gap-1 text-white shadow-sm' :
+                  'bg-gradient-to-r from-gray-500 to-gray-700 flex items-center gap-1 text-white shadow-sm'
                 }>
+                  <Disc className="w-3 h-3" />
                   {String(album.type).charAt(0).toUpperCase() + String(album.type).slice(1)}
                 </Badge>
               </TableCell>
-              <TableCell>{album.songIds?.length || 0}</TableCell>
-              <TableCell className="font-mono">
-                {formatNumber(album.streams)}
+              <TableCell className="text-center">
+                <Badge className="bg-gradient-to-r from-indigo-500 to-indigo-700 shadow-sm">
+                  {album.songIds?.length || 0}
+                </Badge>
               </TableCell>
-              <TableCell className="hidden md:table-cell">
+              <TableCell className="font-mono whitespace-nowrap">
+                <span className="flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3 text-green-500" />
+                  <span className="font-semibold">{formatNumber(album.streams)}</span>
+                </span>
+              </TableCell>
+              <TableCell className="hidden md:table-cell text-gray-400 text-sm">
                 {album.releaseDate 
                   ? formatDate(album.releaseDate)
                   : 'Unknown'}
@@ -294,21 +380,21 @@ const ReleasedSongs: React.FC = () => {
   };
 
   return (
-    <Card className="bg-black bg-opacity-80 border-gray-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-bold flex items-center gap-2">
-          <Award className="h-5 w-5 text-yellow-500" />
+    <Card className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 shadow-lg overflow-hidden">
+      <CardHeader className="pb-3 border-b border-gray-800">
+        <CardTitle className="text-xl font-bold flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-amber-500 bg-clip-text text-transparent">
+          <Award className="h-6 w-6 text-yellow-500" />
           Released Music
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-2 mb-4">
-            <TabsTrigger value="songs" className="flex items-center gap-1">
+          <TabsList className="w-full grid grid-cols-2 mb-4 bg-gray-900/60 p-1 rounded-lg">
+            <TabsTrigger value="songs" className="flex items-center gap-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-800">
               <Music className="h-4 w-4" />
               Songs ({sortedSongs.length})
             </TabsTrigger>
-            <TabsTrigger value="albums" className="flex items-center gap-1">
+            <TabsTrigger value="albums" className="flex items-center gap-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-purple-800">
               <Disc className="h-4 w-4" />
               Albums ({sortedAlbums.length})
             </TabsTrigger>
