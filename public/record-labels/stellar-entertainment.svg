@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="stellar-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8E2DE2"/>
+      <stop offset="100%" style="stop-color:#4A00E0"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="180" height="180" rx="15" fill="url(#stellar-gradient)" />
+  
+  <!-- Star pattern -->
+  <polygon points="100,40 107,55 123,55 110,65 115,80 100,70 85,80 90,65 77,55 93,55" fill="white" />
+  <polygon points="60,90 64,98 73,98 66,103 69,112 60,107 51,112 54,103 47,98 56,98" fill="white" opacity="0.8" />
+  <polygon points="140,90 144,98 153,98 146,103 149,112 140,107 131,112 134,103 127,98 136,98" fill="white" opacity="0.8" />
+  <polygon points="100,120 103,126 110,126 104,130 107,137 100,133 93,137 96,130 90,126 97,126" fill="white" opacity="0.6" />
+  
+  <text x="100" y="165" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">STELLAR</text>
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">ENTERTAINMENT</text>
+</svg>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="urban-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000"/>
+      <stop offset="100%" style="stop-color:#434343"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="180" height="180" rx="10" fill="url(#urban-gradient)" />
+  
+  <!-- Crown emblem -->
+  <path d="M60,80 L80,50 L100,80 L120,50 L140,80 L130,100 L70,100 Z" fill="gold" />
+  <rect x="70" y="100" width="60" height="10" fill="gold" />
+  
+  <!-- Cityscape silhouette -->
+  <path d="M30,140 L30,120 L45,120 L45,130 L55,130 L55,110 L65,110 L65,125 L75,125 L75,100 L90,100 L90,115 L100,115 L100,90 L110,90 L110,115 L120,115 L120,105 L130,105 L130,120 L140,120 L140,110 L150,110 L150,130 L160,130 L160,120 L170,120 L170,140 Z" 
+        fill="black" stroke="gold" stroke-width="1" />
+  
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">URBAN</text>
+  <text x="100" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">DYNASTY</text>
+</svg>

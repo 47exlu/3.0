@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="street-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4b6cb7"/>
+      <stop offset="100%" style="stop-color:#182848"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="180" height="180" rx="0" fill="url(#street-gradient)" />
+  
+  <!-- Brick wall pattern -->
+  <g fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1">
+    <path d="M10,40 H190 M10,70 H190 M10,100 H190 M10,130 H190 M10,160 H190" />
+    <path d="M30,10 V190 M60,10 V190 M90,10 V190 M120,10 V190 M150,10 V190 M180,10 V190" />
+  </g>
+  
+  <!-- Graffiti style text -->
+  <text x="100" y="100" font-family="Impact, sans-serif" font-size="36" text-anchor="middle" fill="white" transform="rotate(-5, 100, 100)">STREET</text>
+  <text x="100" y="130" font-family="Impact, sans-serif" font-size="28" text-anchor="middle" fill="white" transform="rotate(-5, 100, 130)">LEVEL</text>
+  
+  <text x="100" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">ENTERTAINMENT</text>
+</svg>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="horizon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF416C"/>
+      <stop offset="100%" style="stop-color:#FF4B2B"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="180" height="180" rx="0" fill="black" />
+  
+  <!-- Horizon line and sun -->
+  <path d="M 10,100 L 190,100" stroke="url(#horizon-gradient)" stroke-width="5" />
+  <circle cx="100" cy="100" r="30" fill="url(#horizon-gradient)" />
+  
+  <!-- Sound waves -->
+  <path d="M 10,100 Q 35,70 60,100 Q 85,130 110,100 Q 135,70 160,100 Q 185,130 190,100" 
+        fill="none" stroke="white" stroke-width="2" opacity="0.3" />
+  <path d="M 10,100 Q 35,80 60,100 Q 85,120 110,100 Q 135,80 160,100 Q 185,120 190,100" 
+        fill="none" stroke="white" stroke-width="2" opacity="0.5" />
+  <path d="M 10,100 Q 35,90 60,100 Q 85,110 110,100 Q 135,90 160,100 Q 185,110 190,100" 
+        fill="none" stroke="white" stroke-width="2" opacity="0.7" />
+  
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">HORIZON</text>
+  <text x="100" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">RECORDS</text>
+</svg>

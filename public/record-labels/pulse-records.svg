@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pulse-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00C9FF"/>
+      <stop offset="100%" style="stop-color:#92FE9D"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="180" height="180" rx="5" fill="black" />
+  
+  <!-- Pulse line -->
+  <path d="M 20,100 L 60,100 L 70,70 L 80,130 L 90,85 L 100,115 L 110,100 L 120,100 L 130,60 L 140,140 L 150,100 L 180,100" 
+        stroke="url(#pulse-gradient)" stroke-width="6" fill="none" />
+  
+  <!-- Record/vinyl element -->
+  <circle cx="100" cy="100" r="25" fill="black" stroke="url(#pulse-gradient)" stroke-width="2" />
+  <circle cx="100" cy="100" r="8" fill="url(#pulse-gradient)" />
+  <circle cx="100" cy="100" r="3" fill="black" />
+  
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">PULSE</text>
+  <text x="100" y="175" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="white">RECORDS</text>
+</svg>
