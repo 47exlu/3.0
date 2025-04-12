@@ -534,12 +534,10 @@ export function MusicProduction() {
                     alert("Please select an artist to produce for");
                     return;
                   }
-                  const success = produceForArtist(selectedArtist, ghostSongTier, ghostSongTitle);
-                  if (success) {
-                    playSuccess();
-                    setGhostSongTitle('');
-                    setSelectedArtist('');
-                  }
+                  produceForArtist(selectedArtist, ghostSongTier, ghostSongTitle);
+                  playSuccess();
+                  setGhostSongTitle('');
+                  setSelectedArtist('');
                 }}
                 disabled={!selectedArtist}
               >

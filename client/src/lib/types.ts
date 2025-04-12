@@ -342,6 +342,7 @@ export interface AIRapper {
     active: boolean;
     history: string[];
   };
+  songs?: string[]; // IDs of songs owned by this rapper
 }
 
 // Beef system interfaces

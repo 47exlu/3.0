@@ -5404,23 +5404,18 @@ export const useRapperGame = create<RapperGameStore>()(
       }
       
       // Check relationship status - only produce for neutral and friendly rappers
-      const relationship = targetRapper.relationshipStatus || targetRapper.relationship;
+      // Use nullish coalescing to handle undefined values
+      const relationship = targetRapper.relationshipStatus ?? targetRapper.relationship ?? "neutral";
       if (relationship === "rival" || relationship === "enemy") {
         alert(`${targetRapper.name} won't work with you due to your rivalry.`);
         return;
       }
       
       // Calculate cost based on tier and relationship
-      // Friends get a discount, neutral artists pay full price
+      // Friends pay more because they value your work
       const baseCost = SONG_TIER_INFO[tier].cost;
       const relationshipMultiplier = relationship === "friend" ? 1.5 : 1.2;
       const productionFee = Math.round(baseCost * relationshipMultiplier);
-      
-      // Check if player can afford the production
-      if (currentState.stats.wealth < productionFee) {
-        alert(`You don't have enough money to produce this song. You need $${productionFee}.`);
-        return;
-      }
       
       // Generate song title if not provided
       const songTitle = title?.trim() || generateSongTitle();
@@ -5454,22 +5449,38 @@ export const useRapperGame = create<RapperGameStore>()(
       };
       
       // Update AI rapper's song list and increase their stats
-      const updatedRappers = currentState.aiRappers.map(rapper => {
-        if (rapper.id === rapperId) {
+      const updatedRappers = currentState.aiRappers.map(r => {
+        if (r.id === rapperId) {
           // Boost monthly listeners based on song tier
-          const listenerBoost = Math.round(5000 * tier);
+          const listenerBoost = Math.round(5000 * Number(tier));
+          
+          // Determine new relationship status - can only improve to friend from neutral
+          const newRelationship = relationship === "neutral" ? "friend" : relationship;
           
           return {
-            ...rapper,
-            songs: rapper.songs ? [...rapper.songs, newSong.id] : [newSong.id],
-            monthlyListeners: rapper.monthlyListeners + listenerBoost,
+            ...r,
+            songs: r.songs ? [...r.songs, newSong.id] : [newSong.id],
+            monthlyListeners: r.monthlyListeners + listenerBoost,
             // Improve relationship with player
-            relationshipStatus: relationship === "neutral" ? "friend" : relationship,
-            relationship: relationship === "neutral" ? "friend" : relationship
+            relationshipStatus: newRelationship,
+            relationship: newRelationship // For backward compatibility
           };
         }
-        return rapper;
+        return r;
       });
+      
+      // Calculate weekly stats entry
+      const weeklyEntry = currentState.weeklyStats[currentState.weeklyStats.length - 1];
+      const updatedWeeklyStats = [...currentState.weeklyStats];
+      
+      if (weeklyEntry && weeklyEntry.week === currentState.currentWeek) {
+        // Update current week's stats
+        updatedWeeklyStats[updatedWeeklyStats.length - 1] = {
+          ...weeklyEntry,
+          revenue: weeklyEntry.revenue + productionFee,
+          ghostProduction: (weeklyEntry.ghostProduction || 0) + 1
+        };
+      }
       
       // Update state with new song and payment
       set({
@@ -5480,8 +5491,18 @@ export const useRapperGame = create<RapperGameStore>()(
           wealth: currentState.stats.wealth + productionFee, // Player gets paid
           creativity: Math.min(100, currentState.stats.creativity + 3), // Boost creativity
           networking: Math.min(100, currentState.stats.networking + 2) // Boost networking
-        }
+        },
+        weeklyStats: updatedWeeklyStats
       });
+      
+      // Alert success
+      const formattedFee = new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: 'USD',
+        maximumFractionDigits: 0 
+      }).format(productionFee);
+      
+      alert(`You produced "${songTitle}" for ${targetRapper.name} and earned ${formattedFee}!`);
       
       // Return success status
       return true;
