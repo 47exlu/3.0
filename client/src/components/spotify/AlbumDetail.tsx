@@ -66,14 +66,14 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({ albumId, onBack }) => {
   const totalMinutes = Math.floor(totalDuration / 60);
   
   return (
-    <div className="flex-1 bg-gradient-to-b from-gray-900 to-black text-white p-4 sm:p-6 relative">
-      {/* Close button - more visible on mobile */}
+    <div className="flex-1 bg-gradient-to-b from-gray-900 to-black text-white p-4 sm:p-6 relative h-full overflow-y-auto">
+      {/* Fixed close button - always visible on screen */}
       <button 
-        className="absolute top-2 right-2 z-10 p-2 rounded-full bg-black/40 text-white hover:bg-black/60"
+        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-black/80 text-white hover:bg-black shadow-lg"
         onClick={onBack}
         aria-label="Close album view"
       >
-        <X className="h-4 w-4" />
+        <X className="h-5 w-5" />
       </button>
       
       {/* Album header */}
@@ -106,51 +106,53 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({ albumId, onBack }) => {
         </div>
       </div>
       
-      {/* Songs list - improved mobile layout */}
-      <div className="mb-6 sm:mb-8 overflow-x-auto">
-        <table className="w-full text-left">
-          <thead className="text-xs sm:text-sm text-gray-400 border-b border-gray-800">
-            <tr>
-              <th className="pb-2 w-4 sm:w-8">#</th>
-              <th className="pb-2">Title</th>
-              <th className="pb-2 text-right pr-1 sm:pr-8">
-                <Clock className="h-3 w-3 sm:h-4 sm:w-4 inline" />
-              </th>
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            {albumSongs.map((song, index) => (
-              <tr 
-                key={song.id}
-                className="text-gray-300 hover:bg-gray-800 group"
-              >
-                <td className="py-2 sm:py-3 pr-1 sm:pr-2 align-top">{index + 1}</td>
-                <td className="py-2 sm:py-3 align-top">
-                  <div className="font-medium text-white line-clamp-1">{song.title}</div>
-                  <div className="flex flex-col sm:flex-row text-xs text-gray-400 gap-1 sm:gap-2 items-start sm:items-center">
-                    {song.featuring && song.featuring.length > 0 && (
-                      <div className="line-clamp-1">
-                        feat. {song.featuring.join(', ')}
-                      </div>
-                    )}
-                    {/* Show song streams on mobile too */}
-                    {song.streams > 0 && (
-                      <div className="text-[10px] sm:text-xs text-gray-500">
-                        {formatNumberFn(song.streams)} plays
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="py-2 sm:py-3 text-right pl-1 pr-1 sm:pr-8 align-top">
-                  <div className="flex items-center justify-end space-x-1 sm:space-x-3">
-                    <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-transparent group-hover:text-gray-400 cursor-pointer" />
-                    <span className="text-xs sm:text-sm whitespace-nowrap">{getSongDuration(song.id)}</span>
-                  </div>
-                </td>
+      {/* Songs list - improved mobile layout and scrolling */}
+      <div className="mb-6 sm:mb-8">
+        <div className="overflow-x-auto max-h-[60vh] overflow-y-auto">
+          <table className="w-full text-left">
+            <thead className="text-xs sm:text-sm text-gray-400 border-b border-gray-800 sticky top-0 bg-black/80 z-10">
+              <tr>
+                <th className="pb-2 pt-2 w-4 sm:w-8">#</th>
+                <th className="pb-2 pt-2">Title</th>
+                <th className="pb-2 pt-2 text-right pr-1 sm:pr-8">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 inline" />
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="text-sm">
+              {albumSongs.map((song, index) => (
+                <tr 
+                  key={song.id}
+                  className="text-gray-300 hover:bg-gray-800 group"
+                >
+                  <td className="py-2 sm:py-3 pr-1 sm:pr-2 align-top">{index + 1}</td>
+                  <td className="py-2 sm:py-3 align-top">
+                    <div className="font-medium text-white line-clamp-1">{song.title}</div>
+                    <div className="flex flex-col sm:flex-row text-xs text-gray-400 gap-1 sm:gap-2 items-start sm:items-center">
+                      {song.featuring && song.featuring.length > 0 && (
+                        <div className="line-clamp-1">
+                          feat. {song.featuring.join(', ')}
+                        </div>
+                      )}
+                      {/* Show song streams on mobile too */}
+                      {song.streams > 0 && (
+                        <div className="text-[10px] sm:text-xs text-gray-500">
+                          {formatNumberFn(song.streams)} plays
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-2 sm:py-3 text-right pl-1 pr-1 sm:pr-8 align-top">
+                    <div className="flex items-center justify-end space-x-1 sm:space-x-3">
+                      <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-transparent group-hover:text-gray-400 cursor-pointer" />
+                      <span className="text-xs sm:text-sm whitespace-nowrap">{getSongDuration(song.id)}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       
       {/* Album stats - improved mobile layout */}
@@ -173,12 +175,22 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({ albumId, onBack }) => {
       </div>
       
       {/* Back button at the bottom */}
-      <div className="mt-6 pb-4 flex justify-center sm:justify-start">
+      <div className="mt-6 pb-20 flex justify-center sm:justify-start">
         <button 
           className="px-4 py-2 border border-gray-600 rounded-full text-xs sm:text-sm hover:bg-gray-800"
           onClick={onBack}
         >
           Back to profile
+        </button>
+      </div>
+      
+      {/* Fixed bottom exit control for easy access */}
+      <div className="fixed bottom-4 left-0 right-0 flex justify-center z-50">
+        <button 
+          className="px-6 py-3 bg-black/80 text-white rounded-full shadow-lg font-medium text-sm hover:bg-black"
+          onClick={onBack}
+        >
+          Exit Album View
         </button>
       </div>
     </div>
