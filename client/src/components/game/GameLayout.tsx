@@ -128,26 +128,35 @@ export function GameLayout({ children }: GameLayoutProps) {
   // Don't show navbar on main menu or character creation
   const showNavbar = screen !== 'main_menu' && screen !== 'character_creation';
   
-  // Add class to body for tablet detection
+  // Add class to body for device detection
   useEffect(() => {
-    // Add tablet class to help with CSS targeting
-    if (window.innerWidth >= 768 && window.innerWidth <= 1023) {
-      document.body.classList.add('tablet-device');
-    } else {
-      document.body.classList.remove('tablet-device');
-    }
-    
-    // Listen for resize events
-    const handleResize = () => {
+    // Add device classes to help with CSS targeting
+    const updateDeviceClass = () => {
+      // Clear existing device classes
+      document.body.classList.remove('tablet-device', 'desktop-device', 'mobile-device');
+      
+      // Add appropriate device class
       if (window.innerWidth >= 768 && window.innerWidth <= 1023) {
         document.body.classList.add('tablet-device');
+      } else if (window.innerWidth >= 1024) {
+        document.body.classList.add('desktop-device');
       } else {
-        document.body.classList.remove('tablet-device');
+        document.body.classList.add('mobile-device');
       }
+      
+      // Also add a global class to mark those elements that need fix
+      const extraNavElements = document.querySelectorAll('.flex.justify-around.fixed.bottom-0:not(.bottom-nav)');
+      extraNavElements.forEach(el => {
+        el.classList.add('universal-fix-bottom');
+      });
     };
     
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    // Run on mount
+    updateDeviceClass();
+    
+    // Listen for resize events
+    window.addEventListener('resize', updateDeviceClass);
+    return () => window.removeEventListener('resize', updateDeviceClass);
   }, []);
 
   return (

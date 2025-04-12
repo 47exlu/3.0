@@ -462,39 +462,41 @@ canvas {
     padding-bottom: env(safe-area-inset-bottom);
   }
   
-  /* Fix for tablets - hide extra bottom navigation elements */
-  @media (min-width: 768px) and (max-width: 1023px) {
-    /* Target specifically the bottom action buttons that are displaying incorrectly */
-    .bottom-nav:nth-of-type(2),
-    .bottom-nav ~ .bottom-nav,
-    /* Remove any floating nav elements at the bottom */
-    .flex.justify-around.fixed.bottom-0,
-    div[class*="fixed bottom-0"],
-    /* Additional selectors to target those elements */
-    .flex.items-center.justify-around.fixed.bottom-0,
-    .fixed.bottom-0:not(.bottom-nav),
-    .tablet-device .flex.justify-around.items-center:not(.bottom-nav) {
-      display: none !important;
-      opacity: 0 !important;
-      z-index: -1 !important;
-      visibility: hidden !important;
-      height: 0 !important;
-      overflow: hidden !important;
-      pointer-events: none !important;
-    }
-    
-    /* Ensure the real bottom nav stays visible */
-    .bottom-nav:first-of-type {
-      display: flex !important;
-      opacity: 1 !important;
-      z-index: 50 !important;
-      visibility: visible !important;
-    }
-    
-    /* Add breathing room at the bottom of content in tablet mode */
-    .tablet-device main {
-      padding-bottom: 60px !important;
-    }
+  /* Fix for duplicate bottom navigation elements (for all screen sizes) */
+  /* Target specifically the bottom action buttons that are displaying incorrectly */
+  .bottom-nav:nth-of-type(2),
+  .bottom-nav ~ .bottom-nav,
+  /* Remove any floating nav elements at the bottom */
+  .universal-fix-bottom {
+    display: none !important;
+    opacity: 0 !important;
+    z-index: -1 !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+  
+  /* Ensure the real bottom nav stays visible */
+  .bottom-nav:first-of-type {
+    display: flex !important;
+    opacity: 1 !important;
+    z-index: 50 !important;
+    visibility: visible !important;
+  }
+  
+  /* Add breathing room at the bottom of content */
+  .tablet-device main, 
+  .desktop-device main {
+    padding-bottom: 60px !important;
+  }
+  
+  /* Additional fix for specific elements at the bottom */
+  .flex.justify-around.fixed.bottom-0:not(.bottom-nav),
+  div[class*="fixed bottom-0"]:not(.bottom-nav),
+  .flex.items-center.justify-around.fixed.bottom-0:not(.bottom-nav),
+  .fixed.bottom-0:not(.bottom-nav) {
+    display: none !important;
   }
   
   /* Add a subtle glow to the bottom nav active elements */
