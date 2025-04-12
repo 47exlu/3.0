@@ -435,47 +435,64 @@ export function StreamingPlatforms() {
                           </div>
                         </div>
                         
-                        {/* About section */}
+                        {/* About section - Redesigned to match reference images */}
                         <div>
                           <h2 className="text-xl xxs:text-2xl sm:text-3xl font-bold mb-3 xxs:mb-4 sm:mb-6">About</h2>
-                          <div className="rounded-md overflow-hidden">
-                            {/* About section with darker background to match Spotify's look */}
-                            <div className="bg-black p-4 xxs:p-5 sm:p-8">
-                              <div className="flex flex-col sm:flex-row gap-4 xxs:gap-5 sm:gap-8">
-                                {/* Artist Image with click to change - Now circular */}
-                                {character?.image && (
+                          <div className="rounded-md overflow-hidden bg-black">
+                            {/* Artist header with image and stats */}
+                            <div className="relative w-full">
+                              {/* Artist profile image (left) */}
+                              <div className="flex flex-col sm:flex-row">
+                                <div className="sm:w-1/3 p-4">
                                   <div 
-                                    className="w-24 h-24 xxs:w-32 xxs:h-32 sm:w-40 sm:h-40 relative overflow-hidden flex-shrink-0 rounded-full cursor-pointer group shadow-xl mx-auto sm:mx-0"
+                                    className="relative mx-auto sm:mx-0"
                                     onClick={() => setShowProfileEditor(true)}
                                   >
-                                    <img 
-                                      src={character.image} 
-                                      alt={character.artistName} 
-                                      className="w-full h-full object-cover"
-                                    />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                      </svg>
+                                    <div className="relative bg-blue-500 rounded-full h-24 w-24 flex items-center justify-center text-white font-bold text-2xl overflow-hidden mx-auto sm:mx-0">
+                                      {character?.image ? (
+                                        <img 
+                                          src={character.image} 
+                                          alt={character.artistName} 
+                                          className="w-full h-full object-cover"
+                                        />
+                                      ) : (
+                                        <span>{character?.artistName?.[0] || "R"}</span>
+                                      )}
+                                      <div className="absolute top-0 right-0 bg-[#1DB954] text-white text-xs rounded-full px-2 py-1 font-bold">
+                                        #{stats?.ranking || "123"}
+                                      </div>
                                     </div>
                                   </div>
-                                )}
+                                  
+                                  <div className="text-center sm:text-left mt-4">
+                                    <div className="text-2xl font-bold text-white mb-0.5">{formatNumber(spotify.listeners)}</div>
+                                    <div className="text-sm text-gray-400">Ascoltatori mensili</div>
+                                  </div>
+                                  
+                                  <div className="text-center sm:text-left mt-4">
+                                    <div className="text-2xl font-bold text-white mb-0.5">{formatNumber(spotify.totalStreams)}</div>
+                                    <div className="text-sm text-gray-400">Follower</div>
+                                  </div>
+                                </div>
                                 
-                                {/* Artist Stats */}
-                                <div className="flex-1 text-center sm:text-left mt-3 sm:mt-0">
-                                  <div className="flex flex-col text-white">
-                                    <p className="text-xl xxs:text-2xl sm:text-3xl font-bold mb-1 xxs:mb-2">{formatNumber(spotify.listeners)}</p>
-                                    <p className="text-xs xxs:text-sm text-[#b3b3b3] mb-2 xxs:mb-3 sm:mb-4">Monthly Listeners</p>
-                                    <div className="mt-2 xxs:mt-3 sm:mt-4 grid grid-cols-2 gap-3 xxs:gap-4 sm:gap-6">
-                                      <div>
-                                        <h4 className="text-xs xxs:text-sm font-bold mb-1 xxs:mb-2 text-[#b3b3b3] uppercase">Music Style</h4>
-                                        <p className="text-sm xxs:text-md text-white">{character?.musicStyle || "Rap"}</p>
-                                      </div>
-                                      <div>
-                                        <h4 className="text-xs xxs:text-sm font-bold mb-1 xxs:mb-2 text-[#b3b3b3] uppercase">Career Level</h4>
-                                        <p className="text-sm xxs:text-md text-white">{stats.careerLevel}/10</p>
-                                      </div>
+                                {/* Artist bio and details (right) */}
+                                <div className="sm:w-2/3 p-4 sm:p-6">
+                                  <div className="text-white">
+                                    <div className="mb-4">
+                                      <h3 className="text-lg font-semibold mb-2">
+                                        {character?.characterDescription ? (
+                                          `${character.artistName || 'Artist'}`
+                                        ) : (
+                                          'Controversial rapper'
+                                        )}
+                                      </h3>
+                                      <p className="text-sm text-gray-300 leading-relaxed">
+                                        {character?.characterDescription ? (
+                                          character.characterDescription
+                                        ) : (
+                                          `${character?.artistName || 'Artist'} played fast and loose when it came to genres, often incorporating elements of punk rock, hip-hop, R&B, and heavy metal. In the late 2010s, they experienced a quick rise with dark and emotionally intense content, scoring a number one album with ${new Date().getFullYear()}'s ?. Months later, at the peak of popularity, they went viral. Born in ${character?.hometown || 'South Florida'}, they had a troubled upbringing, often getting into difficult situations; their mother couldn't cope with raising them alone, so they were often forced to stay with various relatives as a result. At a very young age, they were sent to a juvenile detention center after committing armed robbery; it was there that they met friend and longtime collaborator ${character?.friendName || 'Ski Mask the Slump God'}. After release, both of them decided to get clean and pursue a career in music, setting up the ${character?.hometown || 'Florida'} rap crew Members Only in the process.`
+                                        )}
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
