@@ -4487,7 +4487,7 @@ export const useRapperGame = create<RapperGameStore>()(
               ...song,
               released: true,
               isActive: true,
-              streams: (song.streams || 0) + initialStreams
+              streams: (song.streams || 0) // Don't add initial streams on release
             };
           }
           return song;
@@ -4502,10 +4502,10 @@ export const useRapperGame = create<RapperGameStore>()(
               releaseDate: currentWeek,
               criticalRating: Math.floor(avgSongQuality / 10),
               fanRating: Math.floor(avgSongQuality / 12 + 2),
-              streams: baseStreams,
-              sales: Math.floor(baseStreams * 0.02),
-              revenue: baseStreams * 0.004, // Approximate revenue
-              platformStreams: {...platformStreamsDistribution},
+              streams: 0, // Start with zero streams, will increase during weekly calculations
+              sales: 0, // Start with zero sales
+              revenue: 0, // Start with zero revenue
+              platformStreams: {...platformStreamsDistribution}, 
               chartPosition: 90 - Math.floor(avgSongQuality / 2) // Higher quality = better position
             };
           }
@@ -4513,13 +4513,11 @@ export const useRapperGame = create<RapperGameStore>()(
         });
         
         // Update streaming platforms with simplified logic
+        // Only update listeners since streams will accumulate weekly
         const updatedStreamingPlatforms = streamingPlatforms.map(platform => {
-          const platformStreams = platformStreamsDistribution[platform.name] || 0;
           return {
             ...platform,
-            totalStreams: platform.totalStreams + platformStreams,
-            listeners: platform.listeners + 1000, // Simple boost
-            revenue: platform.revenue + (platformStreams * 0.004)
+            listeners: platform.listeners + 1000, // Give a listener boost when album is released
           };
         });
         
