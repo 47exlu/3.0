@@ -5216,7 +5216,8 @@ export const useRapperGame = create<RapperGameStore>()(
       const updatedTeamMember = {
         ...teamMember,
         hired: true,
-        hiredWeek: currentState.currentWeek
+        hiredWeek: currentState.currentWeek,
+        hiredDate: currentState.currentWeek // For backward compatibility
       };
       
       // Update state
@@ -5255,7 +5256,7 @@ export const useRapperGame = create<RapperGameStore>()(
         // Add back to available team members with hired flag reset
         availableTeamMembers: [
           ...(state.availableTeamMembers || []), 
-          { ...teamMember, hired: false, hiredWeek: undefined }
+          { ...teamMember, hired: false, hiredWeek: undefined, hiredDate: undefined }
         ]
       }));
       

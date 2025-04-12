@@ -442,7 +442,8 @@ export interface TeamMember {
   name: string;
   role: TeamMemberRole;
   hired: boolean;
-  hiredWeek?: number; // Week when hired (changed from hiredDate for consistency)
+  hiredWeek?: number; // Week when hired
+  hiredDate?: number; // Old field name for week when hired (kept for backwards compatibility)
   contractLength?: number; // In weeks
   contractEnds?: number; // Week when contract expires
   salary: number; // Weekly salary
