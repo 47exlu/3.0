@@ -25,7 +25,8 @@ import {
   ChevronRight,
   Book,
   UserCog,
-  Briefcase
+  Briefcase,
+  Building2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -110,6 +111,12 @@ const screens = [
     category: 'business' 
   },
   { 
+    id: 'company_management', 
+    name: 'Company', 
+    icon: <Building2 className="w-5 h-5" />,
+    category: 'business' 
+  },
+  { 
     id: 'collaborations', 
     name: 'Collabs', 
     icon: <Users className="w-5 h-5" />,
@@ -184,6 +191,7 @@ export function ModernNavbar() {
       case 'team_management': return 'team_management';
       case 'awards_certifications': return 'awards_certifications';
       case 'jobs': return 'jobs';
+      case 'company_management': return 'company_management';
       default: return screenId;
     }
   };
