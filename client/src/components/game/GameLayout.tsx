@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import EnergyDisplay from './EnergyDisplay';
 import { ModernNavbar } from './ModernNavbar';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Volume, VolumeX } from 'lucide-react';
+import { Settings, Volume, VolumeX, Calendar } from 'lucide-react';
+import { format, addDays } from 'date-fns';
 
 interface GameLayoutProps {
   children: React.ReactNode;
@@ -17,8 +18,19 @@ interface GameLayoutProps {
 export function GameLayout({ children }: GameLayoutProps) {
   const { backgroundMusic, isMuted, toggleMute, resumeAudio } = useAudio();
   const { loadingAnimationsEnabled, toggleLoadingAnimations } = useSettings();
-  const { screen } = useRapperGame();
+  const { screen, currentWeek, currentYear } = useRapperGame();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  
+  // Calculate the simulated date based on the current week and year
+  const calculateGameDate = () => {
+    // Start with January 1st of the game year
+    const startDate = new Date(currentYear, 0, 1);
+    // Add days based on current week (each week is 7 days)
+    const currentDate = addDays(startDate, (currentWeek - 1) * 7);
+    return currentDate;
+  };
+  
+  const gameDate = calculateGameDate();
   
   // Animation variants
   const pageTransition = {
@@ -128,7 +140,23 @@ export function GameLayout({ children }: GameLayoutProps) {
         {showNavbar && <ModernNavbar key="navbar" />}
       </AnimatePresence>
       
-      {/* Energy Display - moved to the top right near settings */}
+      {/* Date Tracker Display */}
+      {showNavbar && (
+        <motion.div 
+          className="fixed top-3 right-4 z-40 flex items-center bg-gray-800/80 backdrop-blur-sm py-1 px-3 rounded-full"
+          initial={{ y: -30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -30, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        >
+          <Calendar className="w-4 h-4 mr-2 text-blue-400" />
+          <span className="text-sm font-medium">
+            {format(gameDate, 'dd/MM/yyyy')} • Week {currentWeek}, Year {currentYear}
+          </span>
+        </motion.div>
+      )}
+      
+      {/* Energy Display - moved to the top left */}
       <AnimatePresence>
         {screen === 'career_dashboard' && (
           <motion.div 
