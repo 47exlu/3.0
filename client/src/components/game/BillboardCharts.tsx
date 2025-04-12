@@ -309,6 +309,18 @@ const BillboardCharts: React.FC = () => {
       .map((artist, index) => ({...artist, rank: index + 1})); // Assign rankings
 
     setArtistRankings(allRankings);
+    
+    // Find the player's ranking position and save it to the character
+    const playerRankInChart = allRankings.find(artist => artist.isPlayer)?.rank || 25;
+    const updateCharacter = useRapperGame.getState().updateCharacter;
+    
+    // Update the character with the Billboard ranking position
+    if (updateCharacter && character) {
+      updateCharacter({
+        ...character,
+        ranking: playerRankInChart 
+      });
+    }
   };
 
   // Renders chart movement indicator
