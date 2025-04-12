@@ -1029,13 +1029,39 @@ export const useRapperGame = create<RapperGameStore>()(
         }
       }
       
-      // NOW update each platform with guaranteed unique values
+      // NOW update each platform with guaranteed unique values and proper growth
       updatedState.streamingPlatforms = currentState.streamingPlatforms.map(platform => {
-        // Get the forced unique streams allocated to this platform
-        const updatedStreams = finalStreamsMap[platform.name] || platform.totalStreams;
+        // Get the current platform name
+        const platformName = platform.name;
+        
+        // Directly get the growth for this platform from our platformStreamMap
+        // This ensures we're using the actual calculated growth values from songs
+        const platformGrowth = platformStreamMap[platformName] || 0;
+        
+        // Force a minimum growth if there are active songs to prevent platforms from appearing stagnant
+        // Only apply this minimum if there are active songs
+        const hasActiveSongs = (updatedState.songs?.some(song => 
+          song.isActive && song.released && song.releasePlatforms?.includes(platformName)
+        ) || false);
+        
+        // Ensure meaningful growth when active songs exist
+        const minimalGrowth = hasActiveSongs ? 1 : 0;
+        const effectiveGrowth = Math.max(platformGrowth, minimalGrowth);
+        
+        // Calculate the new total streams by adding growth to existing streams
+        const updatedStreams = platform.totalStreams + effectiveGrowth;
+        
+        // Important: Calculate how much revenue this platform generated just from the new streams
+        const previousRevenue = platform.revenue || 0;
+        const newRevenue = calculateStreamingRevenue(updatedStreams, platformName);
+        const revenueGrowth = Math.max(0, newRevenue - previousRevenue);
+        
+        // Debug output for platform revenue
+        console.log(`Platform ${platformName} - New streams: ${effectiveGrowth}, Revenue generated: $${revenueGrowth.toFixed(2)}`);
         
         // For new players, platforms start with small numbers, then accelerate
         // Calculate base monthly listeners from streams with better progression curve
+        let updatedListeners = platform.listeners;
         
         // First scale for small numbers (0-100K streams)
         if (updatedStreams < 100000) {
@@ -1053,22 +1079,14 @@ export const useRapperGame = create<RapperGameStore>()(
           const minListeners = Math.floor(platform.listeners * 0.85); // Never lose more than 15% of listeners
           
           // Final listeners is the maximum of: baseListeners, minListeners, or (current listeners - decay)
-          const updatedListeners = Math.max(
+          updatedListeners = Math.max(
             baseListeners,
             minListeners, 
             Math.floor(platform.listeners - listenerDecay)
           );
-          
-          return {
-            ...platform,
-            totalStreams: updatedStreams,
-            listeners: updatedListeners,
-            revenue: calculateStreamingRevenue(updatedStreams)
-          };
         }
-        
         // Mid game (100K-10M streams)
-        if (updatedStreams < 10000000) {
+        else if (updatedStreams < 10000000) {
           // Mid game: Moderate listener ratio (1:5)
           let baseListeners = Math.ceil(updatedStreams / 5);
           
@@ -1083,51 +1101,62 @@ export const useRapperGame = create<RapperGameStore>()(
           const minListeners = Math.floor(platform.listeners * 0.9); // Never lose more than 10% of listeners
           
           // Final listeners is the maximum of: baseListeners, minListeners, or (current listeners - decay)
-          const updatedListeners = Math.max(
+          updatedListeners = Math.max(
             baseListeners,
             minListeners, 
             Math.floor(platform.listeners - listenerDecay)
           );
-          
-          return {
-            ...platform,
-            totalStreams: updatedStreams,
-            listeners: updatedListeners,
-            revenue: calculateStreamingRevenue(updatedStreams)
-          };
         }
-        
         // Late game (>10M streams)
-        // Calculate base monthly listeners from streams - use variable ratio based on platform size
-        // Bigger platforms have higher streams-to-listeners ratio (more passive listeners)
-        const platformMultiplier = Math.max(8, 15 - (platform.listeners / 1000000) * 0.5); // Ranges from 8-15
-        let baseListeners = Math.ceil(updatedStreams / platformMultiplier);
-        
-        // Apply listener decay based on active songs ratio
-        const listenerDecay = calculateMonthlyListenerDecay(
-          platform.listeners, 
-          activeSongs, 
-          totalReleasedSongs
-        );
-        
-        // Make sure listeners don't drop too drastically for established artists
-        const minListeners = Math.floor(platform.listeners * 0.95); // Established artists retain 95% minimum
-        
-        // Final listeners is the maximum of: baseListeners, minListeners, or (current listeners - decay)
-        const updatedListeners = Math.max(
-          baseListeners,
-          minListeners, 
-          Math.floor(platform.listeners - listenerDecay)
-        );
+        else {
+          // Calculate base monthly listeners from streams - use variable ratio based on platform size
+          // Bigger platforms have higher streams-to-listeners ratio (more passive listeners)
+          const platformMultiplier = Math.max(8, 15 - (platform.listeners / 1000000) * 0.5); // Ranges from 8-15
+          let baseListeners = Math.ceil(updatedStreams / platformMultiplier);
+          
+          // Apply listener decay based on active songs ratio
+          const listenerDecay = calculateMonthlyListenerDecay(
+            platform.listeners, 
+            activeSongs, 
+            totalReleasedSongs
+          );
+          
+          // Make sure listeners don't drop too drastically for established artists
+          const minListeners = Math.floor(platform.listeners * 0.95); // Established artists retain 95% minimum
+          
+          // Final listeners is the maximum of: baseListeners, minListeners, or (current listeners - decay)
+          updatedListeners = Math.max(
+            baseListeners,
+            minListeners, 
+            Math.floor(platform.listeners - listenerDecay)
+          );
+        }
         
         // Calculate revenue using the platform-specific rate
         return {
           ...platform,
           totalStreams: updatedStreams,
           listeners: updatedListeners,
-          revenue: calculateStreamingRevenue(updatedStreams, platform.name)
+          revenue: newRevenue
         };
       });
+      
+      // Calculate total weekly revenue
+      const totalWeeklyRevenue = updatedState.streamingPlatforms.reduce((total, platform) => {
+        const platformName = platform.name;
+        const previousPlatform = currentState.streamingPlatforms.find(p => p.name === platformName);
+        if (!previousPlatform) return total;
+        
+        // Calculate revenue growth
+        const previousRevenue = previousPlatform.revenue || 0;
+        const newRevenue = platform.revenue || 0;
+        const revenueGrowth = Math.max(0, newRevenue - previousRevenue);
+        
+        return total + revenueGrowth;
+      }, 0);
+      
+      // Log total revenue for debugging
+      console.log(`Total weekly revenue: $${totalWeeklyRevenue.toFixed(2)}`);
       
       // Update AI rappers' profiles with their song performances
       // This ensures featured artists continue to gain benefits from songs they're on

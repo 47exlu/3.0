@@ -123,18 +123,30 @@ export function CareerDashboard() {
       // Add concert revenue, merchandise sales, etc. (if available in the state)
       const newWealth = Math.max(0, currentState.stats.wealth - previousWealth);
       
-      // Find viral, flopped, and comeback songs this week
+      // Find viral, flopped, and comeback songs this week with additional null checks
       const viralSongs = currentState.songs
-        .filter(song => song.performanceType === 'viral' && song.performanceStatusWeek === currentState.currentWeek)
-        .map(song => song.title);
+        ?.filter(song => 
+          song.title && // Make sure title exists
+          song.performanceType === 'viral' && 
+          song.performanceStatusWeek === currentState.currentWeek
+        )
+        .map(song => song.title || 'Unknown Song') || [];
         
       const floppedSongs = currentState.songs
-        .filter(song => song.performanceType === 'flop' && song.performanceStatusWeek === currentState.currentWeek)
-        .map(song => song.title);
+        ?.filter(song => 
+          song.title && // Make sure title exists
+          song.performanceType === 'flop' && 
+          song.performanceStatusWeek === currentState.currentWeek
+        )
+        .map(song => song.title || 'Unknown Song') || [];
         
       const comebackSongs = currentState.songs
-        .filter(song => song.performanceType === 'comeback' && song.performanceStatusWeek === currentState.currentWeek)
-        .map(song => song.title);
+        ?.filter(song => 
+          song.title && // Make sure title exists
+          song.performanceType === 'comeback' && 
+          song.performanceStatusWeek === currentState.currentWeek
+        )
+        .map(song => song.title || 'Unknown Song') || [];
       
       // Update summary data with actual values - use the revenue that's most accurately tracking
       // streaming income (platformRevenue or newWealth, whichever is higher)
