@@ -153,7 +153,7 @@ export function GameLayout({ children }: GameLayoutProps) {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <motion.div 
-          className="h-full nav-spacing-mobile md:nav-spacing-none"
+          className="h-full pb-14 md:pb-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
