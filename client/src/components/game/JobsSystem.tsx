@@ -33,6 +33,12 @@ const JobsSystem: React.FC = () => {
 
   // Check if player meets job requirements
   const checkJobRequirements = (job: Job): boolean => {
+    // Check if the player already has an active job
+    const hasActiveJob = gameState.activeJobs && gameState.activeJobs.length > 0;
+    
+    // If player already has a job, they can't take another one
+    if (hasActiveJob) return false;
+    
     if (!job.requirements) return true;
     
     const reputationMet = !job.requirements.reputation || gameState.stats.reputation >= job.requirements.reputation;
@@ -325,6 +331,12 @@ const JobsSystem: React.FC = () => {
       
       {activeTab === 'available' && (
         <>
+          {gameState.activeJobs && gameState.activeJobs.length > 0 && (
+            <div className="mb-6 bg-orange-800 text-white p-4 rounded-lg">
+              <div className="font-semibold mb-1">You already have an active job</div>
+              <p className="text-sm text-orange-200">You can only work one job at a time. Quit your current job to apply for a new one.</p>
+            </div>
+          )}
           {/* Filters */}
           <div className="flex flex-wrap gap-4 mb-6">
             <div>
