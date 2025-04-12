@@ -462,6 +462,11 @@ const initialState: GameState = {
   activeMarketTrends: [],
   pastMarketTrends: [],
   
+  // Awards and certifications system
+  awards: [],
+  nominations: [],
+  upcomingAwardShows: [],
+  
   // Team management system
   teamMembers: [],
   availableTeamMembers: DEFAULT_TEAM_MEMBERS
@@ -756,6 +761,285 @@ export const useRapperGame = create<RapperGameStore>()(
     },
     
     // Game progression
+    // Check for certifications (gold, platinum, etc.)
+    checkForCertifications: () => {
+      const currentState = get();
+      const { songs, albums } = currentState;
+      let updated = false;
+      
+      // Check songs for certifications
+      if (songs) {
+        songs.forEach(song => {
+          if (!song.released || !song.isActive) return;
+          
+          const currentCertifications = song.certifications || [];
+          const earnedCertifications = new Set(currentCertifications.map(cert => cert.type));
+          
+          // Check each certification threshold
+          Object.entries(CERTIFICATION_THRESHOLDS).forEach(([type, threshold]) => {
+            // Only award certification if the song has enough streams and doesn't already have this certification
+            if (song.streams >= threshold && !earnedCertifications.has(type as CertificationType)) {
+              get().addSongCertification(song.id, type as CertificationType);
+              updated = true;
+            }
+          });
+        });
+      }
+      
+      // Check albums for certifications
+      if (albums) {
+        albums.forEach(album => {
+          if (!album.released) return;
+          
+          const currentCertifications = album.certifications || [];
+          const earnedCertifications = new Set(currentCertifications.map(cert => cert.type));
+          
+          // Check each certification threshold
+          Object.entries(CERTIFICATION_THRESHOLDS).forEach(([type, threshold]) => {
+            // Only award certification if the album has enough streams and doesn't already have this certification
+            if (album.streams >= threshold && !earnedCertifications.has(type as CertificationType)) {
+              get().addAlbumCertification(album.id, type as CertificationType);
+              updated = true;
+            }
+          });
+        });
+      }
+      
+      return updated;
+    },
+    
+    // Add certification to a song
+    addSongCertification: (songId: string, type: CertificationType) => {
+      const currentState = get();
+      const song = currentState.songs.find(s => s.id === songId);
+      if (!song) return;
+      
+      const certification: SongCertification = {
+        id: uuidv4(),
+        type,
+        dateAwarded: currentState.currentWeek,
+        streams: song.streams,
+        issuingOrganization: 'RIAA'
+      };
+      
+      set(state => ({
+        ...state,
+        songs: state.songs.map(s => 
+          s.id === songId 
+            ? { ...s, certifications: [...(s.certifications || []), certification] }
+            : s
+        )
+      }));
+      
+      // Post on social media about the certification
+      const certificationNames = {
+        'gold': 'Gold',
+        'platinum': 'Platinum',
+        '2xPlatinum': '2× Platinum',
+        '3xPlatinum': '3× Platinum',
+        '4xPlatinum': '4× Platinum',
+        '5xPlatinum': '5× Platinum',
+        'diamond': 'Diamond'
+      };
+      
+      // Create a celebratory social media post
+      const content = `My song "${song.title}" just went ${certificationNames[type]}! 🏆 ${formatNumber(song.streams)} streams and counting! Thank you to all my fans for the support! #${type.toUpperCase()} #${song.title.replace(/\s+/g, '')}`;
+      
+      get().postOnSocialMedia("Twitter", content);
+      
+      useAudio.getState().playSuccess();
+    },
+    
+    // Add certification to an album
+    addAlbumCertification: (albumId: string, type: CertificationType) => {
+      const currentState = get();
+      const album = currentState.albums?.find(a => a.id === albumId);
+      if (!album) return;
+      
+      const certification: SongCertification = {
+        id: uuidv4(),
+        type,
+        dateAwarded: currentState.currentWeek,
+        streams: album.streams,
+        issuingOrganization: 'RIAA'
+      };
+      
+      set(state => ({
+        ...state,
+        albums: state.albums?.map(a => 
+          a.id === albumId 
+            ? { ...a, certifications: [...(a.certifications || []), certification] }
+            : a
+        )
+      }));
+      
+      // Post on social media about the certification
+      const certificationNames = {
+        'gold': 'Gold',
+        'platinum': 'Platinum',
+        '2xPlatinum': '2× Platinum',
+        '3xPlatinum': '3× Platinum',
+        '4xPlatinum': '4× Platinum',
+        '5xPlatinum': '5× Platinum',
+        'diamond': 'Diamond'
+      };
+      
+      // Create a celebratory social media post
+      const content = `My album "${album.title}" just went ${certificationNames[type]}! 🏆 ${formatNumber(album.streams)} streams and counting! Thank you to all my fans for the support! #${type.toUpperCase()} #${album.title.replace(/\s+/g, '')}`;
+      
+      get().postOnSocialMedia("Twitter", content);
+      
+      useAudio.getState().playSuccess();
+    },
+    
+    // Generate awards (Grammys, BET, VMAs, etc.)
+    generateAwards: () => {
+      const currentState = get();
+      const { currentWeek, songs, albums, character } = currentState;
+      
+      // Only generate awards during specific weeks
+      // Grammy Awards - Week 4 of the year (January)
+      // BET Awards - Week 25 (June)
+      // VMAs - Week 34 (August)
+      
+      const weekInYear = currentWeek % 52;
+      
+      // Check if it's award season
+      if (weekInYear !== 4 && weekInYear !== 25 && weekInYear !== 34) {
+        return;
+      }
+      
+      // Determine which award show
+      let awardType: AwardType;
+      let awardName: string;
+      let year = Math.floor(currentWeek / 52) + 2025; // Start at 2025 and increment by year
+      
+      if (weekInYear === 4) {
+        awardType = 'grammy';
+        awardName = `Grammy Awards ${year}`;
+      } else if (weekInYear === 25) {
+        awardType = 'bet';
+        awardName = `BET Awards ${year}`;
+      } else {
+        awardType = 'vma';
+        awardName = `Video Music Awards ${year}`;
+      }
+      
+      // Find eligible songs (released in the past year)
+      const eligibleSongs = songs.filter(song => 
+        song.released && 
+        song.releaseDate && 
+        currentWeek - song.releaseDate < 52 &&
+        song.streams > 500000 // Minimum threshold to be considered
+      );
+      
+      // Find eligible albums
+      const eligibleAlbums = albums?.filter(album => 
+        album.released && 
+        album.releaseDate && 
+        currentWeek - album.releaseDate < 52 &&
+        album.streams > 1000000 // Minimum threshold for albums
+      );
+      
+      // Only proceed if there are eligible songs or albums
+      if (eligibleSongs.length === 0 && (!eligibleAlbums || eligibleAlbums.length === 0)) {
+        return;
+      }
+      
+      // Determine which categories to nominate for based on award type
+      const categories: AwardCategory[] = [];
+      
+      // Common categories for all award types
+      if (eligibleSongs.length > 0) {
+        categories.push('song_of_the_year');
+        categories.push('best_rap_song');
+      }
+      
+      if (eligibleAlbums && eligibleAlbums.length > 0) {
+        categories.push('album_of_the_year');
+        categories.push('best_rap_album');
+      }
+      
+      // Add award-specific categories
+      if (awardType === 'grammy') {
+        categories.push('best_new_artist');
+        categories.push('best_rap_performance');
+      } else if (awardType === 'bet') {
+        categories.push('best_collaboration');
+        categories.push('most_popular_artist');
+      } else if (awardType === 'vma') {
+        categories.push('best_music_video');
+        categories.push('best_visual_effects');
+        categories.push('best_choreography');
+      }
+      
+      // Create nominations for each category
+      categories.forEach(category => {
+        // Determine if player should be nominated (based on success metrics)
+        // Higher streams/reputation increase chance of nomination
+        const totalPlayerStreams = eligibleSongs.reduce((total, song) => total + song.streams, 0);
+        const nominationChance = Math.min(0.8, totalPlayerStreams / 10000000); // Cap at 80%
+        
+        if (Math.random() < nominationChance) {
+          get().awardPlayerNomination(category, awardType);
+        }
+      });
+    },
+    
+    // Award a nomination to the player
+    awardPlayerNomination: (category: string, awardType: string) => {
+      const currentState = get();
+      const { currentWeek, character } = currentState;
+      
+      if (!character) return;
+      
+      // Calculate year based on week number
+      const year = Math.floor(currentWeek / 52) + 2025; // Start from 2025
+      
+      const award: Award = {
+        id: uuidv4(),
+        type: awardType as AwardType,
+        name: `${awardType === 'grammy' ? 'Grammy' : awardType === 'bet' ? 'BET' : 'VMA'} Awards ${year}`,
+        category: category as AwardCategory,
+        date: currentWeek,
+        year,
+        isWinner: Math.random() < 0.3, // 30% chance to win if nominated
+        competitionLevel: Math.floor(Math.random() * 5) + 5, // 5-10 scale
+        reputationBoost: Math.floor(Math.random() * 10) + 5, // 5-15 boost
+      };
+      
+      // Update the state with the new award
+      set(state => {
+        // Add to appropriate list based on winner status
+        if (award.isWinner) {
+          return {
+            ...state,
+            awards: [...(state.awards || []), award],
+            stats: {
+              ...state.stats,
+              reputation: state.stats.reputation + award.reputationBoost
+            }
+          };
+        } else {
+          return {
+            ...state,
+            nominations: [...(state.nominations || []), award]
+          };
+        }
+      });
+      
+      // Celebrate on social media
+      const content = award.isWinner
+        ? `I just won a ${award.type === 'grammy' ? 'Grammy' : award.type === 'bet' ? 'BET Award' : 'VMA'} for ${category.replace(/_/g, ' ')}! 🏆 Thank you to all my fans and everyone who supported me! #${award.type.toUpperCase()} #Winner`
+        : `Honored to be nominated for ${category.replace(/_/g, ' ')} at the ${award.type === 'grammy' ? 'Grammy' : award.type === 'bet' ? 'BET' : 'VMA'} Awards! 🙏 #${award.type.toUpperCase()} #Nominated`;
+      
+      get().postOnSocialMedia("Twitter", content);
+      
+      if (award.isWinner) {
+        useAudio.getState().playSuccess();
+      }
+    },
+    
     advanceWeek: () => {
       const currentState = get();
       const newWeek = currentState.currentWeek + 1;
@@ -768,6 +1052,12 @@ export const useRapperGame = create<RapperGameStore>()(
       // Process market trends first
       // This function will update activeMarketTrends and pastMarketTrends in updatedState
       get().processMarketTrends();
+      
+      // Check for certifications (gold, platinum, etc.)
+      get().checkForCertifications();
+      
+      // Generate potential award nominations/wins
+      get().generateAwards();
       
       // Random chance to generate a new market trend (15% chance each week)
       if (Math.random() < 0.15) {

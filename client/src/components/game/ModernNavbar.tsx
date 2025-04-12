@@ -127,6 +127,12 @@ const screens = [
     category: 'other' 
   },
   { 
+    id: 'awards_certifications', 
+    name: 'Awards', 
+    icon: <Award className="w-5 h-5" />,
+    category: 'other' 
+  },
+  { 
     id: 'save_load', 
     name: 'Save/Load', 
     icon: <Calendar className="w-5 h-5" />,
@@ -169,6 +175,7 @@ export function ModernNavbar() {
       case 'save_load': return 'save_load';
       case 'touring': return 'touring_concerts';
       case 'team_management': return 'team_management';
+      case 'awards_certifications': return 'awards_certifications';
       default: return screenId;
     }
   };
