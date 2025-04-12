@@ -26,6 +26,7 @@ import FanbaseNameManager from './components/game/FanbaseNameManager';
 import MediaEventsManager from './components/game/MediaEventsManager';
 import BillboardCharts from './components/game/BillboardCharts';
 import { SettingsPage } from './components/game/SettingsPage';
+import TeamManagement from './components/game/TeamManagement';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -297,6 +298,7 @@ function App() {
                   {screen === 'billboard_charts' && <BillboardCharts />}
                   {screen === 'player_wikipedia' && <PlayerWikipedia />}
                   {screen === 'settings' && <SettingsPage />}
+                  {screen === 'team_management' && <TeamManagement />}
                 </GameLayout>
               </LoadingTransition>
             </Route>
