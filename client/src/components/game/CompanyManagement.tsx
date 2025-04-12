@@ -33,27 +33,46 @@ const CompanyManagement: React.FC = () => {
   // Handle company creation
   const handleCreateCompany = () => {
     if (!companyName) {
-      toast.error('Please enter a company name');
+      toast({
+        title: 'Error',
+        description: 'Please enter a company name',
+        variant: 'destructive'
+      });
       return;
     }
 
     if (stats.reputation < 25) {
-      toast.error('You need at least 25 reputation to start a company');
+      toast({
+        title: 'Error',
+        description: 'You need at least 25 reputation to start a company',
+        variant: 'destructive'
+      });
       return;
     }
 
     if (stats.wealth < startupCost) {
-      toast.error(`You need at least $${formatNumber(startupCost)} to start a company`);
+      toast({
+        title: 'Error',
+        description: `You need at least $${formatNumber(startupCost)} to start a company`,
+        variant: 'destructive'
+      });
       return;
     }
 
     const companyId = createCompany(companyName, companyType, companyDescription);
     
     if (companyId) {
-      toast.success(`${companyName} has been successfully created!`);
+      toast({
+        title: 'Success',
+        description: `${companyName} has been successfully created!`
+      });
       setViewState('overview');
     } else {
-      toast.error('Failed to create company. Please check requirements.');
+      toast({
+        title: 'Error',
+        description: 'Failed to create company. Please check requirements.',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -62,12 +81,19 @@ const CompanyManagement: React.FC = () => {
     const hireCost = costPerEmployee * employeeCount;
     
     if (stats.wealth < hireCost) {
-      toast.error(`You need $${formatNumber(hireCost)} to hire ${employeeCount} employees`);
+      toast({
+        title: 'Error',
+        description: `You need $${formatNumber(hireCost)} to hire ${employeeCount} employees`,
+        variant: 'destructive'
+      });
       return;
     }
     
     hireCompanyEmployee(employeeCount);
-    toast.success(`Hired ${employeeCount} new employees`);
+    toast({
+      title: 'Success',
+      description: `Hired ${employeeCount} new employees`
+    });
   };
 
   // Handle firing employees
@@ -75,30 +101,49 @@ const CompanyManagement: React.FC = () => {
     const maxFireable = Math.max(0, (company?.employees || 1) - 1);
     
     if (employeeCount > maxFireable) {
-      toast.error(`You can't fire more than ${maxFireable} employees`);
+      toast({
+        title: 'Error',
+        description: `You can't fire more than ${maxFireable} employees`,
+        variant: 'destructive'
+      });
       return;
     }
     
     if (employeeCount <= 0) {
-      toast.error('Please enter a valid number of employees to fire');
+      toast({
+        title: 'Error',
+        description: 'Please enter a valid number of employees to fire',
+        variant: 'destructive'
+      });
       return;
     }
     
     const fireCost = (costPerEmployee / 2) * employeeCount; // Severance cost
     
     if (stats.wealth < fireCost) {
-      toast.error(`You need $${formatNumber(fireCost)} for severance packages`);
+      toast({
+        title: 'Error',
+        description: `You need $${formatNumber(fireCost)} for severance packages`,
+        variant: 'destructive'
+      });
       return;
     }
     
     fireCompanyEmployee(employeeCount);
-    toast.success(`Let go of ${employeeCount} employees`);
+    toast({
+      title: 'Success',
+      description: `Let go of ${employeeCount} employees`
+    });
   };
 
   // Handle signing an artist
   const handleSignArtist = (artistId: string) => {
     if (company?.type !== 'record_label') {
-      toast.error('Only record labels can sign artists');
+      toast({
+        title: 'Error',
+        description: 'Only record labels can sign artists',
+        variant: 'destructive'
+      });
       return;
     }
     
@@ -108,23 +153,38 @@ const CompanyManagement: React.FC = () => {
     const signingCost = artist.popularity * 1000;
     
     if (stats.wealth < signingCost) {
-      toast.error(`You need $${formatNumber(signingCost)} to sign ${artist.name}`);
+      toast({
+        title: 'Error',
+        description: `You need $${formatNumber(signingCost)} to sign ${artist.name}`,
+        variant: 'destructive'
+      });
       return;
     }
     
     const success = signArtist(artistId);
     
     if (success) {
-      toast.success(`Signed ${artist.name} to your label!`);
+      toast({
+        title: 'Success',
+        description: `Signed ${artist.name} to your label!`
+      });
     } else {
-      toast.error(`Failed to sign ${artist.name}. Please check requirements.`);
+      toast({
+        title: 'Error',
+        description: `Failed to sign ${artist.name}. Please check requirements.`,
+        variant: 'destructive'
+      });
     }
   };
 
   // Handle dropping an artist
   const handleDropArtist = (artistId: string) => {
     if (company?.type !== 'record_label') {
-      toast.error('Only record labels can drop artists');
+      toast({
+        title: 'Error',
+        description: 'Only record labels can drop artists',
+        variant: 'destructive'
+      });
       return;
     }
     
@@ -134,16 +194,27 @@ const CompanyManagement: React.FC = () => {
     const terminationFee = artist.popularity * 500;
     
     if (stats.wealth < terminationFee) {
-      toast.error(`You need $${formatNumber(terminationFee)} for contract termination`);
+      toast({
+        title: 'Error',
+        description: `You need $${formatNumber(terminationFee)} for contract termination`,
+        variant: 'destructive'
+      });
       return;
     }
     
     const success = dropArtist(artistId);
     
     if (success) {
-      toast.success(`Dropped ${artist.name} from your label`);
+      toast({
+        title: 'Success',
+        description: `Dropped ${artist.name} from your label`
+      });
     } else {
-      toast.error(`Failed to drop ${artist.name}. Please check requirements.`);
+      toast({
+        title: 'Error',
+        description: `Failed to drop ${artist.name}. Please check requirements.`,
+        variant: 'destructive'
+      });
     }
   };
 
