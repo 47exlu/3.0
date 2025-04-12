@@ -4,9 +4,13 @@ import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '../../lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Calendar } from 'lucide-react';
+import { Calendar, Building2, Users, DollarSign, Music, Award } from 'lucide-react';
 import { format, addMonths, subMonths } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { recordLabels, RecordLabel, getLabelsByLevelRequirement } from '../../lib/data/recordLabels';
 
 const CompanyManagement: React.FC = () => {
   const { toast } = useToast();
@@ -28,17 +32,73 @@ const CompanyManagement: React.FC = () => {
   const [companyType, setCompanyType] = useState<string>('record_label');
   const [companyDescription, setCompanyDescription] = useState('');
   const [employeeCount, setEmployeeCount] = useState(1);
-  const [viewState, setViewState] = useState<'overview' | 'create' | 'manage' | 'artists' | 'calendar'>(
+  const [viewState, setViewState] = useState<'overview' | 'create' | 'manage' | 'artists' | 'calendar' | 'labels'>(
     company ? 'overview' : 'create'
   );
   
   // Calendar state
   const [date, setDate] = useState<Date>(new Date());
   const [events, setEvents] = useState<{date: Date, title: string, type: string}[]>([]);
+  
+  // Record label state
+  const [selectedLabelId, setSelectedLabelId] = useState<string | null>(null);
+  const [availableLabels, setAvailableLabels] = useState<RecordLabel[]>([]);
 
   // Cost calculation
   const startupCost = 10000;
   const costPerEmployee = company ? 500 * company.level : 500;
+  
+  // Use effects
+  useEffect(() => {
+    // Load available record labels based on character level
+    if (company?.type === 'record_label') {
+      const labels = getLabelsByLevelRequirement(stats.careerLevel || 1);
+      setAvailableLabels(labels);
+    }
+  }, [company, stats.careerLevel]);
+
+  // Handle selecting a record label
+  const handleSelectLabel = (labelId: string) => {
+    setSelectedLabelId(labelId);
+  };
+
+  // Handle signing with a record label
+  const handleSignWithLabel = () => {
+    if (!selectedLabelId || !company) return;
+    
+    const label = getLabelById(selectedLabelId);
+    if (!label) return;
+    
+    // Check if the player has enough reputation
+    if (stats.reputation < label.reputation * 0.8) {
+      toast({
+        title: 'Not Enough Reputation',
+        description: `You need at least ${Math.floor(label.reputation * 0.8)} reputation to sign with ${label.name}`,
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    // Implement signing logic here by updating your game state
+    // This would typically update company.partnerLabel or similar property
+    toast({
+      title: 'Signed with Label',
+      description: `You've successfully partnered with ${label.name}!`,
+    });
+    
+    // Apply signing bonus if there is one
+    if (label.signupBonus) {
+      // Update wealth with the bonus
+      // updateWealth(label.signupBonus);
+      toast({
+        title: 'Signing Bonus',
+        description: `You received a $${formatNumber(label.signupBonus)} signing bonus!`,
+      });
+    }
+    
+    // Go back to overview
+    setViewState('overview');
+  };
 
   // Handle company creation
   const handleCreateCompany = () => {
