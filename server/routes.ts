@@ -7,6 +7,7 @@ import aiRappersRouter from "./routes/aiRappers";
 import aiSongsRouter from "./routes/aiSongs";
 import aiAlbumsRouter from "./routes/aiAlbums";
 import chartHistoryRouter from "./routes/chartHistory";
+import gameSavesRouter from "./routes/gameSaves";
 // PayPal integration removed per user request
 // import paypal from "@paypal/checkout-server-sdk";
 
