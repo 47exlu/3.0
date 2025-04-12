@@ -507,18 +507,32 @@ canvas {
   /* Critical fix for the footer buttons on tablet/desktop */
   @media (min-width: 768px) {
     /* Target the exact game buttons at the bottom that appear in the screenshot */
-    [role="dialog"] .bg-gray-800,
-    [role="dialog"] .bg-black,
-    [id="radix-:r0:"] .bg-gray-800,
-    [id="radix-:r0:"] .bg-black,
-    div[style*="position: fixed; bottom: 0"],
-    div[style*="position:fixed;bottom:0"] {
+    [role="dialog"] .bg-gray-800:not(.bottom-nav),
+    [role="dialog"] .bg-black:not(.bottom-nav),
+    [id="radix-:r0:"] .bg-gray-800:not(.bottom-nav),
+    [id="radix-:r0:"] .bg-black:not(.bottom-nav),
+    div[style*="position: fixed; bottom: 0"]:not(.bottom-nav),
+    div[style*="position:fixed;bottom:0"]:not(.bottom-nav) {
       display: none !important;
       opacity: 0 !important;
       visibility: hidden !important;
     }
     
-    /* Prevent anything from showing at the bottom of tablet/desktop except bottom-nav */
+    /* Make sure bottom navigation stays visible for all devices */
+    .bottom-nav {
+      display: flex !important;
+      z-index: 1000 !important;
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      background-color: rgba(17, 24, 39, 0.95) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border-top: 1px solid rgba(75, 85, 99, 0.3) !important;
+    }
+    
+    /* Prevent anything else from showing at the bottom except bottom-nav */
     .tablet-device .fixed.bottom-0:not(.bottom-nav),
     .desktop-device .fixed.bottom-0:not(.bottom-nav) {
       display: none !important;
@@ -539,6 +553,14 @@ canvas {
     .bottom-nav {
       display: flex !important;
       z-index: 1000 !important;
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      background-color: rgba(17, 24, 39, 0.95) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border-top: 1px solid rgba(75, 85, 99, 0.3) !important;
     }
     
     /* Ensure all content has enough bottom padding for the navigation */
