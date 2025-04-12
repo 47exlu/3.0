@@ -217,6 +217,40 @@ canvas {
   .drop-shadow-glow {
     filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
   }
+  
+  /* Softer UI utilities */
+  .bg-soft-gradient {
+    background: linear-gradient(120deg, rgba(31, 33, 45, 0.9) 0%, rgba(47, 50, 74, 0.8) 100%);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(to right, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  
+  .shadow-soft {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  
+  .border-soft {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .rounded-soft {
+    border-radius: 16px;
+  }
+  
+  .hover-scale {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .hover-scale:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
 }
 
 /* Social media custom styling */

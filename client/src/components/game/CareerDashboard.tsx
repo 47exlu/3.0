@@ -379,7 +379,7 @@ export function CareerDashboard() {
       </div>
       
       {/* Career progress */}
-      <Card className="mb-6 bg-black/30 border-gray-800">
+      <Card className="mb-6 bg-soft-gradient border-soft shadow-soft rounded-soft hover-scale">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium flex items-center">
             <BarChartIcon size={18} className="mr-2 text-amber-400" />
