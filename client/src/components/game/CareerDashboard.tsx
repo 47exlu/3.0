@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MetricsCard } from '@/components/ui/metrics-card';
@@ -26,6 +26,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 
 export function CareerDashboard() {
+  // Reference for the bottom content to ensure it's always visible
+  const bottomRef = useRef<HTMLDivElement>(null);
   const { 
     character, 
     currentWeek, 
@@ -246,6 +248,14 @@ export function CareerDashboard() {
     }
     return '$' + formatNumber(amount);
   };
+
+  // Add reference to bottomRef at the end of the component to auto scroll there
+  useEffect(() => {
+    // Scroll to the bottom of content to eliminate any gap
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-0">
@@ -1140,6 +1150,9 @@ export function CareerDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Hidden element to help with spacing */}
+      <div ref={bottomRef} className="h-16 md:h-0"></div>
     </div>
   );
 }
