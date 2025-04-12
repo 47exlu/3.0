@@ -248,7 +248,7 @@ export function CareerDashboard() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-12">
+    <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-0">
       {/* Header with career info */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div className="flex items-start gap-4">
@@ -695,7 +695,7 @@ export function CareerDashboard() {
       
       {/* Activities & Features */}
       <h2 className="text-xl font-bold text-amber-400 mb-4">Activities</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-14 sm:mb-14 md:mb-0">
         <Card 
           className="bg-gradient-to-br from-green-900/70 to-teal-900/70 border-teal-800 cursor-pointer hover:from-green-800/70 hover:to-teal-800/70 transition-colors"
           onClick={() => setScreen('song_promotion')}
@@ -958,7 +958,7 @@ export function CareerDashboard() {
       )}
       
       {/* Artist Stats */}
-      <Card className="mt-6 bg-black/30 border-gray-800">
+      <Card className="mt-6 mb-14 sm:mb-14 md:mb-0 bg-black/30 border-gray-800">
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-medium flex items-center">
             <MicrophoneIcon size={18} className="mr-2 text-amber-400" />
