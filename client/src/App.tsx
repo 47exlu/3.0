@@ -36,7 +36,6 @@ import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
 import { useLoadingScreen } from './lib/stores/useLoadingScreen';
 import { useSettings } from './lib/stores/useSettings';
-import { useAudio } from './lib/stores/useAudio';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
 import { LoadingTransition } from './components/ui/loading-transition';
@@ -214,29 +213,6 @@ function App() {
   const { screen, previousScreen } = useRapperGame();
   const { showLoading, hideLoading } = useLoadingScreen();
   const { loadingAnimationsEnabled } = useSettings();
-  const { resumeAudio } = useAudio();
-  
-  // Handle page visibility changes to resume audio
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log("Page became visible, resuming audio if needed");
-        resumeAudio();
-      }
-    };
-
-    // Add event listener
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Initial check
-    if (!document.hidden) {
-      resumeAudio();
-    }
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [resumeAudio]);
   
   // Show loading screen when screen changes
   useEffect(() => {

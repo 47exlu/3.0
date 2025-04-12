@@ -35,7 +35,6 @@ export type GameScreen =
   | "awards_certifications" // Awards and certifications screen
   | "settings" // Game settings page
   | "jobs" // Jobs screen for taking on part-time music industry jobs
-  | "company_management" // Company management screen for record labels and businesses
 
 export interface CharacterInfo {
   id: string;
