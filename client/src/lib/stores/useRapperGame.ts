@@ -105,6 +105,9 @@ interface RapperGameActions {
   fireTeamMember: (teamMemberId: string) => void;
   payTeamSalaries: () => void;
   
+  // Ghost production
+  produceForArtist: (rapperId: string, tier: SongTier, title?: string) => void;
+  
   // Image management
   updateSongCoverArt: (songId: string, coverArt: string) => void;
   updateVideoThumbnail: (videoId: string, thumbnail: string) => void;
@@ -5387,6 +5390,101 @@ export const useRapperGame = create<RapperGameStore>()(
           ) || []
         }));
       }
+    },
+    
+    // Ghost production for other artists
+    produceForArtist: (rapperId: string, tier: SongTier, title?: string) => {
+      const currentState = get();
+      
+      // Find the target rapper
+      const targetRapper = currentState.aiRappers.find(rapper => rapper.id === rapperId);
+      if (!targetRapper) {
+        console.error(`Rapper with ID ${rapperId} not found`);
+        return;
+      }
+      
+      // Check relationship status - only produce for neutral and friendly rappers
+      const relationship = targetRapper.relationshipStatus || targetRapper.relationship;
+      if (relationship === "rival" || relationship === "enemy") {
+        alert(`${targetRapper.name} won't work with you due to your rivalry.`);
+        return;
+      }
+      
+      // Calculate cost based on tier and relationship
+      // Friends get a discount, neutral artists pay full price
+      const baseCost = SONG_TIER_INFO[tier].cost;
+      const relationshipMultiplier = relationship === "friend" ? 1.5 : 1.2;
+      const productionFee = Math.round(baseCost * relationshipMultiplier);
+      
+      // Check if player can afford the production
+      if (currentState.stats.wealth < productionFee) {
+        alert(`You don't have enough money to produce this song. You need $${productionFee}.`);
+        return;
+      }
+      
+      // Generate song title if not provided
+      const songTitle = title?.trim() || generateSongTitle();
+      
+      // Determine quality - better quality for higher career levels
+      const baseQuality = SONG_TIER_INFO[tier].minQuality;
+      const careerBonus = Math.min(20, currentState.stats.careerLevel * 2);
+      const skillBonus = Math.min(20, currentState.stats.creativity / 5);
+      const quality = Math.min(100, baseQuality + careerBonus + skillBonus);
+      
+      // Create a new song for the AI rapper (produced by player)
+      const newSong: Song = {
+        id: uuidv4(),
+        title: songTitle,
+        tier,
+        quality,
+        completed: true,
+        productionStartWeek: currentState.currentWeek,
+        productionProgress: 100,
+        releaseDate: currentState.currentWeek,
+        streams: 0,
+        isActive: true,
+        featuring: [], // No featuring artists on ghost production
+        released: true, // Auto-released
+        icon: "microphone", // Default icon
+        releasePlatforms: ["Spotify", "SoundCloud", "iTunes", "YouTube Music"],
+        performanceType: "normal",
+        performanceStatusWeek: currentState.currentWeek,
+        producedByPlayer: true, // New property to track ghost production
+        aiRapperOwner: rapperId
+      };
+      
+      // Update AI rapper's song list and increase their stats
+      const updatedRappers = currentState.aiRappers.map(rapper => {
+        if (rapper.id === rapperId) {
+          // Boost monthly listeners based on song tier
+          const listenerBoost = Math.round(5000 * tier);
+          
+          return {
+            ...rapper,
+            songs: rapper.songs ? [...rapper.songs, newSong.id] : [newSong.id],
+            monthlyListeners: rapper.monthlyListeners + listenerBoost,
+            // Improve relationship with player
+            relationshipStatus: relationship === "neutral" ? "friend" : relationship,
+            relationship: relationship === "neutral" ? "friend" : relationship
+          };
+        }
+        return rapper;
+      });
+      
+      // Update state with new song and payment
+      set({
+        songs: [...currentState.songs, newSong],
+        aiRappers: updatedRappers,
+        stats: {
+          ...currentState.stats,
+          wealth: currentState.stats.wealth + productionFee, // Player gets paid
+          creativity: Math.min(100, currentState.stats.creativity + 3), // Boost creativity
+          networking: Math.min(100, currentState.stats.networking + 2) // Boost networking
+        }
+      });
+      
+      // Return success status
+      return true;
     },
 
     // Process weekly merchandise sales in the advanceWeek function

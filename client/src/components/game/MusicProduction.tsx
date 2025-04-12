@@ -30,7 +30,8 @@ export function MusicProduction() {
     buySongFromShop,
     setScreen,
     checkSubscriptionFeatureAccess,
-    showSubscriptionPrompt
+    showSubscriptionPrompt,
+    produceForArtist
   } = useRapperGame();
   const { playSuccess } = useAudio();
   const { useEnergy } = useEnergyStore();
@@ -39,6 +40,11 @@ export function MusicProduction() {
   const [selectedTier, setSelectedTier] = useState<SongTier>(3);
   const [featuringArtists, setFeaturingArtists] = useState<string[]>([]);
   const [energyError, setEnergyError] = useState<boolean>(false);
+  
+  // Ghost production states
+  const [selectedArtist, setSelectedArtist] = useState<string>('');
+  const [ghostSongTitle, setGhostSongTitle] = useState('');
+  const [ghostSongTier, setGhostSongTier] = useState<SongTier>(3);
   
   // Get tier info for the selected tier
   const tierInfo = SONG_TIER_INFO[selectedTier];
@@ -158,6 +164,7 @@ export function MusicProduction() {
           <TabsTrigger value="create" className="data-[state=active]:bg-indigo-800">Create Song</TabsTrigger>
           <TabsTrigger value="catalog" className="data-[state=active]:bg-indigo-800">Your Catalog</TabsTrigger>
           <TabsTrigger value="shop" className="data-[state=active]:bg-indigo-800">Song Shop</TabsTrigger>
+          <TabsTrigger value="produce" className="data-[state=active]:bg-indigo-800">Ghost Production</TabsTrigger>
         </TabsList>
         
         {/* Create Song Tab */}
