@@ -7,16 +7,54 @@ import { Slider } from '@/components/ui/slider';
 import { useAudio } from '@/lib/stores/useAudio';
 import { useSettings } from '@/lib/stores/useSettings';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
-import { Settings, Volume, Smartphone, Laptop, Tablet, Maximize, LayoutGrid } from 'lucide-react';
+import { Settings, Volume, Smartphone, Laptop, Tablet, Maximize, LayoutGrid, Save } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { 
+  initAutoSave, 
+  startAutoSave, 
+  stopAutoSave, 
+  isAutoSaveEnabled,
+  toggleAutoSave as toggleAutoSaveService,
+  getFormattedLastAutoSaveTime
+} from '@/lib/autoSaveService';
 
 export function SettingsPage() {
   const { isMuted, toggleMute, playSuccess } = useAudio();
-  const { loadingAnimationsEnabled, toggleLoadingAnimations, highQualityGraphics, toggleHighQualityGraphics } = useSettings();
+  const { 
+    loadingAnimationsEnabled, 
+    toggleLoadingAnimations, 
+    highQualityGraphics, 
+    toggleHighQualityGraphics,
+    autoSaveEnabled, 
+    toggleAutoSave
+  } = useSettings();
   const { setScreen } = useRapperGame();
   
   // Handle sound toggle using the settings store (which will then sync with audio store)
   const { soundEnabled, toggleSound } = useSettings();
+  
+  // State for displaying the last auto-save time
+  const [lastSaveTime, setLastSaveTime] = React.useState<string>("Never");
+  
+  // Initialize auto-save on component mount and update the last save time
+  React.useEffect(() => {
+    // Initialize auto-save on mount based on settings
+    if (autoSaveEnabled) {
+      startAutoSave();
+    } else {
+      stopAutoSave();
+    }
+    
+    // Update the displayed last save time
+    setLastSaveTime(getFormattedLastAutoSaveTime());
+    
+    // Set up an interval to refresh the last save time
+    const interval = setInterval(() => {
+      setLastSaveTime(getFormattedLastAutoSaveTime());
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [autoSaveEnabled]);
   
   const handleSoundToggle = () => {
     // Play success sound before potentially muting
@@ -107,6 +145,56 @@ export function SettingsPage() {
                   className="data-[state=checked]:bg-gradient-to-r from-purple-600 to-pink-600"
                 />
               </motion.div>
+            </CardContent>
+          </Card>
+        </motion.div>
+        
+        {/* Auto-Save Settings */}
+        <motion.div variants={containerVariants} initial="hidden" animate="visible">
+          <Card className="bg-soft-gradient border-soft shadow-soft rounded-soft hover-scale">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center">
+                <Save className="h-5 w-5 mr-2 text-gradient" />
+                <span className="text-gradient">Auto-Save Settings</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <motion.div 
+                className="flex items-center justify-between"
+                variants={itemVariants}
+              >
+                <div className="space-y-0.5">
+                  <Label htmlFor="auto-save-toggle" className="text-base">Auto-Save Game</Label>
+                  <p className="text-sm text-gray-400">Automatically save your progress</p>
+                </div>
+                <Switch 
+                  id="auto-save-toggle" 
+                  checked={autoSaveEnabled}
+                  onCheckedChange={() => {
+                    // Update the settings store
+                    toggleAutoSave();
+                    
+                    // Also update the auto-save service
+                    if (!autoSaveEnabled) {
+                      startAutoSave();
+                      if (soundEnabled) playSuccess();
+                    } else {
+                      stopAutoSave();
+                    }
+                  }}
+                  className="data-[state=checked]:bg-gradient-to-r from-purple-600 to-pink-600"
+                />
+              </motion.div>
+              
+              {autoSaveEnabled && (
+                <motion.div
+                  className="mt-2 p-3 bg-card-gradient rounded-soft border-soft text-sm"
+                  variants={itemVariants}
+                >
+                  <p className="text-gray-300">Last auto-save: <span className="text-gradient font-medium">{lastSaveTime}</span></p>
+                  <p className="text-gray-400 text-xs mt-1">Auto-saves happen when advancing the week or changing major game features.</p>
+                </motion.div>
+              )}
             </CardContent>
           </Card>
         </motion.div>

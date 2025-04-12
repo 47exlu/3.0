@@ -1214,6 +1214,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/ai-songs", aiSongsRouter);
   app.use("/api/ai-albums", aiAlbumsRouter);
   app.use("/api/chart-history", chartHistoryRouter);
+  
+  // Game Saves API
+  app.use("/api/game-saves", gameSavesRouter);
 
   // Create HTTP server
   const httpServer = createServer(app);

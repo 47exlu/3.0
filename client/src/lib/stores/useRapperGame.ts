@@ -1547,6 +1547,15 @@ export const useRapperGame = create<RapperGameStore>()(
       const newWeek = currentState.currentWeek + 1;
       let newYear = currentState.currentYear;
       
+      // Trigger auto-save when advancing the week
+      import('../autoSaveService').then(autoSaveModule => {
+        if (autoSaveModule.isAutoSaveEnabled()) {
+          autoSaveModule.performAutoSave();
+        }
+      }).catch(error => {
+        console.error('Error importing auto-save module:', error);
+      });
+      
       // Check if we need to increment the year (end of week 52)
       if (newWeek > 0 && newWeek % 52 === 1) {
         newYear += 1;
