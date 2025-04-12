@@ -218,6 +218,7 @@ const initialState: GameState = {
   previousScreen: null,
   character: null,
   currentWeek: 1,
+  currentYear: 1,
   songs: [],
   musicVideos: [], // Added empty music videos array
   albums: [], // Added empty albums array
@@ -1043,10 +1044,18 @@ export const useRapperGame = create<RapperGameStore>()(
     advanceWeek: () => {
       const currentState = get();
       const newWeek = currentState.currentWeek + 1;
+      let newYear = currentState.currentYear;
+      
+      // Check if we need to increment the year (end of week 52)
+      if (newWeek > 0 && newWeek % 52 === 1) {
+        newYear += 1;
+        // Could add "New Year" announcement or special event here
+      }
       
       // Create a copy of the current state
       const updatedState: Partial<GameState> = {
-        currentWeek: newWeek
+        currentWeek: newWeek,
+        currentYear: newYear
       };
       
       // Process market trends first

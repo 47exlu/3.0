@@ -726,6 +726,7 @@ export interface GameState {
   previousScreen: GameScreen | null;
   character: CharacterInfo | null;
   currentWeek: number;
+  currentYear: number;
   songs: Song[];
   musicVideos: MusicVideo[];
   albums?: Album[]; // Added for album system
