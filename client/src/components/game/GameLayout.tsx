@@ -141,18 +141,18 @@ export function GameLayout({ children }: GameLayoutProps) {
         {showNavbar && <ModernNavbar key="navbar" />}
       </AnimatePresence>
       
-      {/* Date Tracker Display - Moved to top center with improved visibility */}
+      {/* Date Tracker Display - More compact version */}
       {showNavbar && (
         <motion.div 
-          className="fixed top-3 md:top-5 left-1/2 transform -translate-x-1/2 z-[100] flex items-center bg-gray-800/90 backdrop-blur-sm py-2 px-5 rounded-full border border-gray-700 shadow-lg"
+          className="fixed top-1 md:top-2 left-1/2 transform -translate-x-1/2 z-[100] flex items-center bg-gray-800/80 backdrop-blur-sm py-1 px-3 rounded-full border border-gray-700 shadow-lg"
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -30, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
-          <Calendar className="w-4 h-4 mr-2 text-blue-400" />
-          <span className="text-sm font-medium">
-            {format(gameDate, 'dd/MM/yyyy')} • Week {currentWeek}, Year {currentYear}
+          <Calendar className="w-3 h-3 mr-1 text-blue-400" />
+          <span className="text-xs font-medium whitespace-nowrap">
+            {format(gameDate, 'dd/MM/yyyy')} • W{currentWeek}
           </span>
         </motion.div>
       )}
