@@ -353,18 +353,25 @@ const JobsSystem: React.FC = () => {
             
             <div>
               <label className="block text-sm font-medium mb-1">Difficulty</label>
-              <select 
-                className="bg-gray-800 text-white rounded px-3 py-2 w-full"
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value as JobDifficulty | 'all')}
-              >
-                <option value="all">All Difficulties</option>
-                <option value="entry">Entry Level</option>
-                <option value="basic">Basic</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-                <option value="expert">Expert</option>
-              </select>
+              <div className="relative">
+                <select 
+                  className="bg-gray-800 text-white rounded px-3 py-2 w-full appearance-none"
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value as JobDifficulty | 'all')}
+                >
+                  <option value="all">All Difficulties</option>
+                  <option value="entry">Entry Level</option>
+                  <option value="basic">Basic</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
           
