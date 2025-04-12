@@ -473,12 +473,53 @@ const initialState: GameState = {
   
   // Team management system
   teamMembers: [],
-  availableTeamMembers: DEFAULT_TEAM_MEMBERS
+  availableTeamMembers: DEFAULT_TEAM_MEMBERS,
+  
+  // Jobs system
+  activeJobs: [],
+  appliedJobs: [],
+  availableJobs: DEFAULT_JOBS,
+  completedJobs: []
 };
 
 // Create the store with combined state and actions
 export const useRapperGame = create<RapperGameStore>()(
   subscribeWithSelector((set, get) => ({
+    // Job requirements checking function
+    checkJobRequirements: (job) => {
+      const currentState = get();
+      
+      // If no requirements, job is always available
+      if (!job.requirements) {
+        return true;
+      }
+      
+      // Check reputation requirement
+      if (job.requirements.reputation && currentState.stats.reputation < job.requirements.reputation) {
+        return false;
+      }
+      
+      // Check career level requirement
+      if (job.requirements.careerLevel && currentState.stats.careerLevel < job.requirements.careerLevel) {
+        return false;
+      }
+      
+      // Check skills requirements
+      if (job.requirements.skills && Object.keys(job.requirements.skills).length > 0) {
+        // Check if player has the required skills at the required levels
+        for (const [skillName, requiredLevel] of Object.entries(job.requirements.skills)) {
+          const playerSkill = currentState.skills?.find(s => s.name === skillName);
+          
+          // If player doesn't have the skill or is below required level, requirements not met
+          if (!playerSkill || playerSkill.level < requiredLevel) {
+            return false;
+          }
+        }
+      }
+      
+      // All requirements met
+      return true;
+    },
     ...initialState,
     
     // Added properties for premium store
