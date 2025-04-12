@@ -89,9 +89,6 @@ export function CareerDashboard() {
   const confirmAdvanceWeek = () => {
     // Capture previous stats for comparison with null safety checks
     const previousWeek = currentWeek || 0;
-    const previousStreams = streamingPlatforms?.reduce((sum, platform) => sum + (platform.totalStreams || 0), 0) || 0;
-    const previousFollowers = socialMedia?.reduce((sum, platform) => sum + (platform.followers || 0), 0) || 0;
-    const previousWealth = stats?.wealth || 0;
     
     // Advance the week using the store function
     advanceWeek();
@@ -101,27 +98,42 @@ export function CareerDashboard() {
       // Get updated state after advancing the week
       const currentState = useRapperGame.getState();
       
-      // Calculate changes with null safety checks and prevent negative values
-      const newStreams = Math.max(0, (currentState.streamingPlatforms?.reduce(
-        (sum, platform) => sum + (platform.totalStreams || 0), 0) || 0) - previousStreams);
+      // Get the most recent weekly stats entry
+      const latestWeekStats = currentState.weeklyStats && currentState.weeklyStats.length > 0 
+        ? currentState.weeklyStats[currentState.weeklyStats.length - 1] 
+        : null;
       
-      const newFollowers = Math.max(0, (currentState.socialMedia?.reduce(
-        (sum, platform) => sum + (platform.followers || 0), 0) || 0) - previousFollowers);
+      if (!latestWeekStats) {
+        console.error("No weekly stats available after advancing week");
+        return;
+      }
       
-      // For revenue, use platform-specific revenue calculations rather than total wealth
-      // This provides a more accurate representation of streaming revenue
-      const platformRevenue = currentState.streamingPlatforms?.reduce(
-        (sum, platform) => {
-          const previousPlatform = streamingPlatforms?.find(p => p.name === platform.name);
-          if (!previousPlatform) return sum;
-          
-          // Calculate revenue from new streams this week
-          const newPlatformStreams = Math.max(0, platform.totalStreams - previousPlatform.totalStreams);
-          return sum + Math.max(0, platform.revenue - previousPlatform.revenue);
-        }, 0) || 0;
+      // Get new streams directly from weekly stats
+      const newStreams = latestWeekStats.newStreamsThisWeek || 0;
       
-      // Add concert revenue, merchandise sales, etc. (if available in the state)
-      const newWealth = Math.max(0, currentState.stats.wealth - previousWealth);
+      // Get new followers by comparing with previous weekly stats
+      const previousWeekStats = currentState.weeklyStats && currentState.weeklyStats.length > 1
+        ? currentState.weeklyStats[currentState.weeklyStats.length - 2]
+        : null;
+        
+      const newFollowers = previousWeekStats 
+        ? Math.max(0, latestWeekStats.totalFollowers - previousWeekStats.totalFollowers)
+        : 0;
+      
+      // Get revenue directly from weekly stats
+      const platformRevenue = latestWeekStats.revenue || 0;
+      
+      // Get wealth change
+      const previousWealth = previousWeekStats?.wealth || 0;
+      const newWealth = Math.max(0, latestWeekStats.wealth - previousWealth);
+      
+      // Log stats for debugging
+      console.log('Weekly stats summary:', {
+        week: latestWeekStats.week,
+        newStreamsThisWeek: latestWeekStats.newStreamsThisWeek,
+        totalStreams: latestWeekStats.totalStreams,
+        revenue: latestWeekStats.revenue
+      });
       
       // Find viral, flopped, and comeback songs this week with additional null checks
       const viralSongs = currentState.songs
@@ -483,15 +495,36 @@ export function CareerDashboard() {
                       fill={chartMetric === 'streams' ? 'rgba(16, 185, 129, 0.2)' : chartMetric === 'followers' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(245, 158, 11, 0.2)'} 
                       activeDot={{ r: 6 }}
                     />
+                    {/* Add a second area for new streams this week when streams metric is selected */}
+                    {chartMetric === 'streams' && (
+                      <Area 
+                        type="monotone" 
+                        dataKey="newStreamsThisWeek" 
+                        stroke="#8B5CF6" 
+                        fill="rgba(139, 92, 246, 0.3)" 
+                        activeDot={{ r: 4 }}
+                        name="New Streams"
+                      />
+                    )}
+                    {chartMetric === 'wealth' && (
+                      <Area 
+                        type="monotone" 
+                        dataKey="revenue" 
+                        stroke="#F97316" 
+                        fill="rgba(249, 115, 22, 0.3)" 
+                        activeDot={{ r: 4 }}
+                        name="Weekly Revenue"
+                      />
+                    )}
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
               <div className="text-xs text-center text-gray-400 mt-2">
                 {chartMetric === 'streams' 
-                  ? 'Total streams over time - See your music growth week-by-week' 
+                  ? 'Total streams (green) and new streams this week (purple) - Track your music growth' 
                   : chartMetric === 'followers' 
                     ? 'Social media follower growth - Your expanding audience' 
-                    : 'Cash flow progression - Track your earnings'}
+                    : 'Wealth (amber) and weekly revenue (orange) - Track your earnings and cash flow'}
               </div>
             </CardContent>
           </Card>
