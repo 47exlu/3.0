@@ -253,7 +253,7 @@ export function CareerDashboard() {
   // This fixes the issue where the dashboard pulls down when navigating to it
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-0">
+    <div className="flex flex-col h-full w-full md:min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-4 pb-0 overflow-y-auto mb-0 relative z-10">
       {/* Header with career info */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div className="flex items-start gap-4">

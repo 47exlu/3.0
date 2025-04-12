@@ -144,7 +144,7 @@ export function GameLayout({ children }: GameLayoutProps) {
       {/* Date Tracker Display - Moved to top center with improved visibility */}
       {showNavbar && (
         <motion.div 
-          className="fixed top-3 md:top-5 left-1/2 transform -translate-x-1/2 z-50 flex items-center bg-gray-800/90 backdrop-blur-sm py-2 px-5 rounded-full border border-gray-700 shadow-lg"
+          className="fixed top-3 md:top-5 left-1/2 transform -translate-x-1/2 z-[100] flex items-center bg-gray-800/90 backdrop-blur-sm py-2 px-5 rounded-full border border-gray-700 shadow-lg"
           initial={{ y: -30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -30, opacity: 0 }}
@@ -176,13 +176,13 @@ export function GameLayout({ children }: GameLayoutProps) {
       
       {/* Main content - enhanced for better responsive viewing with improved mobile support */}
       <motion.main 
-        className="w-full h-full overflow-auto flex-1 bg-gradient-to-b from-gray-900 to-gray-800 pb-safe mobile-scroll"
+        className="w-full h-full overflow-auto flex-1 bg-gradient-to-b from-gray-900 to-gray-800 pb-safe mobile-scroll relative z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <motion.div 
-          className={`h-full ${screen === 'main_menu' ? 'pb-0' : 'pb-10 sm:pb-8 md:pb-0'}`}
+          className={`h-full w-full ${screen === 'main_menu' ? 'pb-0' : 'pb-10 sm:pb-8 md:pb-0'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
