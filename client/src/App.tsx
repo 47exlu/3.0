@@ -34,6 +34,7 @@ import CompanyManagement from './components/game/CompanyManagement';
 import { BusinessOverview } from './components/game/BusinessOverview';
 import { Awards } from './components/game/Awards';
 import RecordDeal from './components/game/RecordDeal';
+import ReleasedSongs from './components/game/ReleasedSongs';
 
 import { GameLayout } from './components/game/GameLayout';
 import { useRapperGame } from './lib/stores/useRapperGame';
@@ -360,6 +361,7 @@ function App() {
                   {screen === 'business_overview' && <BusinessOverview />}
                   {screen === 'awards' && <Awards />}
                   {screen === 'record_deal' && <RecordDeal />}
+                  {screen === 'released_songs' && <ReleasedSongs />}
                   
                   {/* Alias screens */}
                   {screen === 'main' && <MainMenu />}
@@ -377,6 +379,7 @@ function App() {
                   {screen === 'job_board' && <JobsSystem />}
                   {screen === 'company' && <CompanyManagement />}
                   {screen === 'interviews' && <MediaEventsManager />}
+                  {screen === 'songs' && <ReleasedSongs />}
                 </GameLayout>
               </LoadingTransition>
             </Route>

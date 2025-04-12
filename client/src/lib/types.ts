@@ -54,6 +54,8 @@ export type GameScreen =
   | "instagram" // Instagram alias
   | "youtube" // YouTube alias
   | "record_deal" // Record deal screen
+  | "released_songs" // Released songs screen to display song certifications and stats
+  | "songs" // Released songs alias
 
 export interface CharacterInfo {
   id: string;

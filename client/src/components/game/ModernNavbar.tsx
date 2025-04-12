@@ -90,6 +90,7 @@ export function ModernNavbar() {
     { id: 'music', name: 'Music', category: 'music', icon: <Music className="w-5 h-5" /> },
     { id: 'music_production', name: 'Studio', category: 'music', icon: <Mic2 className="w-5 h-5" /> },
     { id: 'albums', name: 'Albums', category: 'music', icon: <Album className="w-5 h-5" /> },
+    { id: 'released_songs', name: 'Releases', category: 'music', icon: <Star className="w-5 h-5" /> },
     { id: 'performances', name: 'Perform', category: 'music', icon: <Radio className="w-5 h-5" /> },
     { id: 'skills', name: 'Skills', category: 'music', icon: <Zap className="w-5 h-5" /> },
     
