@@ -124,11 +124,11 @@ export function ModernNavbar() {
     <div className="w-full z-50">
       {/* Bottom tab bar for main navigation */}
       <div 
-        className="bottom-nav flex justify-around items-center py-1 px-2 fixed bottom-0 left-0 right-0 bg-gray-900/95 border-t border-purple-800/30 z-[9999]"
+        className="bottom-nav w-full flex justify-around items-center py-1 px-2 fixed bottom-0 left-0 right-0 bg-gray-900/95 border-t border-purple-800/30 z-[9999]"
         style={{ 
           display: 'flex',
           height: '60px', 
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)',
+          paddingBottom: '8px',
           boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)'
         }}
       >
@@ -143,7 +143,7 @@ export function ModernNavbar() {
             <button
               key={categoryId}
               className={cn(
-                "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors",
+                "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-colors max-w-[20%]",
                 isActive ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
               )}
               onClick={() => handleScreenChange(getActualScreenId(firstScreen.id))}
@@ -161,7 +161,7 @@ export function ModernNavbar() {
         <button
           key="settings"
           className={cn(
-            "flex flex-col items-center justify-center py-2 px-1 rounded-md transition-colors",
+            "flex flex-1 flex-col items-center justify-center py-2 px-0 rounded-md transition-colors max-w-[20%]",
             currentScreen === 'settings' ? "text-purple-400" : "text-gray-500 hover:text-gray-300"
           )}
           onClick={() => handleScreenChange('settings')}
@@ -175,7 +175,7 @@ export function ModernNavbar() {
         
         {/* More Menu Button */}
         <button
-          className="flex flex-col items-center justify-center py-2 px-1 text-gray-500 hover:text-gray-300"
+          className="flex flex-1 flex-col items-center justify-center py-2 px-0 text-gray-500 hover:text-gray-300 max-w-[20%]"
           onClick={() => setMobileMenuOpen(true)}
         >
           <Menu size={20} />
