@@ -1114,6 +1114,7 @@ const TwitterPanel: React.FC<TwitterPanelProps> = ({ onBack }) => {
             </button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px] p-4">
+            <DialogTitle className="sr-only">Create new post</DialogTitle>
             <div className="flex">
               <Avatar className="h-10 w-10 mr-3">
                 <AvatarImage src={character?.image} alt={character?.artistName} />
