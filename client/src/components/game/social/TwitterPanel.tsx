@@ -139,9 +139,9 @@ const Tweet: React.FC<TweetProps> = ({
   };
 
   // Generate avatar and username from post or character
-  const userName = post.username || character?.artistName || "User";
+  const userName = post.username || post.authorName || character?.artistName || "User";
   const userHandle = post.handle || userName.toLowerCase().replace(/\s+/g, '');
-  const avatarUrl = post.avatar || character?.image;
+  const avatarUrl = post.avatar || post.authorImage || character?.image;
   const verified = post.verified !== undefined ? post.verified : true;
   
   // Format date
@@ -449,6 +449,15 @@ const TwitterPanel: React.FC<TwitterPanelProps> = ({ onBack }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mobileFileInputRef = useRef<HTMLInputElement>(null);
   
+  // Initialize profile edit fields from character data
+  useEffect(() => {
+    if (character) {
+      setProfileBio(character.bio || "");
+      setProfileLocation(character.location || "");
+      setProfileWebsite(character.website || "");
+    }
+  }, [character]);
+
   // Get Twitter data from store
   useEffect(() => {
     // Try to get posts from socialMediaStats first (new structure)
@@ -1185,6 +1194,111 @@ const TwitterPanel: React.FC<TwitterPanelProps> = ({ onBack }) => {
           </DialogContent>
         </Dialog>
       </div>
+      
+      {/* Profile Edit Dialog */}
+      <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+        <DialogContent className="sm:max-w-[500px] p-6">
+          <DialogTitle className="text-xl font-bold mb-4">Edit profile</DialogTitle>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="profile-name">
+                Name
+              </label>
+              <Input 
+                id="profile-name"
+                value={character?.artistName || ""}
+                disabled
+                className="w-full"
+              />
+              <p className="text-xs text-gray-500 mt-1">Your artist name can't be changed here</p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="profile-bio">
+                Bio
+              </label>
+              <Textarea 
+                id="profile-bio"
+                placeholder="Tell the world about yourself"
+                value={profileBio}
+                onChange={(e) => setProfileBio(e.target.value)}
+                className="w-full resize-none"
+                rows={3}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="profile-location">
+                Location
+              </label>
+              <Input 
+                id="profile-location"
+                placeholder="Add your location"
+                value={profileLocation}
+                onChange={(e) => setProfileLocation(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-1" htmlFor="profile-website">
+                Website
+              </label>
+              <Input 
+                id="profile-website"
+                placeholder="Add your website"
+                value={profileWebsite}
+                onChange={(e) => setProfileWebsite(e.target.value)}
+                className="w-full"
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end mt-6">
+            <Button
+              variant="ghost"
+              onClick={() => setIsProfileDialogOpen(false)}
+              className="mr-2"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                // Update profile in the game state
+                if (character) {
+                  const updatedCharacter = {
+                    ...character,
+                    bio: profileBio,
+                  };
+                  
+                  // Store the location and website in localStorage since they're not in the character type
+                  if (profileLocation) {
+                    localStorage.setItem('character_location', profileLocation);
+                  }
+                  if (profileWebsite) {
+                    localStorage.setItem('character_website', profileWebsite);
+                  }
+                  
+                  useRapperGame.setState({
+                    character: updatedCharacter
+                  });
+                  
+                  // Show success message
+                  toast.success("Profile updated successfully!", {
+                    position: "bottom-center",
+                    duration: 2000
+                  });
+                }
+                setIsProfileDialogOpen(false);
+              }}
+              className="bg-[#1D9BF0] hover:bg-[#1A8CD8] text-white"
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
