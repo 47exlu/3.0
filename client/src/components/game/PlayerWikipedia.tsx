@@ -378,7 +378,7 @@ export function PlayerWikipedia() {
                           <td className="py-1">
                             <div className="flex items-center gap-1">
                               <Trophy className="w-3 h-3 text-orange-500" />
-                              <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">{stats.chartPosition}</span>
+                              <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded">#{stats.chartPosition}</span>
                             </div>
                           </td>
                         </tr>
