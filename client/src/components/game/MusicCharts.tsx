@@ -747,7 +747,7 @@ export function MusicCharts() {
                 <div className="text-gray-400 text-sm flex items-center overflow-hidden">
                   {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
                   {song.featuring && song.featuring.length > 0 && (
-                    <span> feat. {song.featuring.map(id => {
+                    <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
                       const artist = aiRappers.find(r => r.id === id);
                       return artist ? artist.name : 'Unknown';
                     }).join(', ')}</span>
@@ -1018,7 +1018,7 @@ export function MusicCharts() {
                 <div className="text-gray-400 text-sm flex items-center overflow-hidden">
                   {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
                   {song.featuring && song.featuring.length > 0 && (
-                    <span> feat. {song.featuring.map(id => {
+                    <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
                       const artist = aiRappers.find(r => r.id === id);
                       return artist ? artist.name : 'Unknown';
                     }).join(', ')}</span>
@@ -1179,7 +1179,7 @@ export function MusicCharts() {
                 <div className="text-gray-400 text-sm flex items-center overflow-hidden">
                   {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
                   {song.featuring && song.featuring.length > 0 && (
-                    <span> feat. {song.featuring.map(id => {
+                    <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
                       const artist = aiRappers.find(r => r.id === id);
                       return artist ? artist.name : 'Unknown';
                     }).join(', ')}</span>
