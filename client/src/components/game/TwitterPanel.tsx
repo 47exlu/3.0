@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
 import { useAudio } from '@/lib/stores/useAudio';
 import { MusicChart, SocialMediaPost, TwitterTrend, ViralStatus } from '@/lib/types';
@@ -78,7 +80,7 @@ const formatDate = (date?: Date, postWeek?: number, currentWeek?: number): strin
 };
 
 export function TwitterPanel() {
-  const { socialMediaStats, socialMedia, postOnSocialMedia, character, currentWeek, aiRappers } = useRapperGame();
+  const { socialMediaStats, socialMedia, postOnSocialMedia, character, currentWeek, aiRappers, updateSocialMediaStats } = useRapperGame();
   const { playSuccess } = useAudio();
   const [tweetText, setTweetText] = useState('');
   const [replyingTo, setReplyingTo] = useState<SocialMediaPost | null>(null);
@@ -89,6 +91,11 @@ export function TwitterPanel() {
   const [tweetThreadView, setTweetThreadView] = useState<SocialMediaPost | null>(null);
   const [userProfileView, setUserProfileView] = useState<string | null>(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showProfileEditor, setShowProfileEditor] = useState(false);
+  const [profileBio, setProfileBio] = useState('');
+  const [profileHandle, setProfileHandle] = useState('');
+  const [profileImage, setProfileImage] = useState('');
+  const profileImageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Check if Twitter data exists
@@ -533,14 +540,26 @@ export function TwitterPanel() {
               </Avatar>
             </div>
             
-            {/* Follow button */}
-            {!isUserProfile && (
-              <div className="absolute bottom-4 right-4">
+            {/* Follow/Edit Profile button */}
+            <div className="absolute bottom-4 right-4">
+              {isUserProfile ? (
+                <Button 
+                  className="rounded-full bg-black text-white dark:bg-white dark:text-black"
+                  onClick={() => {
+                    setProfileHandle(twitterData.handle || '');
+                    setProfileBio(userData.bio);
+                    setProfileImage(userData.avatar);
+                    setShowProfileEditor(true);
+                  }}
+                >
+                  Edit Profile
+                </Button>
+              ) : (
                 <Button className="rounded-full bg-black text-white dark:bg-white dark:text-black">
                   Follow
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           
           {/* Profile info */}
@@ -795,8 +814,116 @@ export function TwitterPanel() {
     );
   }
   
+  // Profile editor dialog
+  const renderProfileEditor = () => {
+    const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            setProfileImage(event.target.result as string);
+          }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    };
+
+    const handleSaveProfile = () => {
+      // Create updated Twitter data
+      if (twitterData) {
+        const updatedTwitterData = {
+          ...twitterData,
+          handle: profileHandle,
+        };
+
+        // Update the profile
+        updateSocialMediaStats({ 
+          twitter: updatedTwitterData 
+        });
+
+        try {
+          if (playSuccess) {
+            playSuccess();
+          }
+        } catch (error) {
+          console.log("Could not play audio effect");
+        }
+        
+        setShowProfileEditor(false);
+      }
+    };
+    
+    return (
+      <Dialog open={showProfileEditor} onOpenChange={setShowProfileEditor}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Profile Image */}
+            <div className="flex flex-col items-center gap-2">
+              <Avatar className="w-24 h-24 cursor-pointer" onClick={() => profileImageInputRef.current?.click()}>
+                <AvatarImage src={profileImage} />
+                <AvatarFallback>{character?.artistName?.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <input 
+                type="file" 
+                ref={profileImageInputRef} 
+                onChange={handleProfileImageUpload} 
+                className="hidden" 
+                accept="image/*" 
+              />
+              <Button variant="outline" size="sm" onClick={() => profileImageInputRef.current?.click()}>
+                Change Image
+              </Button>
+            </div>
+            
+            {/* Handle/Username */}
+            <div className="space-y-2">
+              <Label htmlFor="handle">Username</Label>
+              <div className="flex items-center">
+                <span className="mr-1 text-gray-500">@</span>
+                <Input 
+                  id="handle"
+                  value={profileHandle} 
+                  onChange={(e) => setProfileHandle(e.target.value)}
+                  placeholder="username"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+            
+            {/* Bio */}
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea 
+                id="bio"
+                value={profileBio} 
+                onChange={(e) => setProfileBio(e.target.value)}
+                placeholder="Tell the world about yourself"
+                className="resize-none"
+                rows={4}
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setShowProfileEditor(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveProfile}>
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <Card className="w-full max-w-md mx-auto overflow-hidden dark:bg-black bg-white border-0 shadow-md relative h-[600px]">
+      {renderProfileEditor()}
       <CardContent className="p-0 h-full flex">
         {/* Left Sidebar */}
         <div className="hidden md:flex w-16 lg:w-64 flex-col border-r border-gray-200 dark:border-gray-800 h-full p-2">
