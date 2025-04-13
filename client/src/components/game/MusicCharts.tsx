@@ -1,133 +1,89 @@
-import { useState, useMemo, useEffect } from 'react';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle,
-  CardDescription,
-  CardFooter
-} from '@/components/ui/card';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip as UITooltip } from '@/components/ui/tooltip';
+import { useState, useMemo, useCallback } from 'react';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
-import { useToast } from '@/hooks/use-toast';
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  LineChart, 
-  Line, 
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
-import { 
-  MusicIcon, 
-  SpotifyIcon, 
-  StarIcon 
-} from '@/assets/icons';
-import { 
-  Trophy as TrophyIcon, 
-  TrendingUp as TrendingUpIcon,
-  BarChart as BarChartIcon,
-  LineChart as LineChartIcon,
-  Award as AwardIcon, 
-  Star as StarIcon2,
-  Users as UsersIcon,
-  Info as InfoIcon,
-  Crown as CrownIcon,
-  Radio as RadioIcon,
-  Headphones as HeadphonesIcon
+  ArrowDown, 
+  ArrowUp, 
+  ArrowUpRight, 
+  Star,
+  BarChart2, 
+  Calendar, 
+  Music2,
+  Smartphone
 } from 'lucide-react';
-import { Song as BaseSong, AIRapper, SongPerformanceType, StreamingPlatform } from '@/lib/types';
-import { formatNumber, formatMoney } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue, 
+} from '@/components/ui/select';
+import {
+  CommandGroup,
+  CommandDialog,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandEmpty,
+} from "@/components/ui/command"
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { SongPerformanceType, type Song, type BaseSong, type AIRapper } from '@/lib/types';
+import { formatLargeNumber } from '@/lib/utils';
+import { StarIcon } from '@/components/ui/icons';
 
-// Extended Song type with additional properties for the charts
-interface Song extends BaseSong {
-  isPlayerSong?: boolean;
-  artistName?: string;
-  artistImage?: string;
-  genre?: string;
-  weeklyChange?: number;
-  color?: string;
-  ranking?: number;
-  previousRanking?: number;
-  popularity?: number; // 0-100 scale for song popularity
-  revenue?: number;
-  platformStreamDistribution?: Record<string, number>; // Platform-specific stream distribution
-}
+// Styled star icon with fill
+const StarIcon2 = ({ size = 16, className = '' }) => (
+  <Star size={size} className={`fill-current ${className}`} />
+);
 
-// Define different chart types
+// Type definitions
 type ChartType = 'weekly' | 'allTime' | 'genre' | 'platform';
 type ChartPeriod = 'thisWeek' | 'lastMonth' | 'allTime';
 
-// Timeframe for the charts
 interface ChartTimeframe {
   label: string;
   value: ChartPeriod;
 }
 
-const timeframes: ChartTimeframe[] = [
+// Helper function to get icon for chart type
+const getChartIcon = (type: ChartType) => {
+  switch (type) {
+    case 'weekly': return <Calendar className="mr-2 h-4 w-4" />;
+    case 'allTime': return <BarChart2 className="mr-2 h-4 w-4" />;
+    case 'genre': return <Music2 className="mr-2 h-4 w-4" />;
+    case 'platform': return <Smartphone className="mr-2 h-4 w-4" />;
+    default: return <BarChart2 className="mr-2 h-4 w-4" />;
+  }
+};
+
+// Time periods for chart filtering
+const chartTimeframes: ChartTimeframe[] = [
   { label: 'This Week', value: 'thisWeek' },
   { label: 'Last Month', value: 'lastMonth' },
   { label: 'All Time', value: 'allTime' },
 ];
 
-// Helper to get color based on chart position
-const getPositionColor = (position: number): string => {
-  switch (position) {
-    case 1: return 'text-yellow-400';
-    case 2: return 'text-gray-300';
-    case 3: return 'text-amber-600';
-    default: return 'text-white';
-  }
-};
-
-// Helper to get background based on chart position
-const getPositionBackground = (position: number): string => {
-  switch (position) {
-    case 1: return 'bg-yellow-950/30 border-yellow-800/50';
-    case 2: return 'bg-gray-800/30 border-gray-700/50';
-    case 3: return 'bg-amber-950/30 border-amber-800/50';
-    default: return 'bg-gray-900/20 border-gray-800/50';
-  }
-};
-
-// Helper to get badge color based on performance type
+// Helper to get color for performance indicators
 const getPerformanceColor = (type: SongPerformanceType): string => {
   switch (type) {
-    case 'viral': return 'bg-green-500/20 text-green-400 border-green-600/30';
-    case 'flop': return 'bg-red-500/20 text-red-400 border-red-600/30';
-    case 'comeback': return 'bg-blue-500/20 text-blue-400 border-blue-600/30';
-    default: return 'bg-gray-500/20 text-gray-400 border-gray-600/30';
+    case 'viral': return 'text-green-500';
+    case 'flop': return 'text-red-500';
+    case 'comeback': return 'text-blue-500';
+    case 'normal': 
+    default: return 'text-gray-400';
   }
 };
 
-// Helper to get performance badge text
+// Helper to get text description for performance types
 const getPerformanceText = (type: SongPerformanceType): string => {
   switch (type) {
-    case 'viral': return 'Viral';
-    case 'flop': return 'Flopping';
-    case 'comeback': return 'Comeback';
+    case 'viral': return 'Viral Hit';
+    case 'flop': return 'Underperforming';
+    case 'comeback': return 'Making a Comeback';
+    case 'normal': 
     default: return 'Stable';
   }
 };
@@ -143,6 +99,31 @@ const WeeklyChangeIndicator = ({ change }: { change?: number }) => {
   } else {
     return <span className="text-gray-500">-</span>;
   }
+};
+
+// Helper to render song title without truncation
+const SongTitleDisplay = ({ title, isPlayerSong }: { title: string, isPlayerSong?: boolean }) => {
+  return (
+    <div className="font-semibold flex items-center gap-2">
+      <div className="w-full" style={{ wordBreak: 'break-word' }}>{title}</div>
+      {isPlayerSong && <span className="ml-2 text-yellow-500 text-xs shrink-0">YOUR SONG</span>}
+    </div>
+  );
+};
+
+// Helper to render artist name without truncation
+const ArtistNameDisplay = ({ name, featuring, aiRappers }: { name: string, featuring?: string[], aiRappers: AIRapper[] }) => {
+  return (
+    <div className="text-gray-400 text-sm flex items-center gap-1">
+      <div className="w-full" style={{ wordBreak: 'break-word' }}>{name}</div>
+      {featuring && featuring.length > 0 && (
+        <span className="shrink-0"> feat. {featuring.map(id => {
+          const artist = aiRappers.find(r => r.id === id);
+          return artist ? artist.name : 'Unknown';
+        }).join(', ')}</span>
+      )}
+    </div>
+  );
 };
 
 export function MusicCharts() {
@@ -457,964 +438,707 @@ export function MusicCharts() {
           distributedStreams += platformStreams;
         });
         
-        // Adjust totals to match original stream count (maintain consistency)
+        // Adjust to match original total
         const adjustmentFactor = streams / distributedStreams;
         Object.keys(platformStreamMap).forEach(platform => {
           platformStreamMap[platform] = Math.floor(platformStreamMap[platform] * adjustmentFactor);
         });
         
-        aiSongs.push({
-          id: `ai-song-${rapper.id}-${i}`,
+        // Adjust colors based on genre
+        let color = '#6b7280'; // Default gray
+        if (genre === 'Trap') color = '#f59e0b'; // Amber
+        else if (genre === 'Drill') color = '#ef4444'; // Red
+        else if (genre === 'Old School') color = '#3b82f6'; // Blue
+        else if (genre === 'Melodic') color = '#8b5cf6'; // Purple
+        
+        // Create the song object with all metadata
+        const aiSong: any = {
+          id: `ai-${rapper.id}-song-${i}`,
           title,
-          tier: Math.min(5, Math.max(1, Math.floor(rapper.popularity / 20))) as 1|2|3|4|5,
-          quality: 50 + Math.floor(Math.random() * 50),
-          completed: true,
-          productionStartWeek: Math.max(1, currentWeek - Math.floor(Math.random() * 50)),
-          productionProgress: 100,
-          released: true,
-          releaseDate: Math.max(1, currentWeek - Math.floor(Math.random() * 20)),
-          streams,
-          isActive: true,
-          releasePlatforms: streamingPlatforms.map(p => p.name),
-          featuring,
-          performanceType,
-          performanceStatusWeek: currentWeek,
-          aiRapperOwner: rapper.id,
-          isPlayerSong: false,
           artistName: rapper.name,
           artistImage: rapper.image,
+          featuring,
           genre,
+          streams,
+          releaseDate: currentWeek - Math.floor(Math.random() * 20) - 1,
           weeklyChange,
-          popularity,
-          revenue,
+          performanceType,
+          color,
           ranking: currentRanking,
           previousRanking,
-          color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
-          platformStreamDistribution: platformStreamMap, // Store platform-specific streams
-        });
+          popularity,
+          revenue,
+          platformStreamDistribution: platformStreamMap
+        };
+        
+        aiSongs.push(aiSong);
       }
     });
     
-    return [...playerSongs, ...aiSongs];
+    // Combine player and AI songs
+    const combined = [...playerSongs, ...aiSongs];
+    
+    // Random but deterministic ordering
+    const seed = currentWeek * 1234;
+    combined.forEach(song => {
+      const songSeed = song.id.charCodeAt(0) + (song.artistName?.charCodeAt(0) || 0);
+      song.random = (seed + songSeed) % 1000 / 1000;
+    });
+    
+    return combined;
   }, [songs, aiRappers, character, currentWeek, streamingPlatforms]);
   
   // Filter songs based on selected tab and timeframe
   const filteredSongs = useMemo(() => {
     let filtered = [...allSongs];
     
-    // Filter by timeframe
-    switch (timeframe) {
-      case 'thisWeek':
-        filtered = filtered.filter(s => s.releaseDate && currentWeek - s.releaseDate <= 4);
-        break;
-      case 'lastMonth':
-        filtered = filtered.filter(s => s.releaseDate && currentWeek - s.releaseDate <= 12);
-        break;
-      // allTime - no additional filtering
+    // Apply timeframe filter
+    if (timeframe === 'thisWeek') {
+      // Only recent songs
+      filtered = filtered.filter(song => {
+        const releaseDate = song.releaseDate;
+        return releaseDate && currentWeek - releaseDate <= 8;
+      });
+    } else if (timeframe === 'lastMonth') {
+      // Songs from the last month (4 weeks)
+      filtered = filtered.filter(song => {
+        const releaseDate = song.releaseDate;
+        return releaseDate && currentWeek - releaseDate <= 4;
+      });
     }
     
-    // Filter by tab
-    switch (selectedTab) {
-      case 'genre':
-        if (selectedGenre !== 'all') {
-          filtered = filtered.filter(s => s.genre === selectedGenre);
-        }
-        break;
-      case 'platform':
-        // Use platform-specific stream distribution if available, otherwise simulate it
-        filtered = filtered.map(song => {
-          // If we have platform-specific stream data, use it
-          if (song.platformStreamDistribution && song.platformStreamDistribution[selectedPlatform]) {
-            // Return with platform-specific streams
-            return {
-              ...song,
-              streams: song.platformStreamDistribution[selectedPlatform]
-            };
-          } else {
-            // Fallback to the previous method for backwards compatibility
-            // Deterministic randomization based on song ID and platform
-            const songSeed = song.id.charCodeAt(0) + selectedPlatform.charCodeAt(0);
-            const randomFactor = 0.7 + (Math.sin(songSeed) + 1) * 0.3; // 0.7-1.3x
-            return {
-              ...song,
-              streams: Math.floor(song.streams * randomFactor)
-            };
-          }
-        });
-        break;
-    }
-    
-    // Sort by streams (descending)
-    return filtered.sort((a, b) => b.streams - a.streams).slice(0, 50);
-  }, [allSongs, selectedTab, timeframe, selectedGenre, selectedPlatform, currentWeek]);
-  
-  // Create charts data
-  const chartData = useMemo(() => {
-    // For simplicity, use top 10 songs
-    return filteredSongs.slice(0, 10).map((song, index) => ({
-      name: song.title.length > 12 ? song.title.substring(0, 12) + '...' : song.title,
-      artist: song.artistName,
-      streams: song.streams,
-      position: index + 1,
-      color: song.color,
-      weeklyChange: song.weeklyChange || 0
-    }));
-  }, [filteredSongs]);
-  
-  // Create trending data for line chart
-  const trendingChartData = useMemo(() => {
-    // Create weekly trend data (simulated)
-    const topSongs = filteredSongs.slice(0, 5);
-    const weeksToShow = 8;
-    
-    return Array.from({ length: weeksToShow }).map((_, i) => {
-      const weekNum = currentWeek - (weeksToShow - i - 1);
-      const dataPoint: Record<string, any> = { week: `Week ${weekNum}` };
-      
-      // Add data for each top song with realistic trend
-      topSongs.forEach((song, songIndex) => {
-        // Create a more realistic curve - songs start with fewer streams and peak
-        let factor = 1;
-        const songAge = currentWeek - (song.releaseDate || currentWeek - 1);
-        const normalizedWeek = i - (weeksToShow - songAge);
-        
-        // Songs trend up at first, then plateau, then decline
-        if (normalizedWeek < 0) {
-          // Before release
-          factor = 0;
-        } else if (normalizedWeek <= 2) {
-          // Growth phase
-          factor = normalizedWeek * 0.5;
-        } else if (normalizedWeek <= 4) {
-          // Peak
-          factor = 1;
-        } else {
-          // Decline
-          factor = Math.max(0.3, 1 - ((normalizedWeek - 4) * 0.15));
-        }
-        
-        // Apply performance type modifiers
-        if (song.performanceType === 'viral') {
-          factor *= 1.5;
-        } else if (song.performanceType === 'flop') {
-          factor *= 0.6;
-        } else if (song.performanceType === 'comeback' && normalizedWeek > 3) {
-          factor *= 1.2; // Comeback after initial decline
-        }
-        
-        dataPoint[song.title] = Math.floor(song.streams * factor);
+    // Apply tab-specific filtering
+    if (selectedTab === 'genre' && selectedGenre !== 'all') {
+      // Filter by genre
+      filtered = filtered.filter(song => song.genre === selectedGenre);
+    } else if (selectedTab === 'platform') {
+      // Filter by platform
+      filtered = filtered.filter(song => {
+        if (!song.platformStreamDistribution) return false;
+        return song.platformStreamDistribution[selectedPlatform] !== undefined;
       });
       
-      return dataPoint;
-    });
-  }, [filteredSongs, currentWeek]);
+      // Sort by platform-specific streams
+      filtered.sort((a, b) => {
+        const aStreams = a.platformStreamDistribution?.[selectedPlatform] || 0;
+        const bStreams = b.platformStreamDistribution?.[selectedPlatform] || 0;
+        return bStreams - aStreams;
+      });
+      return filtered;
+    }
+    
+    // Default sorting: all songs by total streams
+    filtered.sort((a, b) => b.streams - a.streams);
+    return filtered;
+  }, [allSongs, selectedTab, timeframe, selectedGenre, selectedPlatform, currentWeek]);
   
-  // Weekly Hot Songs
-  const WeeklyHotSongs = () => (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-bold flex items-center">
-          <TrophyIcon size={20} className="mr-2 text-yellow-500" />
-          Top 50 Charts
-        </h3>
-        
-        <Select value={timeframe} onValueChange={(val) => setTimeframe(val as ChartPeriod)}>
-          <SelectTrigger className="w-[160px] bg-black/40 border-gray-700">
-            <SelectValue placeholder="Select timeframe" />
-          </SelectTrigger>
-          <SelectContent className="bg-gray-900 border-gray-700">
-            {timeframes.map((tf) => (
-              <SelectItem key={tf.value} value={tf.value}>
-                {tf.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+  // Command palette state
+  const [openCommandPalette, setOpenCommandPalette] = useState(false);
+  
+  // Platform search query
+  const [platformSearchQuery, setPlatformSearchQuery] = useState('');
+  
+  // Filter platforms
+  const filteredPlatforms = useMemo(() => {
+    return streamingPlatforms.filter(p => 
+      p.name.toLowerCase().includes(platformSearchQuery.toLowerCase())
+    );
+  }, [streamingPlatforms, platformSearchQuery]);
+  
+  // Select a platform from command palette
+  const selectPlatform = useCallback((platform: string) => {
+    setSelectedPlatform(platform);
+    setOpenCommandPalette(false);
+  }, []);
+  
+  // Calculate chart performance stats
+  const chartStats = useMemo(() => {
+    // How many songs the player has in the charts
+    const playerSongsInChart = filteredSongs.filter(s => s.isPlayerSong).length;
+    
+    // Highest ranking song
+    const playerSongs = filteredSongs.filter(s => s.isPlayerSong);
+    const highestRanking = playerSongs.sort((a, b) => (a.ranking || 999) - (b.ranking || 999))[0]?.ranking || 0;
+    
+    return {
+      playerSongsInChart,
+      totalSongs: filteredSongs.length,
+      percentageOfChart: Math.round((playerSongsInChart / Math.max(1, filteredSongs.length)) * 100),
+      highestRanking
+    };
+  }, [filteredSongs]);
+  
+  // For displaying top 50 only
+  const topSongs = filteredSongs.slice(0, 50);
+  
+  return (
+    <div className="p-4 pb-24 md:pb-4 max-w-screen-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Music Charts</h1>
       
-      {/* Charts visualizations */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <Card className="bg-gray-900/30 border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center">
-              <BarChartIcon size={16} className="mr-2 text-blue-400" />
-              Top Songs by Streams
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-2">
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} layout="vertical" margin={{ left: 20, right: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" tickFormatter={(value) => formatNumber(value)} />
-                  <YAxis type="category" dataKey="name" width={100} />
-                  <Tooltip formatter={(value) => formatNumber(Number(value))} />
-                  <Bar 
-                    dataKey="streams" 
-                    fill="#8884d8" 
-                    isAnimationActive={true}
-                    label={{ position: 'right', formatter: (item: any) => `#${item.position}` }}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gray-900/30 border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center">
-              <LineChartIcon size={16} className="mr-2 text-green-400" />
-              Streaming Trends
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-2">
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={trendingChartData} margin={{ left: 0, right: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="week" />
-                  <YAxis tickFormatter={(value) => formatNumber(value)} />
-                  <Tooltip formatter={(value) => formatNumber(Number(value))} />
-                  <Legend />
-                  {filteredSongs.slice(0, 5).map((song, index) => (
-                    <Line
-                      key={song.id}
-                      type="monotone"
-                      dataKey={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
-                      name={song.title.length > 15 ? song.title.substring(0, 15) + '...' : song.title}
-                      stroke={song.color || `hsl(${index * 70}, 70%, 50%)`}
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
-                    />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Top 50 list */}
-      <div className="space-y-2">
-        {filteredSongs.map((song, index) => (
-          <div 
-            key={song.id}
-            className={`flex items-center p-3 rounded-lg border ${getPositionBackground(index + 1)} transition-all hover:bg-gray-800/40 ${song.isPlayerSong ? 'bg-gradient-to-r from-amber-950/30 to-transparent' : ''}`}
-            onClick={() => {
-              if (song.revenue) {
-                toast({
-                  title: `💰 ${<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>} Revenue`,
-                  description: `This song has earned ${formatMoney(song.revenue)}.`,
-                  variant: "default"
-                });
-              }
-            }}
-          >
-            <div className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 mr-4 font-bold ${getPositionColor(index + 1)}`}>
-              {index + 1}
-            </div>
-            
-            <div className="flex items-center flex-1 min-w-0">
-              {song.artistImage ? (
-                <div className="w-10 h-10 rounded-full overflow-hidden mr-3 relative">
-                  <img src={song.artistImage} alt={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>} className="w-full h-full object-cover" />
-                  {song.isPlayerSong && (
-                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
-                      <StarIcon2 size={10} className="text-black" />
-                    </div>
-                  )}
-                </div>
+      {/* Player's Overall Ranking */}
+      <div className="mb-6 p-4 rounded-lg bg-gray-800/30 backdrop-blur-sm border border-gray-700/50">
+        <h2 className="text-lg font-semibold mb-2">Your Artist Ranking</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="col-span-1 flex items-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full overflow-hidden flex items-center justify-center mr-4">
+              {character?.image ? (
+                <img src={character.image} className="w-full h-full object-cover" alt="Artist" />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 relative">
-                  <span className="text-sm font-bold">{song.artistName?.charAt(0)}</span>
-                  {song.isPlayerSong && (
-                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
-                      <StarIcon2 size={10} className="text-black" />
-                    </div>
-                  )}
-                </div>
+                <span className="text-white text-xl font-bold">
+                  {character?.artistName?.charAt(0) || '?'}
+                </span>
               )}
-              
-              <div className="min-w-0 flex-1">
-                <div className="font-semibold flex items-center overflow-hidden">
-                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
-                  {song.isPlayerSong && (
-                    <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
+            </div>
+            <div>
+              <p className="font-bold text-xl">{character?.artistName || 'You'}</p>
+              <p className="text-gray-400">
+                {playerRanking.ranking === 1 ? (
+                  <span className="text-yellow-500 flex items-center">
+                    <StarIcon2 size={14} className="mr-1" /> 
+                    Top Artist
+                  </span>
+                ) : (
+                  <>Ranked #{playerRanking.ranking}</>
+                )}
+              </p>
+            </div>
+          </div>
+          
+          <div className="col-span-1">
+            <p className="text-gray-400 text-sm">Monthly Listeners</p>
+            <p className="font-bold text-xl">
+              {formatLargeNumber(streamingPlatforms.reduce((sum, platform) => sum + platform.listeners, 0))}
+            </p>
+          </div>
+          
+          <div className="col-span-1">
+            <p className="text-gray-400 text-sm">Total Streams</p>
+            <p className="font-bold text-xl">
+              {formatLargeNumber(songs.filter(s => s.released).reduce((sum, song) => sum + song.streams, 0))}
+            </p>
+          </div>
+          
+          <div className="col-span-1">
+            <p className="text-gray-400 text-sm">Industry Percentile</p>
+            <p className="font-bold text-xl">
+              Top {playerRanking.percentile}%
+            </p>
+          </div>
+        </div>
+        
+        {/* Nearby artists in ranking */}
+        <div className="mt-4">
+          <p className="text-sm text-gray-400 mb-2">Nearby Artists in Rankings</p>
+          <div className="flex flex-wrap gap-2">
+            {playerRanking.nearbyArtists.map((artist, index) => (
+              <div 
+                key={artist.id} 
+                className={`
+                  flex items-center p-2 rounded-lg
+                  ${artist.id === 'player' 
+                    ? 'bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-700/50' 
+                    : 'bg-gray-800/30 border border-gray-700/50'}
+                `}
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-2 bg-gray-700">
+                  {artist.image ? (
+                    <img src={artist.image} className="w-full h-full object-cover" alt={artist.name} />
+                  ) : (
+                    <span className="text-sm font-bold">{artist.name.charAt(0)}</span>
                   )}
                 </div>
-                <div className="text-gray-400 text-sm flex items-center overflow-hidden">
-                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
-                  {song.featuring && song.featuring.length > 0 && (
-                    <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
-                      const artist = aiRappers.find(r => r.id === id);
-                      return artist ? artist.name : 'Unknown';
-                    }).join(', ')}</span>
+                <div>
+                  <p className="text-sm font-medium">{artist.name}</p>
+                  <p className="text-xs text-gray-400">#{playerRanking.ranking - 1 + index}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {/* Music Chart Tabs */}
+      <Tabs defaultValue="weekly" value={selectedTab} onValueChange={(value) => setSelectedTab(value as ChartType)} className="w-full">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+          <TabsList className="mb-4 md:mb-0">
+            <TabsTrigger value="weekly" className="flex items-center">
+              {getChartIcon('weekly')} Weekly Charts
+            </TabsTrigger>
+            <TabsTrigger value="allTime" className="flex items-center">
+              {getChartIcon('allTime')} All-Time
+            </TabsTrigger>
+            <TabsTrigger value="genre" className="flex items-center">
+              {getChartIcon('genre')} By Genre
+            </TabsTrigger>
+            <TabsTrigger value="platform" className="flex items-center">
+              {getChartIcon('platform')} By Platform
+            </TabsTrigger>
+          </TabsList>
+          
+          <div className="flex gap-2 flex-wrap">
+            {selectedTab !== 'platform' && selectedTab !== 'genre' && (
+              <Select value={timeframe} onValueChange={(value) => setTimeframe(value as ChartPeriod)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select timeframe" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {chartTimeframes.map(tf => (
+                      <SelectItem key={tf.value} value={tf.value}>
+                        {tf.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+            
+            {selectedTab === 'genre' && (
+              <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select genre" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {genres.map(genre => (
+                      <SelectItem key={genre} value={genre}>
+                        {genre === 'all' ? 'All Genres' : genre}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+            
+            {selectedTab === 'platform' && (
+              <>
+                <Button
+                  variant="outline"
+                  className="w-[180px] justify-between"
+                  onClick={() => setOpenCommandPalette(true)}
+                >
+                  {selectedPlatform}
+                  <ArrowUpRight className="ml-2 h-4 w-4" />
+                </Button>
+                
+                <CommandDialog open={openCommandPalette} onOpenChange={setOpenCommandPalette}>
+                  <CommandInput
+                    placeholder="Search platforms..."
+                    value={platformSearchQuery}
+                    onValueChange={setPlatformSearchQuery}
+                  />
+                  <CommandList>
+                    <CommandEmpty>No platforms found.</CommandEmpty>
+                    <CommandGroup heading="Streaming Platforms">
+                      {filteredPlatforms.map(platform => (
+                        <CommandItem
+                          key={platform.name}
+                          onSelect={() => selectPlatform(platform.name)}
+                          className="flex items-center"
+                        >
+                          <div
+                            className="w-4 h-4 rounded-full mr-2"
+                            style={{ backgroundColor: platform.color }}
+                          />
+                          {platform.name}
+                          {platform.name === selectedPlatform && (
+                            <span className="ml-auto text-green-500">✓</span>
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </CommandDialog>
+              </>
+            )}
+          </div>
+        </div>
+        
+        {/* Chart stats section */}
+        <div className="flex flex-wrap gap-3 mb-4">
+          <div className="px-3 py-2 bg-gray-800/30 backdrop-blur-sm rounded-lg">
+            <p className="text-xs text-gray-400">Your Songs in Chart</p>
+            <p className="font-bold">{chartStats.playerSongsInChart} of {chartStats.totalSongs}</p>
+          </div>
+          
+          <div className="px-3 py-2 bg-gray-800/30 backdrop-blur-sm rounded-lg">
+            <p className="text-xs text-gray-400">Chart Dominance</p>
+            <p className="font-bold">{chartStats.percentageOfChart}%</p>
+          </div>
+          
+          <div className="px-3 py-2 bg-gray-800/30 backdrop-blur-sm rounded-lg">
+            <p className="text-xs text-gray-400">Highest Position</p>
+            <p className="font-bold">
+              {chartStats.highestRanking ? (
+                <>#{chartStats.highestRanking}</>
+              ) : (
+                <>Not Charting</>
+              )}
+            </p>
+          </div>
+        </div>
+        
+        {/* Tab content */}
+        <TabsContent value="weekly" className="pt-2">
+          {/* Weekly chart display */}
+          <h3 className="text-lg font-semibold mb-3">Top 50 Songs This Week</h3>
+          
+          <div className="space-y-1">
+            {topSongs.map((song, index) => (
+              <div 
+                key={`weekly-${song.id}`}
+                className={`
+                  p-3 rounded-lg flex items-center
+                  ${song.isPlayerSong 
+                    ? 'bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-700/50' 
+                    : 'bg-gray-800/30 hover:bg-gray-800/60 border border-gray-700/50'}
+                `}
+              >
+                {/* Position and change indicator */}
+                <div className="mr-3 w-12 text-center">
+                  <div className="text-xl font-bold">#{index + 1}</div>
+                  <div className="text-xs flex items-center justify-center">
+                    {song.previousRanking && song.ranking && (
+                      <>
+                        {song.previousRanking > song.ranking ? (
+                          <ArrowUp size={12} className="text-green-500 mr-1" />
+                        ) : song.previousRanking < song.ranking ? (
+                          <ArrowDown size={12} className="text-red-500 mr-1" />
+                        ) : (
+                          <span className="text-gray-500 mr-1">-</span>
+                        )}
+                        <span>
+                          <WeeklyChangeIndicator 
+                            change={song.previousRanking - song.ranking} 
+                          />
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Song artwork/artist image */}
+                {song.cover ? (
+                  <div className="w-10 h-10 rounded-md overflow-hidden mr-3 flex-shrink-0">
+                    <img 
+                      src={song.cover} 
+                      alt={song.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 relative">
+                    <span className="text-sm font-bold">{song.artistName?.charAt(0)}</span>
+                    {song.isPlayerSong && (
+                      <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
+                        <StarIcon2 size={10} className="text-black" />
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Song title and artist */}
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold flex items-center">
+                    <div className="max-w-full mr-2">{song.title}</div>
+                    {song.isPlayerSong && (
+                      <span className="ml-2 text-yellow-500 text-xs whitespace-nowrap">YOUR SONG</span>
+                    )}
+                  </div>
+                  <div className="text-gray-400 text-sm flex items-center">
+                    <div className="max-w-full">{song.artistName}</div>
+                    {song.featuring && song.featuring.length > 0 && (
+                      <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
+                        const artist = aiRappers.find(r => r.id === id);
+                        return artist ? artist.name : 'Unknown';
+                      }).join(', ')}</span>
+                    )}
+                    
+                    {song.genre && (
+                      <Badge variant="outline" className="ml-2 text-[10px] px-1 py-0 h-4 bg-gray-800/50">
+                        {song.genre}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Streams indicator */}
+                <div className="text-right ml-2">
+                  <div className="font-medium whitespace-nowrap">{formatLargeNumber(song.streams)}</div>
+                  <div className="text-xs text-gray-400">streams</div>
+                </div>
+                
+                {/* Performance indicator */}
+                <div className={`ml-4 text-xs px-2 py-1 rounded-full ${getPerformanceColor(song.performanceType)} bg-gray-800/50`}>
+                  {getPerformanceText(song.performanceType)}
+                </div>
+              </div>
+            ))}
+            
+            {filteredSongs.length === 0 && (
+              <div className="p-8 text-center text-gray-400">
+                <p>No songs match your filter criteria.</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="allTime" className="pt-2">
+          {/* All time hits display */}
+          <h3 className="text-lg font-semibold mb-3">All-Time Greatest Hits</h3>
+          
+          <div className="space-y-1">
+            {topSongs.map((song, index) => (
+              <div 
+                key={`allTime-${song.id}`}
+                className={`
+                  p-3 rounded-lg flex items-center
+                  ${song.isPlayerSong 
+                    ? 'bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-700/50' 
+                    : 'bg-gray-800/30 hover:bg-gray-800/60 border border-gray-700/50'}
+                `}
+              >
+                {/* Position */}
+                <div className="mr-3 w-10 text-center">
+                  <div className="text-xl font-bold">#{index + 1}</div>
+                </div>
+                
+                {/* Song artwork/artist image */}
+                {song.cover ? (
+                  <div className="w-10 h-10 rounded-md overflow-hidden mr-3 flex-shrink-0">
+                    <img 
+                      src={song.cover} 
+                      alt={song.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 relative">
+                    <span className="text-sm font-bold">{song.artistName?.charAt(0)}</span>
+                    {song.isPlayerSong && (
+                      <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
+                        <StarIcon2 size={10} className="text-black" />
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Song title and artist */}
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold flex items-center">
+                    <div className="max-w-full mr-2">{song.title}</div>
+                    {song.isPlayerSong && (
+                      <span className="ml-2 text-yellow-500 text-xs whitespace-nowrap">YOUR SONG</span>
+                    )}
+                  </div>
+                  <div className="text-gray-400 text-sm flex items-center">
+                    <div className="max-w-full">{song.artistName}</div>
+                    {song.featuring && song.featuring.length > 0 && (
+                      <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
+                        const artist = aiRappers.find(r => r.id === id);
+                        return artist ? artist.name : 'Unknown';
+                      }).join(', ')}</span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Popularity indicator */}
+                <div className="flex flex-col items-end ml-2">
+                  <div className="font-medium">{formatLargeNumber(song.streams)}</div>
+                  <div className="mt-1 w-24 bg-gray-700 rounded-full h-1.5">
+                    <div 
+                      className="h-1.5 rounded-full" 
+                      style={{ 
+                        width: `${song.popularity || 0}%`,
+                        backgroundColor: song.color || '#8b5cf6'
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            {filteredSongs.length === 0 && (
+              <div className="p-8 text-center text-gray-400">
+                <p>No songs match your filter criteria.</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="genre" className="pt-2">
+          {/* Genre-based charts */}
+          <h3 className="text-lg font-semibold mb-3">
+            {selectedGenre === 'all' ? 'All Genres' : selectedGenre} Charts
+          </h3>
+          
+          <div className="space-y-1">
+            {topSongs.map((song, index) => (
+              <div 
+                key={`genre-${song.id}`}
+                className={`
+                  p-3 rounded-lg flex items-center
+                  ${song.isPlayerSong 
+                    ? 'bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-700/50' 
+                    : 'bg-gray-800/30 hover:bg-gray-800/60 border border-gray-700/50'}
+                `}
+              >
+                {/* Position */}
+                <div className="mr-3 w-10 text-center">
+                  <div className="text-xl font-bold">#{index + 1}</div>
+                </div>
+                
+                {/* Song artwork/artist image */}
+                {song.cover ? (
+                  <div className="w-10 h-10 rounded-md overflow-hidden mr-3 flex-shrink-0">
+                    <img 
+                      src={song.cover} 
+                      alt={song.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 relative">
+                    <span className="text-sm font-bold">{song.artistName?.charAt(0)}</span>
+                    {song.isPlayerSong && (
+                      <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
+                        <StarIcon2 size={10} className="text-black" />
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Song title and artist */}
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold flex items-center">
+                    <div className="max-w-full mr-2">{song.title}</div>
+                    {song.isPlayerSong && (
+                      <span className="ml-2 text-yellow-500 text-xs whitespace-nowrap">YOUR SONG</span>
+                    )}
+                  </div>
+                  <div className="text-gray-400 text-sm flex items-center">
+                    <div className="max-w-full">{song.artistName}</div>
+                    {song.featuring && song.featuring.length > 0 && (
+                      <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
+                        const artist = aiRappers.find(r => r.id === id);
+                        return artist ? artist.name : 'Unknown';
+                      }).join(', ')}</span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Streams indicator */}
+                <div className="text-right ml-2">
+                  <div className="font-medium whitespace-nowrap">{formatLargeNumber(song.streams)}</div>
+                  <div className="text-xs text-gray-400">streams</div>
+                </div>
+                
+                {/* Genre badge */}
+                <div 
+                  className="ml-4 text-xs px-2 py-1 rounded-full border"
+                  style={{ 
+                    borderColor: song.color || '#8b5cf6',
+                    backgroundColor: `${song.color || '#8b5cf6'}20`
+                  }}
+                >
+                  {song.genre}
+                </div>
+              </div>
+            ))}
+            
+            {filteredSongs.length === 0 && (
+              <div className="p-8 text-center text-gray-400">
+                <p>No songs match your filter criteria.</p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="platform" className="pt-2">
+          {/* Platform-specific charts */}
+          <h3 className="text-lg font-semibold mb-3">
+            {selectedPlatform} Top 50
+          </h3>
+          
+          <div className="space-y-1">
+            {topSongs.map((song, index) => {
+              // Get platform-specific streams
+              const platformStreams = song.platformStreamDistribution?.[selectedPlatform] || 0;
+              
+              return (
+                <div 
+                  key={`platform-${song.id}`}
+                  className={`
+                    p-3 rounded-lg flex items-center
+                    ${song.isPlayerSong 
+                      ? 'bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-700/50' 
+                      : 'bg-gray-800/30 hover:bg-gray-800/60 border border-gray-700/50'}
+                  `}
+                >
+                  {/* Position */}
+                  <div className="mr-3 w-10 text-center">
+                    <div className="text-xl font-bold">#{index + 1}</div>
+                  </div>
+                  
+                  {/* Song artwork/artist image */}
+                  {song.cover ? (
+                    <div className="w-10 h-10 rounded-md overflow-hidden mr-3 flex-shrink-0">
+                      <img 
+                        src={song.cover} 
+                        alt={song.title} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 relative">
+                      <span className="text-sm font-bold">{song.artistName?.charAt(0)}</span>
+                      {song.isPlayerSong && (
+                        <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
+                          <StarIcon2 size={10} className="text-black" />
+                        </div>
+                      )}
+                    </div>
                   )}
                   
-                  {song.genre && (
-                    <Badge variant="outline" className="ml-2 text-[10px] px-1 py-0 h-4 bg-gray-800/50">
-                      {song.genre}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex flex-col items-end ml-4">
-              <div className="text-sm font-medium flex items-center">
-                {formatNumber(song.streams)} 
-                <HeadphonesIcon size={12} className="ml-1 text-gray-400" />
-                {song.popularity && (
-                  <div className="ml-2 flex items-center" title={`Popularity: ${song.popularity}/100`}>
-                    <div className="h-1.5 w-10 bg-gray-800 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${
-                          song.popularity > 80 ? 'bg-green-500' : 
-                          song.popularity > 60 ? 'bg-blue-500' : 
-                          song.popularity > 40 ? 'bg-yellow-500' : 
-                          song.popularity > 20 ? 'bg-orange-500' : 'bg-red-500'
-                        }`} 
-                        style={{ width: `${song.popularity}%` }}
-                      />
+                  {/* Song title and artist */}
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold flex items-center">
+                      <div className="max-w-full mr-2">{song.title}</div>
+                      {song.isPlayerSong && (
+                        <span className="ml-2 text-yellow-500 text-xs whitespace-nowrap">YOUR SONG</span>
+                      )}
+                    </div>
+                    <div className="text-gray-400 text-sm flex items-center">
+                      <div className="max-w-full">{song.artistName}</div>
+                      {song.featuring && song.featuring.length > 0 && (
+                        <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
+                          const artist = aiRappers.find(r => r.id === id);
+                          return artist ? artist.name : 'Unknown';
+                        }).join(', ')}</span>
+                      )}
                     </div>
                   </div>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline" className={`text-xs ${getPerformanceColor(song.performanceType)}`}>
-                  {getPerformanceText(song.performanceType)}
-                </Badge>
-                
-                {song.revenue && song.isPlayerSong && (
-                  <Badge variant="outline" className="text-xs bg-emerald-900/20 text-emerald-400 border-emerald-700/30">
-                    {formatMoney(song.revenue)}
-                  </Badge>
-                )}
-              </div>
-            </div>
-            
-            <div className="ml-4 flex flex-col items-center justify-center space-y-1">
-              <div className="text-center">
-                <WeeklyChangeIndicator change={song.weeklyChange} />
-              </div>
-              {song.previousRanking && song.previousRanking !== index + 1 && (
-                <div className="text-xs text-gray-400">
-                  from #{song.previousRanking}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-  
-  // Genre-based charts
-  const GenreCharts = () => (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-bold flex items-center">
-          <MusicIcon size={20} className="mr-2 text-indigo-500" />
-          Genre Charts
-        </h3>
-        
-        <div className="flex gap-2">
-          <Select value={selectedGenre} onValueChange={setSelectedGenre}>
-            <SelectTrigger className="w-[160px] bg-black/40 border-gray-700">
-              <SelectValue placeholder="Select genre" />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
-              {genres.map((genre) => (
-                <SelectItem key={genre} value={genre}>
-                  {genre === 'all' ? 'All Genres' : genre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select value={timeframe} onValueChange={(val) => setTimeframe(val as ChartPeriod)}>
-            <SelectTrigger className="w-[160px] bg-black/40 border-gray-700">
-              <SelectValue placeholder="Select timeframe" />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
-              {timeframes.map((tf) => (
-                <SelectItem key={tf.value} value={tf.value}>
-                  {tf.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      {/* Genre distribution pie chart */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-        <Card className="bg-gray-900/30 border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center">
-              <RadioIcon size={16} className="mr-2 text-purple-400" />
-              Genre Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="h-[250px] flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={(() => {
-                      const genreCounts: Record<string, number> = {};
-                      allSongs.forEach(song => {
-                        if (song.genre) {
-                          genreCounts[song.genre] = (genreCounts[song.genre] || 0) + 1;
-                        }
-                      });
-                      return Object.entries(genreCounts).map(([name, value]) => ({
-                        name,
-                        value,
-                        color: name === 'Player' ? '#ff9500' : `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`
-                      }));
-                    })()}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    nameKey="name"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {(() => {
-                      const genreCounts: Record<string, number> = {};
-                      allSongs.forEach(song => {
-                        if (song.genre) {
-                          genreCounts[song.genre] = (genreCounts[song.genre] || 0) + 1;
-                        }
-                      });
-                      return Object.entries(genreCounts).map(([name], index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={name === 'Player' ? '#ff9500' : `hsl(${(index * 137) % 360}, 70%, 50%)`} 
-                        />
-                      ));
-                    })()}
-                  </Pie>
-                  <Tooltip formatter={(value) => [`${value} songs`, 'Count']} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gray-900/30 border-gray-800">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center">
-              <BarChartIcon size={16} className="mr-2 text-blue-400" />
-              Top Genre Streams
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={(() => {
-                    const genreStreams: Record<string, number> = {};
-                    allSongs.forEach(song => {
-                      if (song.genre) {
-                        genreStreams[song.genre] = (genreStreams[song.genre] || 0) + song.streams;
-                      }
-                    });
-                    return Object.entries(genreStreams)
-                      .map(([name, value]) => ({ name, streams: value }))
-                      .sort((a, b) => b.streams - a.streams)
-                      .slice(0, 5);
-                  })()}
-                  layout="vertical"
-                  margin={{ left: 20, right: 20 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" tickFormatter={(value) => formatNumber(value)} />
-                  <YAxis type="category" dataKey="name" width={80} />
-                  <Tooltip formatter={(value) => formatNumber(Number(value))} />
-                  <Bar 
-                    dataKey="streams" 
-                    fill="#8884d8" 
-                    isAnimationActive={true}
-                  >
-                    {(() => {
-                      const genreStreams: Record<string, number> = {};
-                      allSongs.forEach(song => {
-                        if (song.genre) {
-                          genreStreams[song.genre] = (genreStreams[song.genre] || 0) + song.streams;
-                        }
-                      });
-                      return Object.entries(genreStreams)
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 5)
-                        .map(([name], index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={name === 'Player' ? '#ff9500' : `hsl(${(index * 137) % 360}, 70%, 50%)`} 
-                          />
-                        ));
-                    })()}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {/* Top songs by genre - same list as Weekly but filtered by genre */}
-      <div className="space-y-2">
-        {filteredSongs.map((song, index) => (
-          <div 
-            key={song.id}
-            className={`flex items-center p-3 rounded-lg border ${getPositionBackground(index + 1)} transition-all hover:bg-gray-800/40 ${song.isPlayerSong ? 'bg-gradient-to-r from-amber-950/30 to-transparent' : ''}`}
-            onClick={() => {
-              if (song.revenue) {
-                toast({
-                  title: `💰 ${<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>} Revenue`,
-                  description: `This song has earned ${formatMoney(song.revenue)}.`,
-                  variant: "default"
-                });
-              }
-            }}
-          >
-            <div className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 mr-4 font-bold ${getPositionColor(index + 1)}`}>
-              {index + 1}
-            </div>
-            
-            <div className="flex items-center flex-1 min-w-0">
-              {song.artistImage ? (
-                <div className="w-10 h-10 rounded-full overflow-hidden mr-3 relative">
-                  <img src={song.artistImage} alt={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>} className="w-full h-full object-cover" />
-                  {song.isPlayerSong && (
-                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
-                      <StarIcon2 size={10} className="text-black" />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 relative">
-                  <span className="text-sm font-bold">{song.artistName?.charAt(0)}</span>
-                  {song.isPlayerSong && (
-                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
-                      <StarIcon2 size={10} className="text-black" />
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              <div className="min-w-0 flex-1">
-                <div className="font-semibold flex items-center overflow-hidden">
-                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
-                  {song.isPlayerSong && (
-                    <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
-                  )}
-                </div>
-                <div className="text-gray-400 text-sm flex items-center overflow-hidden">
-                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
-                  {song.featuring && song.featuring.length > 0 && (
-                    <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
-                      const artist = aiRappers.find(r => r.id === id);
-                      return artist ? artist.name : 'Unknown';
-                    }).join(', ')}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex flex-col items-end ml-4">
-              <div className="text-sm font-medium flex items-center">
-                {formatNumber(song.streams)} 
-                <HeadphonesIcon size={12} className="ml-1 text-gray-400" />
-                {song.popularity && (
-                  <div className="ml-2 flex items-center" title={`Popularity: ${song.popularity}/100`}>
-                    <div className="h-1.5 w-10 bg-gray-800 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${
-                          song.popularity > 80 ? 'bg-green-500' : 
-                          song.popularity > 60 ? 'bg-blue-500' : 
-                          song.popularity > 40 ? 'bg-yellow-500' : 
-                          song.popularity > 20 ? 'bg-orange-500' : 'bg-red-500'
-                        }`} 
-                        style={{ width: `${song.popularity}%` }}
-                      />
-                    </div>
+                  
+                  {/* Platform-specific streams indicator */}
+                  <div className="text-right ml-2">
+                    <div className="font-medium whitespace-nowrap">{formatLargeNumber(platformStreams)}</div>
+                    <div className="text-xs text-gray-400">platform streams</div>
                   </div>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline" className={`text-xs ${getPerformanceColor(song.performanceType)}`}>
-                  {getPerformanceText(song.performanceType)}
-                </Badge>
-                
-                {song.revenue && song.isPlayerSong && (
-                  <Badge variant="outline" className="text-xs bg-emerald-900/20 text-emerald-400 border-emerald-700/30">
-                    {formatMoney(song.revenue)}
-                  </Badge>
-                )}
-              </div>
-            </div>
-            
-            <div className="ml-4 px-2 py-1 rounded bg-gradient-to-r from-indigo-900/40 to-purple-900/40 flex items-center">
-              <RadioIcon size={12} className="mr-1 text-indigo-400" />
-              <span className="text-xs">{song.genre}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-  
-  // Platform-specific charts
-  const PlatformCharts = () => (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-bold flex items-center">
-          <SpotifyIcon size={20} className="mr-2 text-green-500" />
-          Platform Charts
-        </h3>
-        
-        <div className="flex gap-2">
-          <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
-            <SelectTrigger className="w-[160px] bg-black/40 border-gray-700">
-              <SelectValue placeholder="Select platform" />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
-              {streamingPlatforms.map((platform) => (
-                <SelectItem key={platform.name} value={platform.name}>
-                  {platform.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select value={timeframe} onValueChange={(val) => setTimeframe(val as ChartPeriod)}>
-            <SelectTrigger className="w-[160px] bg-black/40 border-gray-700">
-              <SelectValue placeholder="Select timeframe" />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-700">
-              {timeframes.map((tf) => (
-                <SelectItem key={tf.value} value={tf.value}>
-                  {tf.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      {/* Platform info */}
-      <Card className="bg-black/30 border-gray-800">
-        <CardContent className="p-4">
-          <div className="flex items-center">
-            <div className="flex-1">
-              <h3 className="text-lg font-bold">{selectedPlatform} Top 50</h3>
-              <p className="text-sm text-gray-400">
-                The most streamed tracks on {selectedPlatform} right now
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-lg font-bold">
-                {formatNumber(streamingPlatforms.find(p => p.name === selectedPlatform)?.listeners || 0)}
-              </div>
-              <p className="text-sm text-gray-400">Monthly Listeners</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Platform-specific top songs - same list as Weekly but filtered by platform */}
-      <div className="space-y-2">
-        {filteredSongs.map((song, index) => (
-          <div 
-            key={song.id}
-            className={`flex items-center p-3 rounded-lg border ${getPositionBackground(index + 1)} transition-all hover:bg-gray-800/40 ${song.isPlayerSong ? 'bg-gradient-to-r from-amber-950/30 to-transparent' : ''}`}
-            onClick={() => {
-              if (song.revenue) {
-                toast({
-                  title: `💰 ${<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>} Revenue`,
-                  description: `This song has earned ${formatMoney(song.revenue)}.`,
-                  variant: "default"
-                });
-              }
-            }}
-          >
-            <div className={`w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 mr-4 font-bold ${getPositionColor(index + 1)}`}>
-              {index + 1}
-            </div>
-            
-            <div className="flex items-center flex-1 min-w-0">
-              {song.artistImage ? (
-                <div className="w-10 h-10 rounded-full overflow-hidden mr-3 relative">
-                  <img src={song.artistImage} alt={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>} className="w-full h-full object-cover" />
-                  {song.isPlayerSong && (
-                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
-                      <StarIcon2 size={10} className="text-black" />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 relative">
-                  <span className="text-sm font-bold">{song.artistName?.charAt(0)}</span>
-                  {song.isPlayerSong && (
-                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
-                      <StarIcon2 size={10} className="text-black" />
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              <div className="min-w-0 flex-1">
-                <div className="font-semibold flex items-center overflow-hidden">
-                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
-                  {song.isPlayerSong && (
-                    <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
-                  )}
-                </div>
-                <div className="text-gray-400 text-sm flex items-center overflow-hidden">
-                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
-                  {song.featuring && song.featuring.length > 0 && (
-                    <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
-                      const artist = aiRappers.find(r => r.id === id);
-                      return artist ? artist.name : 'Unknown';
-                    }).join(', ')}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex flex-col items-end ml-4">
-              <div className="text-sm font-medium flex items-center">
-                {formatNumber(song.streams)} 
-                <HeadphonesIcon size={12} className="ml-1 text-gray-400" />
-                {song.popularity && (
-                  <div className="ml-2 flex items-center" title={`Popularity: ${song.popularity}/100`}>
-                    <div className="h-1.5 w-10 bg-gray-800 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${
-                          song.popularity > 80 ? 'bg-green-500' : 
-                          song.popularity > 60 ? 'bg-blue-500' : 
-                          song.popularity > 40 ? 'bg-yellow-500' : 
-                          song.popularity > 20 ? 'bg-orange-500' : 'bg-red-500'
-                        }`} 
-                        style={{ width: `${song.popularity}%` }}
-                      />
-                    </div>
+                  
+                  {/* Platform percentage indicator */}
+                  <div className="ml-4 text-xs px-2 py-1 rounded-full bg-gray-800/50">
+                    {Math.round((platformStreams / song.streams) * 100)}% of total
                   </div>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline" className={`text-xs ${getPerformanceColor(song.performanceType)}`}>
-                  {getPerformanceText(song.performanceType)}
-                </Badge>
-                
-                {song.revenue && song.isPlayerSong && (
-                  <Badge variant="outline" className="text-xs bg-emerald-900/20 text-emerald-400 border-emerald-700/30">
-                    {formatMoney(song.revenue)}
-                  </Badge>
-                )}
-              </div>
-            </div>
+                </div>
+              );
+            })}
             
-            <div className="ml-4 flex flex-col items-center justify-center space-y-1">
-              <div className="text-center">
-                <WeeklyChangeIndicator change={song.weeklyChange} />
+            {filteredSongs.length === 0 && (
+              <div className="p-8 text-center text-gray-400">
+                <p>No songs match your filter criteria.</p>
               </div>
-              {song.previousRanking && song.previousRanking !== index + 1 && (
-                <div className="text-xs text-gray-400">
-                  from #{song.previousRanking}
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        ))}
-      </div>
-    </div>
-  );
-  
-  // Effect to show a message when player's song enters the charts
-  // We need to track if we've already shown notifications to prevent them from re-appearing
-  // when just opening the charts
-  const [shownTop3Notification, setShownTop3Notification] = useState(false);
-  const [shownTop10Notification, setShownTop10Notification] = useState(false);
-  
-  useEffect(() => {
-    // Check if any player song is in the top 10
-    const playerInTop10 = filteredSongs.findIndex(s => s.isPlayerSong && s.streams > 5000) < 10;
-    const playerInTop3 = filteredSongs.findIndex(s => s.isPlayerSong && s.streams > 10000) < 3;
-    
-    // Only show notifications for new achievements, not when just viewing the charts
-    if (playerInTop3 && !shownTop3Notification) {
-      setShownTop3Notification(true);
-      // After a slight delay to allow the UI to render first
-      const timer = setTimeout(() => {
-        toast({
-          title: "🏆 Chart Achievement!",
-          description: "One of your songs has reached the Top 3! Your fans are going wild!",
-          variant: "default",
-          duration: 5000,
-        });
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    } else if (playerInTop10 && !playerInTop3 && !shownTop10Notification) {
-      setShownTop10Notification(true);
-      // After a slight delay to allow the UI to render first
-      const timer = setTimeout(() => {
-        toast({
-          title: "📈 Chart Success!",
-          description: "Your music is in the Top 10! Your career is taking off!",
-          variant: "default",
-          duration: 3000,
-        });
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [filteredSongs, timeframe, selectedTab, toast, shownTop3Notification, shownTop10Notification]);
-
-  return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-indigo-950 to-black text-white p-4 overflow-y-auto">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          <BarChartIcon size={32} className="mr-3 text-blue-400" />
-          <div>
-            <h1 className="text-2xl font-bold">Music Charts</h1>
-            <p className="text-sm text-gray-400">See what's trending across the industry</p>
-          </div>
-        </div>
-        
-        <Button 
-          variant="outline" 
-          className="bg-transparent border-gray-600 hover:bg-gray-800"
-          onClick={() => useRapperGame.getState().setScreen('career_dashboard')}
-        >
-          Back to Dashboard
-        </Button>
-      </div>
-      
-      {/* Player Ranking Stats Card */}
-      <Card className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-purple-800 mb-6">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="col-span-1 md:col-span-2">
-              <h3 className="text-lg font-bold flex items-center mb-2">
-                <CrownIcon size={18} className="mr-2 text-yellow-400" />
-                Your Industry Position
-              </h3>
-              
-              <div className="flex flex-col space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-300">Artist Ranking:</span>
-                  <span className="font-bold text-white">
-                    #{playerRanking.ranking} of {playerRanking.totalArtists}
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-300">Industry Percentile:</span>
-                  <span className={`font-bold ${playerRanking.percentile > 75 ? 'text-green-400' : playerRanking.percentile > 50 ? 'text-yellow-400' : 'text-gray-400'}`}>
-                    Top {100 - playerRanking.percentile}%
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-300">Leader:</span>
-                  <span className="font-bold text-white">
-                    {playerRanking.topArtist.name} ({formatNumber(playerRanking.topArtist.streams)} streams)
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-300">Your Songs in Top 50:</span>
-                  <span className="font-bold text-white">
-                    {filteredSongs.filter(s => s.isPlayerSong).length}
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-300">Best Chart Position:</span>
-                  <span className="font-bold text-white">
-                    #{Math.min(
-                      ...filteredSongs
-                        .filter(s => s.isPlayerSong)
-                        .map((_, i) => i + 1),
-                      51
-                    )}
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="col-span-1 bg-black/20 rounded-md p-3 flex flex-col justify-center">
-              <h4 className="text-sm font-semibold text-gray-300 mb-1 flex items-center">
-                <InfoIcon size={14} className="mr-1 text-blue-400" />
-                Industry Insights
-              </h4>
-              <p className="text-xs text-gray-400 mb-2">
-                {playerRanking.percentile > 90 
-                  ? "You're a dominant force in the industry! Leverage your fame for brand deals and business opportunities."
-                  : playerRanking.percentile > 70
-                  ? "You're becoming a major player! Focus on maintaining momentum with quality releases."
-                  : playerRanking.percentile > 50
-                  ? "You're making a name for yourself. Consider collaborations to expand your audience."
-                  : playerRanking.percentile > 30
-                  ? "You're on the rise, but still building your fanbase. Keep consistent with your social media presence."
-                  : "You're still establishing yourself. Focus on creating your unique sound and growing your core audience."}
-              </p>
-              <Button 
-                size="sm" 
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                onClick={() => toast({
-                  title: "Industry Report",
-                  description: "Your detailed industry analysis has been sent to your team!",
-                  variant: "default"
-                })}
-              >
-                <UsersIcon size={14} className="mr-1" />
-                Get Industry Report
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Tabs 
-        defaultValue="weekly" 
-        value={selectedTab} 
-        onValueChange={(value) => setSelectedTab(value as ChartType)}
-        className="flex-1"
-      >
-        <TabsList className="grid grid-cols-3 mb-4 bg-gray-900/30">
-          <TabsTrigger value="weekly" className="data-[state=active]:bg-indigo-900/50">
-            <TrendingUpIcon size={16} className="mr-2" />
-            Weekly Charts
-          </TabsTrigger>
-          <TabsTrigger value="genre" className="data-[state=active]:bg-indigo-900/50">
-            <MusicIcon size={16} className="mr-2" />
-            By Genre
-          </TabsTrigger>
-          <TabsTrigger value="platform" className="data-[state=active]:bg-indigo-900/50">
-            <SpotifyIcon size={16} className="mr-2" />
-            By Platform
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="weekly" className="flex-1 mt-0">
-          <WeeklyHotSongs />
-        </TabsContent>
-        
-        <TabsContent value="genre" className="flex-1 mt-0">
-          <GenreCharts />
-        </TabsContent>
-        
-        <TabsContent value="platform" className="flex-1 mt-0">
-          <PlatformCharts />
         </TabsContent>
       </Tabs>
     </div>
