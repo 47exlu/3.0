@@ -29,7 +29,7 @@ import {
   CommandEmpty,
 } from "@/components/ui/command"
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+
 import { SongPerformanceType, type Song, type AIRapper } from '@/lib/types';
 import { formatNumber } from '@/lib/utils';
 import { StarIcon } from '@/components/ui/icons';
