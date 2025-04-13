@@ -216,11 +216,11 @@ export function SaveLoadGame() {
       
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-700">
+        <DialogContent className="bg-gray-900 border-gray-700" aria-describedby="delete-save-description">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
           </DialogHeader>
-          <p className="text-gray-300">
+          <p className="text-gray-300" id="delete-save-description">
             Are you sure you want to delete this save?
             This action cannot be undone.
           </p>
