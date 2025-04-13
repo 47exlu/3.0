@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -263,6 +263,7 @@ const Tweet: React.FC<TweetProps> = ({
       {/* Comment Modal */}
       <Dialog open={isCommentModalOpen} onOpenChange={setIsCommentModalOpen}>
         <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden">
+          <DialogTitle className="sr-only">Reply to Tweet</DialogTitle>
           <div className="p-4 border-b border-gray-200 dark:border-gray-800">
             <div className="flex justify-between items-center">
               <button onClick={() => setIsCommentModalOpen(false)} className="rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-800">
