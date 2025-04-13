@@ -74,16 +74,21 @@ export function GameLayout({ children }: GameLayoutProps) {
   }, [toggleMute]);
   
   // Setup visibility change detection to handle background/foreground transitions
-  // This handler only resumes audio but doesn't pause it in the background
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         // Page is now visible (user returned to tab)
         console.log('Page became visible, resuming audio if needed');
         resumeAudio();
+      } else {
+        // Page is now hidden (user switched tabs)
+        // Pause background music to save resources
+        const { backgroundMusic, isMuted } = useAudio.getState();
+        if (backgroundMusic && !isMuted && backgroundMusic.playing()) {
+          console.log('Page hidden, pausing audio');
+          backgroundMusic.pause();
+        }
       }
-      // We intentionally don't pause audio when tab loses focus
-      // This allows background music to continue playing
     };
     
     // Listen for visibility changes
