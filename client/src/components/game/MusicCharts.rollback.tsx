@@ -29,26 +29,10 @@ import {
   CommandEmpty,
 } from "@/components/ui/command"
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { SongPerformanceType, type Song, type AIRapper } from '@/lib/types';
 import { formatNumber } from '@/lib/utils';
 import { StarIcon } from '@/components/ui/icons';
-
-// Function for formatting large numbers with K/M/B
-const formatLargeNumber = (num: number | undefined | null): string => {
-  if (num === undefined || num === null) return '0';
-  
-  if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
-  }
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-  }
-  
-  return num.toString();
-};
 
 // Styled star icon with fill
 const StarIcon2 = ({ size = 16, className = '' }) => (
@@ -138,6 +122,8 @@ export function MusicCharts() {
     return ['all', ...Array.from(genreSet)];
   }, [aiRappers]);
   
+  const { toast } = useToast();
+
   // Calculate player's position in overall rankings
   const playerRanking = useMemo(() => {
     // Calculate total streams across all platforms
