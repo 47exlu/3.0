@@ -1612,6 +1612,9 @@ export const useRapperGame = create<RapperGameStore>()(
       // Generate potential award nominations/wins
       get().generateAwards();
       
+      // Generate AI rapper and news source posts on Twitter weekly
+      get().generateAIRapperPosts();
+      
       // Random chance to generate a new market trend (15% chance each week)
       if (Math.random() < 0.15) {
         get().generateMarketTrend();
