@@ -201,7 +201,15 @@ export function TwitterPanel() {
       }
       
       postOnSocialMedia("Twitter", content, images);
-      playSuccess?.();
+      
+      try {
+        if (playSuccess) {
+          playSuccess();
+        }
+      } catch (error) {
+        console.log("Could not play audio effect");
+      }
+      
       setTweetText('');
       setSelectedImage(null);
       setIsComposeOpen(false);
@@ -242,14 +250,26 @@ export function TwitterPanel() {
       // In a real implementation, would create a retweet record
       const content = `RT @${tweet.handle || 'user'}: ${tweet.content}`;
       postOnSocialMedia("Twitter", content, []);
-      playSuccess?.();
+      try {
+        if (playSuccess) {
+          playSuccess();
+        }
+      } catch (error) {
+        console.log("Could not play audio effect");
+      }
     }
   };
   
   // Handle like
   const handleLike = (tweet: SocialMediaPost) => {
     // In a real implementation, would toggle like status
-    playSuccess?.();
+    try {
+      if (playSuccess) {
+        playSuccess();
+      }
+    } catch (error) {
+      console.log("Could not play audio effect");
+    }
   };
   
   // Helper function to render a tweet
