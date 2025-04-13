@@ -1,0 +1,22 @@
+The above error occurred in the <MusicCharts> component:
+
+    at MusicCharts (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/components/game/MusicCharts.tsx?t=1744507903796:139:41)
+    at div
+    at MotionComponent (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=682abedd:945:40)
+    at main
+    at MotionComponent (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=682abedd:945:40)
+    at div
+    at MotionComponent (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=682abedd:945:40)
+    at GameLayout (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/components/game/GameLayout.tsx:27:30)
+    at LoadingTransition (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/components/ui/loading-transition.tsx:21:37)
+    at Route (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=682abedd:280:16)
+    at Switch (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=682abedd:336:17)
+    at Suspense
+    at CustomToastProvider (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/hooks/use-toast.tsx:20:39)
+    at QueryClientProvider (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=682abedd:2882:3)
+    at App (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/App.tsx?t=1744507903796&v=cK3DUIzeNyVo59G1KPtvv:247:38)
+    at CustomToastProvider (https://397561d4-7a4c-40cc-835e-a94ebfab19c3-00-b1adwr61u9a0.worf.replit.dev/src/hooks/use-toast.tsx?v=cK3DUIzeNyVo59G1KPtvv:20:39)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+globalGenres is not iterable
