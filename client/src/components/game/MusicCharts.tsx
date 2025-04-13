@@ -213,7 +213,7 @@ export function MusicCharts() {
       
       return Array.from({ length: songsPerRapper }).map((_, i) => ({
         id: `ai-${rapper.id}-${i}`,
-        title: `${rapper.songTitles[i % rapper.songTitles.length]}`,
+        title: `${rapper.songTitles && rapper.songTitles.length > 0 ? rapper.songTitles[i % rapper.songTitles.length] : 'Song ' + i}`,
         artistName: rapper.name,
         artistId: rapper.id,
         streams: Math.floor(rapper.monthlyListeners * (Math.random() * 0.4 + 0.1)),
