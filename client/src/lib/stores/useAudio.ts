@@ -36,7 +36,10 @@ export const useAudio = create<AudioState>()(
         // Configure new music
         music.loop(true);
         music.volume(0.4);
-        // HTML5 Audio can only be set in constructor options, not via method
+        
+        // Note: HTML5 mode should be set in constructor options
+        // For music playback in background tabs, we create new instances with html5: true
+        // when initializing sounds in the app
         
         // Play if not muted
         if (!get().isMuted) {
