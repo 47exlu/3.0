@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
 import { useAudio } from '@/lib/stores/useAudio';
-import { MusicChart, SocialMediaPost, TwitterTrend } from '@/lib/types';
+import { MusicChart, SocialMediaPost, TwitterTrend, ViralStatus } from '@/lib/types';
 import { 
   Image as ImageIcon, 
   Heart, 
@@ -414,7 +414,7 @@ export function TwitterPanel() {
       likes: Math.floor(Math.random() * tweetThreadView.likes * 0.5),
       comments: Math.floor(Math.random() * 10),
       shares: Math.floor(Math.random() * 5),
-      viralStatus: 'not_viral',
+      viralStatus: "not_viral" as ViralStatus,
       viralMultiplier: 1,
       followerGain: 0,
       reputationGain: 0,
@@ -458,7 +458,12 @@ export function TwitterPanel() {
                 verified: Math.random() > 0.8
               };
               
-              return renderTweet(reply, randomAccount as MusicChart, true);
+              // Cast reply to ensure viralStatus is properly typed
+              const typedReply = {
+                ...reply,
+                viralStatus: reply.viralStatus as ViralStatus
+              };
+              return renderTweet(typedReply, randomAccount as MusicChart, true);
             })}
           </div>
         </ScrollArea>
@@ -1066,7 +1071,7 @@ export function TwitterPanel() {
                     size="icon"
                     className="text-blue-500 hover:text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                   >
-                    <Gif size={20} />
+                    <Gift size={20} />
                   </Button>
                   <Button
                     variant="ghost"

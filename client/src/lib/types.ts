@@ -141,6 +141,13 @@ export interface SocialMediaPost {
   handle?: string;   // Handle/username for the post author
   avatar?: string;   // Avatar image URL for post author
   verified?: boolean; // Whether the account is verified
+  // Reply and quote retweet fields for Twitter:
+  replyToId?: string;            // ID of the post this is a reply to
+  replyToHandle?: string;        // Handle of the user this is a reply to
+  quoteTweetId?: string;         // ID of the post this is quoting
+  quoteTweetAuthor?: string;     // Author name of the quoted tweet
+  quoteTweetHandle?: string;     // Handle of the quoted tweet author
+  quoteTweetContent?: string;    // Content of the quoted tweet
   // TikTok specific fields:
   video?: string;     // Video URL for TikTok posts
   thumbnail?: string; // Thumbnail for TikTok videos
