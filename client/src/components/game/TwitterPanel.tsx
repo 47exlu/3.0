@@ -27,7 +27,7 @@ import {
   Sparkles,
   BarChart2,
   Calendar,
-  Gif,
+  Gift,
   Smile,
   MapPin,
   ChevronLeft,

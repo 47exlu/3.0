@@ -4017,6 +4017,137 @@ export const useRapperGame = create<RapperGameStore>()(
       if (platformIndex === -1) return;
       
       const platform = currentState.socialMedia[platformIndex];
+      const costInfo = SOCIAL_MEDIA_COSTS[platform.name as keyof typeof SOCIAL_MEDIA_COSTS];
+      
+      if (!costInfo) return;
+      
+      // Calculate engagement rate for this post
+      const [minEngagement, maxEngagement] = costInfo.postEngagementRange;
+      const postEngagement = Math.floor(minEngagement + Math.random() * (maxEngagement - minEngagement));
+      
+      // Calculate likes, comments, shares based on followers and engagement
+      const baseEngagement = Math.max(platform.followers * (postEngagement / 100), 10);
+      const likes = Math.floor(baseEngagement * (0.5 + Math.random() * 0.5));
+      const comments = Math.floor(baseEngagement * (0.1 + Math.random() * 0.2));
+      const shares = Math.floor(baseEngagement * (0.05 + Math.random() * 0.1));
+      
+      // Determine viral status based on platform, influence, quality of content, and luck
+      let viralStatus: ViralStatus = "not_viral";
+      let viralMultiplier = 1;
+      
+      // Base chance of going viral is affected by marketing stat and reputation
+      const baseViralChance = 0.05 + 
+        (currentState.stats.marketing / 100) * 0.15 + 
+        (currentState.stats.reputation / 100) * 0.10;
+      
+      // Additional factors: content length, images, etc.
+      const contentBonus = content.length > 50 ? 0.05 : 0;
+      const imageBonus = images.length > 0 ? 0.1 : 0;
+      
+      // Calculate final chance
+      const viralChance = baseViralChance + contentBonus + imageBonus;
+      const roll = Math.random();
+      
+      if (roll < viralChance * 0.2) {
+        viralStatus = "super_viral";
+        viralMultiplier = 10 + Math.random() * 20; // 10-30x multiplier
+      } else if (roll < viralChance * 0.5) {
+        viralStatus = "viral";
+        viralMultiplier = 5 + Math.random() * 5; // 5-10x multiplier
+      } else if (roll < viralChance) {
+        viralStatus = "trending";
+        viralMultiplier = 2 + Math.random() * 3; // 2-5x multiplier
+      }
+      
+      // Calculate follower and reputation gains based on viral status
+      const baseFollowerGain = Math.floor(likes * 0.1); // Base follower gain
+      const followerGain = Math.floor(baseFollowerGain * viralMultiplier);
+      
+      // Calculate reputation gain
+      const baseReputationGain = Math.floor(shares * 0.05);
+      const reputationGain = Math.floor(baseReputationGain * viralMultiplier);
+      
+      // Calculate wealth gain (from monetization, if applicable)
+      const baseWealthGain = platform.followers > 10000 ? Math.floor(likes * 0.01) : 0;
+      const wealthGain = Math.floor(baseWealthGain * viralMultiplier);
+      
+      // Create new social media post
+      const newPost: SocialMediaPost = {
+        id: uuidv4(),
+        platformName,
+        content: content || "Posted new content!",
+        images: images.length > 0 ? images : undefined,
+        postWeek: currentState.currentWeek,
+        date: new Date(),
+        likes,
+        comments,
+        shares,
+        viralStatus,
+        viralMultiplier,
+        followerGain,
+        reputationGain,
+        wealthGain
+      };
+      
+      // Update platform with new post
+      const updatedSocialMedia = [...currentState.socialMedia];
+      const updatedPlatform = {
+        ...platform,
+        followers: platform.followers + followerGain,
+        posts: platform.posts + 1,
+        engagement: Math.floor((platform.engagement + postEngagement) / 2), // Average with existing engagement
+        lastPostWeek: currentState.currentWeek,
+        viralPosts: [...(platform.viralPosts || []), newPost].filter(post => 
+          // Only keep viral posts and limit to most recent 10
+          post.viralStatus !== "not_viral"
+        ).slice(-10)
+      };
+      
+      updatedSocialMedia[platformIndex] = updatedPlatform;
+      
+      // Update state for both old and new data models
+      set({
+        socialMedia: updatedSocialMedia,
+        stats: {
+          ...currentState.stats,
+          wealth: currentState.stats.wealth + wealthGain,
+          marketing: Math.min(100, currentState.stats.marketing + 1),
+          reputation: Math.min(100, currentState.stats.reputation + reputationGain)
+        }
+      });
+      
+      // ALSO update the socialMediaStats for the new model
+      // This is the critical part that was missing - we need to update both data structures
+      const lowerCasePlatform = platformName.toLowerCase();
+      const updatedStats = { ...currentState.socialMediaStats };
+      
+      // Twitter post
+      if (lowerCasePlatform === 'twitter' && updatedStats.twitter) {
+        updatedStats.twitter = {
+          ...updatedStats.twitter,
+          tweets: [...(updatedStats.twitter.tweets || []), newPost],
+          followers: updatedStats.twitter.followers + followerGain
+        };
+        set({ socialMediaStats: updatedStats });
+      } 
+      // Instagram post
+      else if (lowerCasePlatform === 'instagram' && updatedStats.instagram) {
+        updatedStats.instagram = {
+          ...updatedStats.instagram,
+          posts: [...(updatedStats.instagram.posts || []), newPost],
+          followers: updatedStats.instagram.followers + followerGain
+        };
+        set({ socialMediaStats: updatedStats });
+      } 
+      // TikTok post (video)
+      else if (lowerCasePlatform === 'tiktok' && updatedStats.tiktok) {
+        updatedStats.tiktok = {
+          ...updatedStats.tiktok,
+          videos: [...(updatedStats.tiktok.videos || []), newPost],
+          followers: updatedStats.tiktok.followers + followerGain
+        };
+        set({ socialMediaStats: updatedStats });
+      }
     },
     
     // Add a social media post directly 
