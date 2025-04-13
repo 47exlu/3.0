@@ -681,7 +681,7 @@ export function MusicCharts() {
                     <Line
                       key={song.id}
                       type="monotone"
-                      dataKey={song.title}
+                      dataKey={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
                       name={song.title.length > 15 ? song.title.substring(0, 15) + '...' : song.title}
                       stroke={song.color || `hsl(${index * 70}, 70%, 50%)`}
                       strokeWidth={2}
@@ -705,7 +705,7 @@ export function MusicCharts() {
             onClick={() => {
               if (song.revenue) {
                 toast({
-                  title: `💰 ${song.title} Revenue`,
+                  title: `💰 ${<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>} Revenue`,
                   description: `This song has earned ${formatMoney(song.revenue)}.`,
                   variant: "default"
                 });
@@ -719,7 +719,7 @@ export function MusicCharts() {
             <div className="flex items-center flex-1 min-w-0">
               {song.artistImage ? (
                 <div className="w-10 h-10 rounded-full overflow-hidden mr-3 relative">
-                  <img src={song.artistImage} alt={song.artistName} className="w-full h-full object-cover" />
+                  <img src={song.artistImage} alt={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>} className="w-full h-full object-cover" />
                   {song.isPlayerSong && (
                     <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
                       <StarIcon2 size={10} className="text-black" />
@@ -738,14 +738,14 @@ export function MusicCharts() {
               )}
               
               <div className="min-w-0 flex-1">
-                <div className="font-semibold truncate flex items-center">
-                  {song.title}
+                <div className="font-semibold flex items-center overflow-hidden">
+                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
                   {song.isPlayerSong && (
                     <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                   )}
                 </div>
-                <div className="text-gray-400 text-sm truncate flex items-center">
-                  {song.artistName}
+                <div className="text-gray-400 text-sm flex items-center overflow-hidden">
+                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
                   {song.featuring && song.featuring.length > 0 && (
                     <span> feat. {song.featuring.map(id => {
                       const artist = aiRappers.find(r => r.id === id);
@@ -976,7 +976,7 @@ export function MusicCharts() {
             onClick={() => {
               if (song.revenue) {
                 toast({
-                  title: `💰 ${song.title} Revenue`,
+                  title: `💰 ${<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>} Revenue`,
                   description: `This song has earned ${formatMoney(song.revenue)}.`,
                   variant: "default"
                 });
@@ -990,7 +990,7 @@ export function MusicCharts() {
             <div className="flex items-center flex-1 min-w-0">
               {song.artistImage ? (
                 <div className="w-10 h-10 rounded-full overflow-hidden mr-3 relative">
-                  <img src={song.artistImage} alt={song.artistName} className="w-full h-full object-cover" />
+                  <img src={song.artistImage} alt={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>} className="w-full h-full object-cover" />
                   {song.isPlayerSong && (
                     <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
                       <StarIcon2 size={10} className="text-black" />
@@ -1009,14 +1009,14 @@ export function MusicCharts() {
               )}
               
               <div className="min-w-0 flex-1">
-                <div className="font-semibold truncate flex items-center">
-                  {song.title}
+                <div className="font-semibold flex items-center overflow-hidden">
+                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
                   {song.isPlayerSong && (
                     <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                   )}
                 </div>
-                <div className="text-gray-400 text-sm truncate flex items-center">
-                  {song.artistName}
+                <div className="text-gray-400 text-sm flex items-center overflow-hidden">
+                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
                   {song.featuring && song.featuring.length > 0 && (
                     <span> feat. {song.featuring.map(id => {
                       const artist = aiRappers.find(r => r.id === id);
@@ -1137,7 +1137,7 @@ export function MusicCharts() {
             onClick={() => {
               if (song.revenue) {
                 toast({
-                  title: `💰 ${song.title} Revenue`,
+                  title: `💰 ${<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>} Revenue`,
                   description: `This song has earned ${formatMoney(song.revenue)}.`,
                   variant: "default"
                 });
@@ -1151,7 +1151,7 @@ export function MusicCharts() {
             <div className="flex items-center flex-1 min-w-0">
               {song.artistImage ? (
                 <div className="w-10 h-10 rounded-full overflow-hidden mr-3 relative">
-                  <img src={song.artistImage} alt={song.artistName} className="w-full h-full object-cover" />
+                  <img src={song.artistImage} alt={<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>} className="w-full h-full object-cover" />
                   {song.isPlayerSong && (
                     <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full w-4 h-4 flex items-center justify-center border border-black">
                       <StarIcon2 size={10} className="text-black" />
@@ -1170,14 +1170,14 @@ export function MusicCharts() {
               )}
               
               <div className="min-w-0 flex-1">
-                <div className="font-semibold truncate flex items-center">
-                  {song.title}
+                <div className="font-semibold flex items-center overflow-hidden">
+                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
                   {song.isPlayerSong && (
                     <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                   )}
                 </div>
-                <div className="text-gray-400 text-sm truncate flex items-center">
-                  {song.artistName}
+                <div className="text-gray-400 text-sm flex items-center overflow-hidden">
+                  {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
                   {song.featuring && song.featuring.length > 0 && (
                     <span> feat. {song.featuring.map(id => {
                       const artist = aiRappers.find(r => r.id === id);
