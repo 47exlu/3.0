@@ -608,7 +608,7 @@ const TwitterPanel: React.FC<TwitterPanelProps> = ({ onBack }) => {
     );
     
     // Play satisfying sound effect on like
-    const audio = new Audio("/assets/sounds/pop.mp3");
+    const audio = new Audio("/sounds/click.mp3");
     audio.volume = 0.2;
     audio.play().catch(e => console.log("Audio play prevented:", e));
     
