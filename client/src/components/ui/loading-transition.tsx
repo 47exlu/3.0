@@ -2,6 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { LoadingScreen } from './loading-screen';
 import { useLoadingScreen } from '@/lib/stores/useLoadingScreen';
 
+// Define loading variant type
+type LoadingVariant = 
+  'default' | 
+  'record' | 
+  'vinyl' | 
+  'microphone' | 
+  'studio' | 
+  'awards' |
+  'streaming' |
+  'billboard' |
+  'contract' |
+  'concert' |
+  'random';
+
 interface LoadingTransitionProps {
   children: React.ReactNode;
 }
@@ -45,7 +59,7 @@ export function useLoadingTransition(timeout: number = 1500) {
   const triggerTransition = (
     onComplete: () => void, 
     message?: string, 
-    variant?: 'default' | 'record' | 'vinyl' | 'microphone' | 'random'
+    variant?: LoadingVariant
   ) => {
     showLoading(message, variant);
     
