@@ -122,7 +122,7 @@ export function MusicCharts() {
     return ['all', ...Array.from(genreSet)];
   }, [aiRappers]);
   
-  const { toast } = useToast();
+  // Toast functionality removed
 
   // Calculate player's position in overall rankings
   const playerRanking = useMemo(() => {
@@ -811,13 +811,13 @@ export function MusicCharts() {
                 
                 {/* Song title and artist */}
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold flex items-center overflow-hidden">
+                  <div className="font-semibold flex items-center">
                     {<span className="">{song.title}</span>}
                     {song.isPlayerSong && (
                       <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                     )}
                   </div>
-                  <div className="text-gray-400 text-sm flex items-center overflow-hidden">
+                  <div className="text-gray-400 text-sm flex items-center">
                     {<span className="">{song.artistName}</span>}
                     {song.featuring && song.featuring.length > 0 && (
                       <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
@@ -836,7 +836,7 @@ export function MusicCharts() {
                 
                 {/* Streams indicator */}
                 <div className="text-right ml-2">
-                  <div className="font-medium whitespace-nowrap">{formatNumber(song.streams)}</div>
+                  <div className="font-medium">{formatNumber(song.streams)}</div>
                   <div className="text-xs text-gray-400">streams</div>
                 </div>
                 
@@ -897,13 +897,13 @@ export function MusicCharts() {
                 
                 {/* Song title and artist */}
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold flex items-center overflow-hidden">
+                  <div className="font-semibold flex items-center">
                     {<span className="">{song.title}</span>}
                     {song.isPlayerSong && (
                       <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                     )}
                   </div>
-                  <div className="text-gray-400 text-sm flex items-center overflow-hidden">
+                  <div className="text-gray-400 text-sm flex items-center">
                     {<span className="">{song.artistName}</span>}
                     {song.featuring && song.featuring.length > 0 && (
                       <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
@@ -982,13 +982,13 @@ export function MusicCharts() {
                 
                 {/* Song title and artist */}
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold flex items-center overflow-hidden">
+                  <div className="font-semibold flex items-center">
                     {<span className="">{song.title}</span>}
                     {song.isPlayerSong && (
                       <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                     )}
                   </div>
-                  <div className="text-gray-400 text-sm flex items-center overflow-hidden">
+                  <div className="text-gray-400 text-sm flex items-center">
                     {<span className="">{song.artistName}</span>}
                     {song.featuring && song.featuring.length > 0 && (
                       <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
@@ -1001,7 +1001,7 @@ export function MusicCharts() {
                 
                 {/* Streams indicator */}
                 <div className="text-right ml-2">
-                  <div className="font-medium whitespace-nowrap">{formatNumber(song.streams)}</div>
+                  <div className="font-medium">{formatNumber(song.streams)}</div>
                   <div className="text-xs text-gray-400">streams</div>
                 </div>
                 
@@ -1074,13 +1074,13 @@ export function MusicCharts() {
                   
                   {/* Song title and artist */}
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold flex items-center overflow-hidden">
+                    <div className="font-semibold flex items-center">
                       {<span className="">{song.title}</span>}
                       {song.isPlayerSong && (
                         <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                       )}
                     </div>
-                    <div className="text-gray-400 text-sm flex items-center overflow-hidden">
+                    <div className="text-gray-400 text-sm flex items-center">
                       {<span className="">{song.artistName}</span>}
                       {song.featuring && song.featuring.length > 0 && (
                         <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
@@ -1093,7 +1093,7 @@ export function MusicCharts() {
                   
                   {/* Platform-specific streams indicator */}
                   <div className="text-right ml-2">
-                    <div className="font-medium whitespace-nowrap">{formatNumber(platformStreams)}</div>
+                    <div className="font-medium">{formatNumber(platformStreams)}</div>
                     <div className="text-xs text-gray-400">platform streams</div>
                   </div>
                   
