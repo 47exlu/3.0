@@ -140,6 +140,7 @@ interface RapperGameActions {
   postFromBurnerAccount: (platform: string, burnerAccountHandle: string, content: string, images?: string[]) => void;
   deleteBurnerAccount: (platform: string, burnerAccountHandle: string) => void;
   generateMusicChartPost: (accountId: string, content: string, image?: string) => void;
+  generateAIRapperPosts: () => void;
   
   // Collaboration
   requestFeature: (rapperId: string, songTier: SongTier) => void;
@@ -3913,6 +3914,279 @@ export const useRapperGame = create<RapperGameStore>()(
           // Use the store function to generate the post
           get().generateMusicChartPost(accountId, randomTopic);
         }
+      }
+    },
+    
+    // Generate AI rapper and news source posts for Twitter
+    generateAIRapperPosts: () => {
+      const currentState = get();
+      
+      if (!currentState.socialMediaStats?.twitter || !currentState.aiRappers) {
+        return;
+      }
+      
+      const newWeek = currentState.currentWeek;
+      const date = new Date();
+      const aiPosts: SocialMediaPost[] = [];
+      
+      // Select a random subset of AI rappers to post this week (about 30%)
+      const postingRappers = currentState.aiRappers
+        .filter(() => Math.random() < 0.3)
+        .slice(0, 5); // Limit to max 5 rappers per week
+      
+      // AI rapper content templates
+      const rapperContentTemplates = [
+        "Just hit the studio for a new track. Can't wait for y'all to hear this! 🔥 #NewMusic",
+        "Working on something special for the fans. Stay tuned! 🎵",
+        "Grateful for all the support on my latest drop. More coming soon! 🙏",
+        "Feeling inspired today. Writing some of my best lyrics yet. ✍️",
+        "Just wrapped up a collab with @{otherRapper}. This one's gonna be crazy! 🤯",
+        "Who should I work with next? Drop some names below! 👇",
+        "Streaming numbers going crazy this week! Thank you to all my real fans out there. ❤️",
+        "Looking for producers with that unique sound. Hit my DMs! 📩",
+        "Taking some time to recharge and get inspired. The next project needs to be perfect. 🧘‍♂️",
+        "Just booked a show in {city}! Tickets drop next week. 🎫",
+        "Anyone listening to {currentTrend}? That's the vibe I'm on right now.",
+        "Getting ready to drop a surprise this Friday. You're not ready! 👀"
+      ];
+      
+      postingRappers.forEach((rapper, index) => {
+        // Select a random content template
+        const templateIndex = Math.floor(Math.random() * rapperContentTemplates.length);
+        let content = rapperContentTemplates[templateIndex];
+        
+        // Replace placeholders
+        if (content.includes("{otherRapper}")) {
+          const otherRappers = currentState.aiRappers?.filter(r => r.id !== rapper.id) || [];
+          const otherRapper = otherRappers[Math.floor(Math.random() * otherRappers.length)];
+          content = content.replace("{otherRapper}", otherRapper?.name || "another artist");
+        }
+        
+        if (content.includes("{city}")) {
+          const cities = ["New York", "Los Angeles", "Atlanta", "Chicago", "Miami", "London", "Toronto", "Houston"];
+          content = content.replace("{city}", cities[Math.floor(Math.random() * cities.length)]);
+        }
+        
+        if (content.includes("{currentTrend}")) {
+          const trends = currentState.socialMediaStats?.twitter?.trends || [];
+          const trend = trends.length > 0 
+            ? trends[Math.floor(Math.random() * trends.length)].name
+            : "the latest trend";
+          content = content.replace("{currentTrend}", trend);
+        }
+        
+        // Create base engagement values
+        const followerBase = 10000 + Math.floor(Math.random() * 990000); // 10K-1M followers
+        const baseEngagement = Math.floor(followerBase * (0.02 + Math.random() * 0.08));
+        const likes = Math.floor(baseEngagement * (0.5 + Math.random() * 0.5));
+        const comments = Math.floor(baseEngagement * (0.1 + Math.random() * 0.2));
+        const shares = Math.floor(baseEngagement * (0.05 + Math.random() * 0.1));
+        
+        // Random viral status
+        const viralRoll = Math.random();
+        let viralStatus: ViralStatus = "not_viral";
+        let viralMultiplier = 1;
+        
+        if (viralRoll < 0.02) {
+          viralStatus = "super_viral";
+          viralMultiplier = 10 + Math.random() * 20; // 10-30x multiplier
+        } else if (viralRoll < 0.05) {
+          viralStatus = "viral";
+          viralMultiplier = 5 + Math.random() * 5; // 5-10x multiplier
+        } else if (viralRoll < 0.15) {
+          viralStatus = "trending";
+          viralMultiplier = 2 + Math.random() * 3; // 2-5x multiplier
+        }
+        
+        // Apply viral multipliers
+        const finalLikes = Math.floor(likes * viralMultiplier);
+        const finalComments = Math.floor(comments * viralMultiplier);
+        const finalShares = Math.floor(shares * viralMultiplier);
+        
+        // Create AI rapper post
+        const post: SocialMediaPost = {
+          id: `ai-rapper_${rapper.id}-${Date.now()}-${index}`,
+          platformName: "Twitter",
+          handle: rapper.name.toLowerCase().replace(/\s+/g, ""),
+          authorName: rapper.name,
+          authorImage: rapper.image,
+          content,
+          postWeek: newWeek,
+          date,
+          likes: finalLikes,
+          comments: finalComments,
+          shares: finalShares,
+          viralStatus,
+          viralMultiplier,
+          followerGain: Math.floor(finalLikes * 0.1),
+          reputationGain: Math.floor(finalShares * 0.05),
+          wealthGain: 0
+        };
+        
+        aiPosts.push(post);
+      });
+      
+      // News source content templates
+      const newsSourceNames = [
+        "MusicInsider",
+        "HipHopDaily",
+        "ChartBeat",
+        "IndustryNow",
+        "RapRadar"
+      ];
+      
+      const newsContentTemplates = [
+        "Breaking: {rapper1} and {rapper2} spotted in the studio together. Collab coming soon? 👀 #MusicNews",
+        "{rapper1}'s latest album has officially gone {certification}! Congrats to the team. 🏆",
+        "Industry sources say {rapper1} is about to sign a major deal with {label}. Stay tuned for the announcement!",
+        "Chart Update: {rapper1} remains at #1 for the second week with '{songTitle}'. 📈",
+        "Concert Review: {rapper1}'s show in {city} last night was absolutely electric. Full coverage on our website!",
+        "Who's dominating streaming this week? Our analysts break down the numbers. {rapper1} leads with a {percentage}% increase! 📊",
+        "New Music Friday: Don't miss {rapper1}'s surprise drop '{songTitle}' - already trending worldwide! 🌎",
+        "ICYMI: {rapper1} revealed plans for a world tour starting this fall. Dates to be announced next month. 🎫",
+        "The music industry is changing: {trend} is reshaping how artists connect with fans. Our latest report explains why."
+      ];
+      
+      // Create 1-3 news source posts
+      const newsPostCount = 1 + Math.floor(Math.random() * 3);
+      
+      for (let i = 0; i < newsPostCount; i++) {
+        const newsSource = newsSourceNames[Math.floor(Math.random() * newsSourceNames.length)];
+        const templateIndex = Math.floor(Math.random() * newsContentTemplates.length);
+        let content = newsContentTemplates[templateIndex];
+        
+        // Replace placeholders
+        if (content.includes("{rapper1}") || content.includes("{rapper2}")) {
+          const rappers = currentState.aiRappers || [];
+          const shuffledRappers = [...rappers].sort(() => 0.5 - Math.random());
+          
+          // Include player in the mix sometimes
+          if (Math.random() < 0.3 && currentState.character?.artistName) {
+            if (content.includes("{rapper1}")) {
+              content = content.replace("{rapper1}", currentState.character.artistName);
+            } else if (content.includes("{rapper2}")) {
+              content = content.replace("{rapper2}", currentState.character.artistName);
+            }
+          }
+          
+          // Replace remaining rapper placeholders
+          if (content.includes("{rapper1}")) {
+            content = content.replace("{rapper1}", shuffledRappers[0]?.name || "a rising artist");
+          }
+          
+          if (content.includes("{rapper2}")) {
+            content = content.replace("{rapper2}", shuffledRappers[1]?.name || "another major artist");
+          }
+        }
+        
+        if (content.includes("{certification}")) {
+          const certifications = ["Gold", "Platinum", "Multi-Platinum", "Diamond"];
+          content = content.replace("{certification}", certifications[Math.floor(Math.random() * certifications.length)]);
+        }
+        
+        if (content.includes("{label}")) {
+          const labels = ["Universal", "Sony Music", "Warner", "Def Jam", "Interscope", "Republic Records"];
+          content = content.replace("{label}", labels[Math.floor(Math.random() * labels.length)]);
+        }
+        
+        if (content.includes("{songTitle}")) {
+          const songTitles = [
+            "Midnight Dreams",
+            "City Lights",
+            "Forever Young",
+            "Higher Ground",
+            "The Wave",
+            "No Limits",
+            "Paradise"
+          ];
+          content = content.replace("{songTitle}", songTitles[Math.floor(Math.random() * songTitles.length)]);
+        }
+        
+        if (content.includes("{city}")) {
+          const cities = ["New York", "Los Angeles", "Atlanta", "Chicago", "Miami", "London", "Toronto", "Houston"];
+          content = content.replace("{city}", cities[Math.floor(Math.random() * cities.length)]);
+        }
+        
+        if (content.includes("{percentage}")) {
+          const percentage = 10 + Math.floor(Math.random() * 90);
+          content = content.replace("{percentage}", percentage.toString());
+        }
+        
+        if (content.includes("{trend}")) {
+          const trends = [
+            "AI-generated music",
+            "Short-form video",
+            "Direct artist-to-fan platforms",
+            "Virtual concerts",
+            "Blockchain royalties",
+            "Independent distribution"
+          ];
+          content = content.replace("{trend}", trends[Math.floor(Math.random() * trends.length)]);
+        }
+        
+        // Create engagement values for news sources (typically higher than individual artists)
+        const followerBase = 100000 + Math.floor(Math.random() * 9900000); // 100K-10M followers
+        const baseEngagement = Math.floor(followerBase * (0.03 + Math.random() * 0.07));
+        const likes = Math.floor(baseEngagement * (0.4 + Math.random() * 0.3));
+        const comments = Math.floor(baseEngagement * (0.2 + Math.random() * 0.2));
+        const shares = Math.floor(baseEngagement * (0.1 + Math.random() * 0.1));
+        
+        // News posts are slightly more likely to go viral as they cover popular topics
+        const viralRoll = Math.random();
+        let viralStatus: ViralStatus = "not_viral";
+        let viralMultiplier = 1;
+        
+        if (viralRoll < 0.03) {
+          viralStatus = "super_viral";
+          viralMultiplier = 10 + Math.random() * 20; // 10-30x multiplier
+        } else if (viralRoll < 0.08) {
+          viralStatus = "viral";
+          viralMultiplier = 5 + Math.random() * 5; // 5-10x multiplier
+        } else if (viralRoll < 0.20) {
+          viralStatus = "trending";
+          viralMultiplier = 2 + Math.random() * 3; // 2-5x multiplier
+        }
+        
+        // Apply viral multipliers
+        const finalLikes = Math.floor(likes * viralMultiplier);
+        const finalComments = Math.floor(comments * viralMultiplier);
+        const finalShares = Math.floor(shares * viralMultiplier);
+        
+        // Create news source post
+        const post: SocialMediaPost = {
+          id: `news-source-${newsSource}-${Date.now()}-${i}`,
+          platformName: "Twitter",
+          handle: newsSource.toLowerCase().replace(/\s+/g, ""),
+          authorName: newsSource,
+          authorImage: "", // Default news source image
+          content,
+          postWeek: newWeek,
+          date,
+          likes: finalLikes,
+          comments: finalComments,
+          shares: finalShares,
+          viralStatus,
+          viralMultiplier,
+          followerGain: Math.floor(finalLikes * 0.05),
+          reputationGain: 0,
+          wealthGain: 0,
+          verified: true // News sources are typically verified
+        };
+        
+        aiPosts.push(post);
+      }
+      
+      // Add all AI posts to Twitter
+      if (aiPosts.length > 0) {
+        set(state => ({
+          socialMediaStats: {
+            ...state.socialMediaStats,
+            twitter: {
+              ...state.socialMediaStats!.twitter,
+              tweets: [...(state.socialMediaStats?.twitter.tweets || []), ...aiPosts]
+            }
+          }
+        }));
       }
     },
     
