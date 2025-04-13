@@ -812,13 +812,13 @@ export function MusicCharts() {
                 {/* Song title and artist */}
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold flex items-center overflow-hidden">
-                    {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
+                    {<span className="">{song.title}</span>}
                     {song.isPlayerSong && (
                       <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                     )}
                   </div>
                   <div className="text-gray-400 text-sm flex items-center overflow-hidden">
-                    {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
+                    {<span className="">{song.artistName}</span>}
                     {song.featuring && song.featuring.length > 0 && (
                       <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
                         const artist = aiRappers.find(r => r.id === id);
@@ -898,13 +898,13 @@ export function MusicCharts() {
                 {/* Song title and artist */}
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold flex items-center overflow-hidden">
-                    {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
+                    {<span className="">{song.title}</span>}
                     {song.isPlayerSong && (
                       <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                     )}
                   </div>
                   <div className="text-gray-400 text-sm flex items-center overflow-hidden">
-                    {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
+                    {<span className="">{song.artistName}</span>}
                     {song.featuring && song.featuring.length > 0 && (
                       <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
                         const artist = aiRappers.find(r => r.id === id);
@@ -983,13 +983,13 @@ export function MusicCharts() {
                 {/* Song title and artist */}
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold flex items-center overflow-hidden">
-                    {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
+                    {<span className="">{song.title}</span>}
                     {song.isPlayerSong && (
                       <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                     )}
                   </div>
                   <div className="text-gray-400 text-sm flex items-center overflow-hidden">
-                    {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
+                    {<span className="">{song.artistName}</span>}
                     {song.featuring && song.featuring.length > 0 && (
                       <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
                         const artist = aiRappers.find(r => r.id === id);
@@ -1075,13 +1075,13 @@ export function MusicCharts() {
                   {/* Song title and artist */}
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold flex items-center overflow-hidden">
-                      {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.title}</span>}
+                      {<span className="">{song.title}</span>}
                       {song.isPlayerSong && (
                         <span className="ml-2 text-yellow-500 text-xs">YOUR SONG</span>
                       )}
                     </div>
                     <div className="text-gray-400 text-sm flex items-center overflow-hidden">
-                      {<span className="overflow-hidden text-ellipsis whitespace-nowrap">{song.artistName}</span>}
+                      {<span className="">{song.artistName}</span>}
                       {song.featuring && song.featuring.length > 0 && (
                         <span className="shrink-0 ml-1"> feat. {song.featuring.map(id => {
                           const artist = aiRappers.find(r => r.id === id);
