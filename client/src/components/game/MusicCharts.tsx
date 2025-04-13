@@ -1,17 +1,14 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useRapperGame } from '@/lib/stores/useRapperGame';
 import { 
   ArrowDown, 
   ArrowUp, 
   ArrowUpRight, 
-  Star,
+  Star, 
   BarChart2, 
   Calendar, 
   Music2,
-  Smartphone,
-  Medal,
-  TrendingUp,
-  Disc
+  Smartphone
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -32,10 +29,8 @@ import {
   CommandEmpty,
 } from "@/components/ui/command"
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { SongPerformanceType, type Song, type AIRapper } from '@/lib/types';
 import { formatLargeNumber, formatNumber } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 // Styled star icon with fill
 const StarIcon = ({ size = 16, className = '' }) => (
@@ -102,17 +97,6 @@ const getPerformanceText = (type: SongPerformanceType): string => {
   }
 };
 
-// Helper to get icon for performance types
-const getPerformanceIcon = (type: SongPerformanceType) => {
-  switch (type) {
-    case 'viral': return <TrendingUp size={12} className="mr-1" />;
-    case 'flop': return <ArrowDown size={12} className="mr-1" />;
-    case 'comeback': return <ArrowUp size={12} className="mr-1" />;
-    case 'normal': 
-    default: return <Disc size={12} className="mr-1" />;
-  }
-};
-
 // Helper to render the weekly change indicator
 const WeeklyChangeIndicator = ({ change }: { change?: number }) => {
   if (change === undefined) return <span className="text-gray-500">-</span>;
@@ -124,15 +108,6 @@ const WeeklyChangeIndicator = ({ change }: { change?: number }) => {
   } else {
     return <span className="text-gray-500">-</span>;
   }
-};
-
-// Chart position display with proper formatting
-const ChartPosition = ({ position }: { position: number }) => {
-  return (
-    <div className="text-xl font-bold">
-      {position}
-    </div>
-  );
 };
 
 // Song Title Display Component
@@ -185,8 +160,6 @@ export function MusicCharts() {
     });
     return ['all', ...Array.from(genreSet)];
   }, [aiRappers]);
-  
-  const { toast } = useToast();
 
   // Calculate player's position in overall rankings
   const playerRanking = useMemo(() => {
@@ -610,27 +583,6 @@ export function MusicCharts() {
   // For displaying top 50 only
   const topSongs = filteredSongs.slice(0, 50);
 
-  // Animation variants for song items
-  const songItemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.05,
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    }),
-    hover: {
-      scale: 1.02,
-      boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
-      transition: {
-        duration: 0.2
-      }
-    }
-  };
-
   // Handle song item click
   const handleSongClick = (songId: string) => {
     setHighlightedSongId(highlightedSongId === songId ? null : songId);
@@ -638,17 +590,16 @@ export function MusicCharts() {
   
   return (
     <div className="p-4 pb-24 md:pb-4 max-w-screen-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-indigo-600 text-transparent bg-clip-text">Music Charts</h1>
+      <h1 className="text-2xl font-bold mb-4 text-indigo-300">Music Charts</h1>
       
       {/* Player's Overall Ranking */}
-      <div className="mb-6 p-4 rounded-lg bg-gradient-to-b from-gray-800/50 to-gray-900/70 backdrop-blur-sm border border-gray-700/50 shadow-lg">
-        <h2 className="text-lg font-semibold mb-2 flex items-center">
-          <Medal className="mr-2 h-5 w-5 text-yellow-500" /> 
+      <div className="mb-6 p-4 rounded-lg bg-gray-800/50 border border-gray-700/50 shadow-md">
+        <h2 className="text-lg font-semibold mb-2 flex items-center text-purple-300">
           Your Artist Ranking
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="col-span-1 flex items-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full overflow-hidden flex items-center justify-center mr-4 shadow-lg border-2 border-indigo-400/30">
+            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full overflow-hidden flex items-center justify-center mr-4 shadow-md border border-indigo-400/30">
               {character?.image ? (
                 <img src={character.image} className="w-full h-full object-cover" alt="Artist" />
               ) : (
@@ -658,7 +609,7 @@ export function MusicCharts() {
               )}
             </div>
             <div>
-              <p className="font-bold text-xl bg-gradient-to-r from-indigo-400 to-purple-500 text-transparent bg-clip-text">{character?.artistName || 'You'}</p>
+              <p className="font-bold text-xl text-indigo-300">{character?.artistName || 'You'}</p>
               <p className="text-gray-300">
                 {playerRanking.ranking === 1 ? (
                   <span className="text-yellow-500 flex items-center">
@@ -674,21 +625,21 @@ export function MusicCharts() {
           
           <div className="col-span-1">
             <p className="text-gray-400 text-sm">Monthly Listeners</p>
-            <p className="font-bold text-xl bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+            <p className="font-bold text-xl text-green-400">
               {formatLargeNumber(streamingPlatforms.reduce((sum, platform) => sum + platform.listeners, 0))}
             </p>
           </div>
           
           <div className="col-span-1">
             <p className="text-gray-400 text-sm">Total Streams</p>
-            <p className="font-bold text-xl bg-gradient-to-r from-blue-400 to-teal-500 text-transparent bg-clip-text">
+            <p className="font-bold text-xl text-blue-400">
               {formatLargeNumber(songs.filter(s => s.released).reduce((sum, song) => sum + song.streams, 0))}
             </p>
           </div>
           
           <div className="col-span-1">
             <p className="text-gray-400 text-sm">Industry Percentile</p>
-            <p className="font-bold text-xl bg-gradient-to-r from-amber-400 to-orange-500 text-transparent bg-clip-text">
+            <p className="font-bold text-xl text-amber-400">
               Top {playerRanking.percentile}%
             </p>
           </div>
@@ -698,19 +649,15 @@ export function MusicCharts() {
         <div className="mt-4">
           <p className="text-sm text-gray-400 mb-2">Nearby Artists in Rankings</p>
           <div className="flex flex-wrap gap-2">
-            {playerRanking.nearbyArtists.map((artist, index) => (
-              <motion.div 
+            {playerRanking.nearbyArtists.map((artist) => (
+              <div 
                 key={artist.id} 
                 className={`
                   flex items-center p-2 rounded-lg shadow-md
                   ${artist.id === 'player' 
-                    ? 'bg-gradient-to-r from-indigo-900/70 to-purple-900/70 border border-indigo-700/50' 
+                    ? 'bg-indigo-900/70 border border-indigo-700/50' 
                     : 'bg-gray-800/50 border border-gray-700/50'}
                 `}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
               >
                 <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center mr-2 bg-gray-700">
                   {artist.image ? (
@@ -721,9 +668,9 @@ export function MusicCharts() {
                 </div>
                 <div>
                   <p className="text-sm font-medium">{artist.name}</p>
-                  <p className="text-xs text-gray-400">#{playerRanking.ranking - 1 + index}</p>
+                  <p className="text-xs text-gray-400">#{playerRanking.ranking - 1 + playerRanking.nearbyArtists.indexOf(artist)}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -828,31 +775,22 @@ export function MusicCharts() {
         
         {/* Chart stats section */}
         <div className="flex flex-wrap gap-3 mb-4">
-          <motion.div 
-            className="px-3 py-2 bg-gradient-to-br from-gray-800/50 to-gray-900/70 backdrop-blur-sm rounded-lg border border-gray-700/30 shadow-lg"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
+          <div 
+            className="px-3 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/30 shadow-md"
           >
             <p className="text-xs text-gray-400">Your Songs in Chart</p>
             <p className="font-bold text-indigo-300">{chartStats.playerSongsInChart} of {chartStats.totalSongs}</p>
-          </motion.div>
+          </div>
           
-          <motion.div 
-            className="px-3 py-2 bg-gradient-to-br from-gray-800/50 to-gray-900/70 backdrop-blur-sm rounded-lg border border-gray-700/30 shadow-lg"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
+          <div 
+            className="px-3 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/30 shadow-md"
           >
             <p className="text-xs text-gray-400">Chart Dominance</p>
             <p className="font-bold text-blue-300">{chartStats.percentageOfChart}%</p>
-          </motion.div>
+          </div>
           
-          <motion.div 
-            className="px-3 py-2 bg-gradient-to-br from-gray-800/50 to-gray-900/70 backdrop-blur-sm rounded-lg border border-gray-700/30 shadow-lg"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
+          <div 
+            className="px-3 py-2 bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700/30 shadow-md"
           >
             <p className="text-xs text-gray-400">Highest Position</p>
             <p className="font-bold text-purple-300">
@@ -862,41 +800,32 @@ export function MusicCharts() {
                 <>Not Charting</>
               )}
             </p>
-          </motion.div>
+          </div>
         </div>
         
         {/* Tab content */}
         <TabsContent value="weekly" className="pt-2">
           {/* Weekly chart display */}
-          <motion.h3 
-            className="text-lg font-semibold mb-3 flex items-center"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <h3 className="text-lg font-semibold mb-3 flex items-center">
             <Calendar className="mr-2 h-5 w-5 text-indigo-400" />
             Top 50 Songs This Week
-          </motion.h3>
+          </h3>
           
           <div className="space-y-2">
             {topSongs.map((song, index) => (
-              <motion.div 
+              <div 
                 key={`weekly-${song.id}`}
                 className={`
                   p-3 rounded-lg flex items-center cursor-pointer overflow-hidden
                   ${song.id === highlightedSongId ? 'ring-2 ring-indigo-500 ring-opacity-50' : ''}
                   ${song.isPlayerSong 
-                    ? 'bg-gradient-to-r from-indigo-900/70 to-purple-900/70 border border-indigo-700/50 shadow-md' 
-                    : 'bg-gradient-to-br from-gray-800/30 to-gray-900/70 hover:from-gray-800/40 hover:to-gray-800/80 border border-gray-700/50'}
+                    ? 'bg-indigo-900/70 border border-indigo-700/50 shadow-md' 
+                    : 'bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50'}
                 `}
-                variants={songItemVariants}
-                initial="hidden"
-                animate="visible"
-                custom={index}
-                whileHover="hover"
                 onClick={() => handleSongClick(song.id)}
               >
                 {/* Position and change indicator */}
-                <div className="mr-3 w-12 text-center">
+                <div className="mr-3 w-8 text-center">
                   <div className="text-xl font-bold">{index + 1}</div>
                   <div className="text-xs flex items-center justify-center">
                     {song.previousRanking && song.ranking && (
@@ -958,10 +887,9 @@ export function MusicCharts() {
                 
                 {/* Performance indicator */}
                 <div className={`ml-3 text-xs px-2.5 py-1 rounded-full ${getPerformanceColor(song.performanceType)} ${getPerformanceBackground(song.performanceType)} flex items-center border shadow-sm`}>
-                  {getPerformanceIcon(song.performanceType)}
                   {getPerformanceText(song.performanceType)}
                 </div>
-              </motion.div>
+              </div>
             ))}
             
             {filteredSongs.length === 0 && (
@@ -974,35 +902,26 @@ export function MusicCharts() {
         
         <TabsContent value="allTime" className="pt-2">
           {/* All time hits display */}
-          <motion.h3 
-            className="text-lg font-semibold mb-3 flex items-center"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <h3 className="text-lg font-semibold mb-3 flex items-center">
             <BarChart2 className="mr-2 h-5 w-5 text-blue-400" />
             All-Time Greatest Hits
-          </motion.h3>
+          </h3>
           
           <div className="space-y-2">
             {topSongs.map((song, index) => (
-              <motion.div 
+              <div 
                 key={`allTime-${song.id}`}
                 className={`
                   p-3 rounded-lg flex items-center cursor-pointer
                   ${song.id === highlightedSongId ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
                   ${song.isPlayerSong 
-                    ? 'bg-gradient-to-r from-blue-900/70 to-purple-900/70 border border-blue-700/50 shadow-md' 
-                    : 'bg-gradient-to-br from-gray-800/30 to-gray-900/70 hover:from-gray-800/40 hover:to-gray-800/80 border border-gray-700/50'}
+                    ? 'bg-blue-900/70 border border-blue-700/50 shadow-md' 
+                    : 'bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50'}
                 `}
-                variants={songItemVariants}
-                initial="hidden"
-                animate="visible"
-                custom={index}
-                whileHover="hover"
                 onClick={() => handleSongClick(song.id)}
               >
                 {/* Position */}
-                <div className="mr-3 w-10 text-center">
+                <div className="mr-3 w-8 text-center">
                   <div className="text-xl font-bold">{index + 1}</div>
                 </div>
                 
@@ -1045,7 +964,7 @@ export function MusicCharts() {
                     />
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
             
             {filteredSongs.length === 0 && (
@@ -1058,35 +977,26 @@ export function MusicCharts() {
         
         <TabsContent value="genre" className="pt-2">
           {/* Genre-based charts */}
-          <motion.h3 
-            className="text-lg font-semibold mb-3 flex items-center"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <h3 className="text-lg font-semibold mb-3 flex items-center">
             <Music2 className="mr-2 h-5 w-5 text-green-400" />
             {selectedGenre === 'all' ? 'All Genres' : selectedGenre} Charts
-          </motion.h3>
+          </h3>
           
           <div className="space-y-2">
             {topSongs.map((song, index) => (
-              <motion.div 
+              <div 
                 key={`genre-${song.id}`}
                 className={`
                   p-3 rounded-lg flex items-center cursor-pointer
                   ${song.id === highlightedSongId ? 'ring-2 ring-green-500 ring-opacity-50' : ''}
                   ${song.isPlayerSong 
-                    ? 'bg-gradient-to-r from-green-900/70 to-emerald-900/70 border border-green-700/50 shadow-md' 
-                    : 'bg-gradient-to-br from-gray-800/30 to-gray-900/70 hover:from-gray-800/40 hover:to-gray-800/80 border border-gray-700/50'}
+                    ? 'bg-green-900/70 border border-green-700/50 shadow-md' 
+                    : 'bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50'}
                 `}
-                variants={songItemVariants}
-                initial="hidden"
-                animate="visible"
-                custom={index}
-                whileHover="hover"
                 onClick={() => handleSongClick(song.id)}
               >
                 {/* Position */}
-                <div className="mr-3 w-10 text-center">
+                <div className="mr-3 w-8 text-center">
                   <div className="text-xl font-bold">{index + 1}</div>
                 </div>
                 
@@ -1133,7 +1043,7 @@ export function MusicCharts() {
                   <Music2 size={12} className="mr-1" style={{ color: song.color || '#8b5cf6' }} />
                   {song.genre}
                 </div>
-              </motion.div>
+              </div>
             ))}
             
             {filteredSongs.length === 0 && (
@@ -1146,14 +1056,10 @@ export function MusicCharts() {
         
         <TabsContent value="platform" className="pt-2">
           {/* Platform-specific charts */}
-          <motion.h3 
-            className="text-lg font-semibold mb-3 flex items-center"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <h3 className="text-lg font-semibold mb-3 flex items-center">
             <Smartphone className="mr-2 h-5 w-5 text-amber-400" />
             {selectedPlatform} Top 50
-          </motion.h3>
+          </h3>
           
           <div className="space-y-2">
             {topSongs.map((song, index) => {
@@ -1161,24 +1067,19 @@ export function MusicCharts() {
               const platformStreams = song.platformStreamDistribution?.[selectedPlatform] || 0;
               
               return (
-                <motion.div 
+                <div 
                   key={`platform-${song.id}`}
                   className={`
                     p-3 rounded-lg flex items-center cursor-pointer
                     ${song.id === highlightedSongId ? 'ring-2 ring-amber-500 ring-opacity-50' : ''}
                     ${song.isPlayerSong 
-                      ? 'bg-gradient-to-r from-amber-900/70 to-orange-900/70 border border-amber-700/50 shadow-md' 
-                      : 'bg-gradient-to-br from-gray-800/30 to-gray-900/70 hover:from-gray-800/40 hover:to-gray-800/80 border border-gray-700/50'}
+                      ? 'bg-amber-900/70 border border-amber-700/50 shadow-md' 
+                      : 'bg-gray-800/30 hover:bg-gray-800/50 border border-gray-700/50'}
                   `}
-                  variants={songItemVariants}
-                  initial="hidden"
-                  animate="visible"
-                  custom={index}
-                  whileHover="hover"
                   onClick={() => handleSongClick(song.id)}
                 >
                   {/* Position */}
-                  <div className="mr-3 w-10 text-center">
+                  <div className="mr-3 w-8 text-center">
                     <div className="text-xl font-bold">{index + 1}</div>
                   </div>
                   
@@ -1219,7 +1120,7 @@ export function MusicCharts() {
                     <Smartphone size={12} className="mr-1 text-amber-400" />
                     {Math.round((platformStreams / song.streams) * 100)}% of total
                   </div>
-                </motion.div>
+                </div>
               );
             })}
             
