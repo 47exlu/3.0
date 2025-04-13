@@ -442,6 +442,10 @@ const TwitterPanel: React.FC<TwitterPanelProps> = ({ onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [twitterPosts, setTwitterPosts] = useState<SocialMediaPost[]>([]);
   const [activeTab, setActiveTab] = useState('for-you');
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [profileBio, setProfileBio] = useState("");
+  const [profileLocation, setProfileLocation] = useState("");
+  const [profileWebsite, setProfileWebsite] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mobileFileInputRef = useRef<HTMLInputElement>(null);
   
@@ -857,7 +861,10 @@ const TwitterPanel: React.FC<TwitterPanelProps> = ({ onBack }) => {
               <Bookmark className="h-6 w-6" />
               <span>Bookmarks</span>
             </button>
-            <button className="flex items-center space-x-4 px-4 py-3 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-lg">
+            <button 
+              onClick={() => setIsProfileDialogOpen(true)}
+              className="flex items-center space-x-4 px-4 py-3 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-lg"
+            >
               <User className="h-6 w-6" />
               <span>Profile</span>
             </button>
